@@ -1,0 +1,24 @@
+digraph { 
+
+node[shape = plaintext];
+
+node[shape = circle];
+	neg1[label="¬"];
+	neg2[label="¬"];
+	neg3[label="¬"];
+	neg4[label="¬"];
+	neg5[label="¬"];
+	and1[label="˄"];
+	p[label="p"];
+	q[label="q"];
+	
+p -> neg1
+neg1 -> neg 2
+q -> neg3
+neg3 -> neg4
+neg2 -> and1
+neg4 -> and1
+and1 -> neg 5
+
+
+}

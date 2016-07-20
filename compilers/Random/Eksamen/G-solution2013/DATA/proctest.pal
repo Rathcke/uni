@@ -1,0 +1,17 @@
+program proctest;
+
+procedure f(a : int; b : int)
+begin inc(a); inc(b); end;
+
+procedure inc (a : int)
+var c : int;
+a  := a + 1;
+                 
+procedure main()
+var x : int; y : int;
+begin
+   x := 2; y := 3;
+   f(x, y);
+   write(x); write(' '); write(y); write('\n');
+end;
+

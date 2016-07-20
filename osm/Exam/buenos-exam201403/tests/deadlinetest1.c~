@@ -1,0 +1,7 @@
+#include "tests/lib.h"
+
+int main(void)
+{
+  puts("3000\n");
+  return 0;
+}

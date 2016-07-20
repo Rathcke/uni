@@ -1,0 +1,102 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 3}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+
+\section*{6.4.19}
+We want to find a natural cubic spline function whose knots are $-1,0,1$ and that takes these values
+\begin{center}
+\begin{tabular}{c||c|c|c}
+x & -1 & 0 & 1 \\ 
+\hline 
+y & 5 & 7 & 9
+\end{tabular} 
+\end{center}
+Let us expand the table to include all coefficients.
+\begin{center}
+\begin{tabular}{c||c|c|c} 
+i & 0 & 1 & 2 \\
+\hline
+x & -1 & 0 & 1 \\ 
+\hline 
+y & 5 & 7 & 9 \\
+\hline 
+h = $x_{i+1}-x_i$ & 1 & 1 & \\
+\hline
+u = $2(h_i+h_{i-1})$ & & 4 & \\
+\hline
+b = $\frac{6}{h_i}(y_{i+1}-y_i)$ & 12 & 12 & \\
+\hline
+v = $b_i-b_{i-1}$ & & 0 &
+\end{tabular} 
+\end{center}
+By \textbf{KC, page 351} equation \textbf{(6)} and inserting known values we are looking for solutions to
+\begin{align*}
+S_i(x) &= \left\{ \begin{array}{rl}
+\frac{z_0}{6}(-x)^3+\frac{z_1}{6}(x+1)^3 + C(x+1) - Dx &x\in [x_0,x_1]\\
+\frac{z_1}{6}(1-x)^3+\frac{z_2}{6}(x)^3 + Cx + D(1-x) &x\in [x_1,x_2]
+\end{array} \right.
+\end{align*}
+First off we want to determine values of $z_i$. This is done by solving the following linear system using \textbf{[KC, page 352]} with $z_0=z_2=0$.
+$$
+\begin{bmatrix}
+1 & 0 & 0 \\
+4 & 1 & 0 \\
+0 & 0 & 1 
+\end{bmatrix}
+\begin{bmatrix}
+0 \\
+z_1 \\
+0
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 \\
+0 \\
+0
+\end{bmatrix}
+$$
+Where obviously $z_1=0$, thus we get
+\begin{align*}
+S(x) &= \left\{ \begin{array}{rl}
+C(x+1) - Dx &x\in [x_0,x_1]\\
+Cx + D(1-x) &x\in [x_1,x_2]
+\end{array} \right.
+\end{align*}
+Where we can find $C$ and $D$ so we get the following
+\begin{align*}
+S(x) &= \left\{ \begin{array}{rl}
+(\frac{y_{i+1}}{h_i}-\frac{z_{i+1}h_i}{6})(x+1) - (\frac{y_i}{h_i}-\frac{z_ih_i}{6}) x &x\in [x_0,x_1]\\
+(\frac{y_{i+1}}{h_i}-\frac{z_{i+1}h_i}{6})x + (\frac{y_i}{h_i}-\frac{z_ih_i}{6})(1-x) &x\in [x_1,x_2]
+\end{array} \right.
+\end{align*}
+Where all values are now known, and $S$ is
+\begin{align*}
+S(x) &= \left\{ \begin{array}{rl}
+(\frac{7}{1}-\frac{0}{6})(x+1) - (\frac{5}{1}-\frac{0}{6}) x &x\in [x_0,x_1]\\
+(\frac{9}{1}-\frac{0}{6})x + (\frac{7}{1}-\frac{0}{6})(1-x) &x\in [x_1,x_2]
+\end{array} \right. \\
+S(x) &= \left\{ \begin{array}{rl}
+2x+7 &x\in [x_0,x_1]\\
+2x+7 &x\in [x_1,x_2]
+\end{array} \right.
+\end{align*}
+Which makes sense with a linear function, since the second derivative is $0$.
+
+\end{document}

@@ -1,0 +1,38 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 3}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Elementær Talteori}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\section*{3.5.1}
+We are asked to use Horner's algorithm to find $p(4)$, when
+$$p(z)=3z^5-7z^4-5z^3+z^2-8z+2$$
+We arrange the calculation as shown in [KC, page 112] and we are able to compute the values.\\
+\begin{center}
+\begin{tabular}{|c|cccccc|}
+\hline 
+4 & 3 & -7 & -5 & 1 & -8 & 2 \\ 
+ &  & 12 & 20 & 60 & 244 & 944 \\ 
+\hline 
+ & 3 & 5 & 15 & 61 & 236 & 946 \\ 
+\hline 
+\end{tabular} 
+\end{center}
+Meaning that $p(4)$ evaluates to $946$.
+
+\end{document}

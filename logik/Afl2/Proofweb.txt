@@ -1,0 +1,72 @@
+(* Required in all proofs *)
+Require Import ProofWeb.
+
+(* Give names to propositional variables *)
+Parameters p q r s t : Prop. 
+
+(* Syntax: Theorem <name> : <formula>. *)
+(* Proof. *)
+(* ... *)
+(* Qed. *)
+
+(* Easiest way to translate paper-proof is to translate
+   from bottom to top, or, "backwards-style" *)
+Theorem example_1_2_1r_bwd
+    : (p -> q /\ r) -> (p -> q) /\ (p -> r).
+Proof.
+imp_i H.
+con_i.
+imp_i Hq.
+con_e1 r.
+imp_e p.
+exact H.
+exact Hq.
+imp_i Hr.
+con_e2 q.
+imp_e p.
+exact H.
+exact Hr.
+Qed.
+
+Theorem example_1_2_3u_bwd
+    : (s -> p) \/ (t -> q) -> (s -> q) \/ (t -> p).
+Proof.
+imp_i H.
+dis_e ((s -> p) \/ (t -> q)) H1 H2.
+exact H.
+dis_e (s \/ ~s) H3 H4.
+LEM.
+insert H5 (t -> p).
+imp_i H5.
+imp_e s.
+exact H1.
+exact H3.
+dis_i2.
+exact H5.
+insert H6 (s -> q).
+imp_i H6.
+fls_e.
+imp_e s.
+exact H4.
+exact H6.
+dis_i1.
+exact H6.
+
+dis_e (t \/ ~t) H6 H7.
+LEM.
+insert H8 (s -> q).
+imp_i H8.
+imp_e t.
+exact H2.
+exact H6.
+dis_i1.
+exact H8.
+insert H9 (t -> p).
+imp_i H9.
+fls_e.
+imp_e t.
+exact H7.
+exact H9.
+dis_i2.
+exact H9.
+Qed.

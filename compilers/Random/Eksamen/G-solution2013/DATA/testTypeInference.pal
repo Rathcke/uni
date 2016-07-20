@@ -1,0 +1,34 @@
+program Inference;
+
+function f(a : int) : char
+begin
+    return read();
+end;
+
+procedure main()
+var n : int;
+    i  : int;
+    a  : array of array of int;
+    b  : array of array of int;
+    c  : array of array of char;
+begin
+
+   n := 3 + 8 - read();
+   a := new(n,n);
+   c := {{'a','b'},{'c','d'}};
+
+   a[0,0] := ff(c[0,0]);
+   
+   if (5 + read() - n) = read() 
+    then write("\nOK\n") 
+    else write("\nNot OK\n"); 
+
+   write( c ); write(a); 
+   // program does not type check because of this
+   write( new(n,n) );
+end;
+
+function ff(a : char) : int 
+begin
+    if ( a = chr(0) ) then return ord(read()) else return read();
+end;

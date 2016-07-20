@@ -1,0 +1,85 @@
+program Array3D;
+
+procedure main()
+var n : int;
+    i  : int;
+    c  : int;
+    a  : array of array of array of char;
+    b  : array of array of array of bool;
+begin
+    n := 2;
+    a := new(n, n+n, n+n+n);
+    b := new(n, n+n, n+n+n);
+    
+    i := 0;
+    while i < n do 
+    var j : int;
+    begin
+        c := 97;
+        j := 0;
+        while j < (n+n) do
+        var k : int;
+        begin
+            k := 0;
+            while( k < (n+n+n) ) do
+                begin
+                    a[i,j,k] := chr(c);
+                    if i = 0 then b[i,j,k] := true else b[i,j,k] := false;
+                    c := c + 1;
+                    k := k + 1;
+                end;
+            j := j + 1;
+         end;
+         i := i + 1;
+    end;
+
+    write("Char array is: \n");
+    printArr(a);
+    write("Bool array is: \n");
+    printArr(b);
+end;
+
+
+procedure printArr(a : array of array of array of char)
+var d1 : int;
+    d2 : int;
+    d3 : int;
+    i  : int;
+    j  : int;
+    k  : int;
+begin
+    d1 := len(0,a);
+    d2 := len(1,a);
+    d3 := len(2,a);
+
+    write("\n\nArray is: { \n");
+
+    i  := 0;
+    while i < d1 do
+    begin
+        write(" { ");
+
+        j := 0;
+        while j < d2 do
+        begin
+            write(" { ");
+
+            k := 0;
+            while k < d3 do
+            begin
+                write(a[i, j, k]);
+                write(", ");
+                k := k + 1;
+            end;
+            
+            write("}, ");
+            j := j + 1;
+        end;
+
+        write(" }, ");
+        i := i + 1;
+    end;
+
+    write("\n}\n\n");
+end;
+

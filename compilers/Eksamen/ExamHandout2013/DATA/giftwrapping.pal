@@ -1,0 +1,120 @@
+// http://en.wikipedia.org/wiki/Gift_wrapping_algorithm
+// Due to lag of sorting, one have to be aware that the starting point is 
+// extreme.
+
+program Giftwrapping;
+
+
+function turn(p : array of int; q : array of int; r : array of int) : int
+var
+  x : int;
+  ret: int;
+begin
+  x := (q[0] - p[0])*(r[1] - p[1]) - (r[0] - p[0])*(q[1] - p[1]);
+  if x = 0 then begin
+    ret := 0;
+  end
+  else if x < 0 then begin
+    ret := 0-1;
+  end
+  else begin
+    ret := 1;
+  end;
+  return ret;
+end;
+
+
+function dist(p : array of int; q : array of int) : int
+var
+  dx : int;
+  dy : int;
+begin
+  dx := q[0] - p[0];
+  dy := q[1] - p[1];
+  return dx * dx + dy * dy;
+end;
+
+
+function nexthullpoint(points : array of array of int;
+                            p : array of int) : array of int
+var
+  q : array of int;
+  r : array of int;
+  n : int;
+  i : int;
+  t : int;
+begin
+  q := new(2);
+  q[0] := p[0];
+  q[1] := p[1];
+  i := 0;
+  r := new(2);
+  n := len(0, points);
+  while i < n do
+  begin
+    r[0] := points[i,0];
+    r[1] := points[i,1];
+    t := turn(p,q,r);
+    if t = 0-1 or t = 0 and (dist(p, q) < dist(p, r)) then
+      begin
+      q[0] := r[0];
+      q[1] := r[1];
+      end;
+    i := i + 1;
+  end;
+  return q;
+end;
+
+
+procedure main()
+var
+  points : array of array of int;
+  hull : array of array of int;
+  i : int;
+  q : array of int;
+  p : array of int;
+begin
+  points := new(9,2);
+  points[0,0] := 0;
+  points[0,1] := 0;
+
+  points[1,0] := 36;
+  points[1,1] := 2;
+  points[2,0] := 27;
+  points[2,1] := 30;
+  points[3,0] := 36;
+  points[3,1] := 0;
+  points[4,0] := 13;
+  points[4,1] := 29;
+  points[5,0] := 31;
+  points[5,1] := 17;
+  points[6,0] := 41;
+  points[6,1] := 10;
+  points[7,0] := 2;
+  points[7,1] := 33;
+  points[8,0] := 31;
+  points[8,1] := 20;
+
+  hull := new(9,2);
+  hull[0,0] := 0;
+  hull[0,1] := 0;
+
+  p := new(2);
+  i := 0;
+
+  q := new(2);
+  q[0] := 0-1;
+  q[1] := 0-1;
+
+  while not (hull[0,0] = q[0]) and not (hull[0,1] = q[0]) do
+  begin
+    p[0] := hull[i,0];
+    p[1] := hull[i,1];
+    q := nexthullpoint(points, p);
+    write(q);
+    i := i + 1;
+    hull[i,0] := q[0];
+    hull[i,1] := q[1];
+  end;
+end;
+

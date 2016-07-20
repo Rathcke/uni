@@ -1,0 +1,79 @@
+;
+; This is the expected level of detail, when you hand in
+; a "commented assembly listing." You can ignore the startup
+; code, so you only need to look at "main" and the functions
+; which "main" calls.
+;
+
+080483c4 <main>:
+
+; set up stack frame
+ 80483c4: 55                    push   ebp
+ 80483c5: 89 e5                 mov    ebp,esp
+
+; save registers which are overwritten in the function
+ 80483c7: 57                    push   edi
+ 80483c8: 56                    push   esi
+ 80483c9: 53                    push   ebx
+
+; edi = 1st argument to main: argc
+ 80483ca: 8b 7d 08              mov    edi,DWORD PTR [ebp+0x8]
+
+; esi = 2nd argument to main: argv
+ 80483cd: 8b 75 0c              mov    esi,DWORD PTR [ebp+0xc]
+
+; skip loop if (argc == 0)
+ 80483d0: 85 ff                 test   edi,edi
+ 80483d2: 7e 1d                 jle    80483f1 <main+0x2d>
+
+; i = 0
+ 80483d4: bb 00 00 00 00        mov    ebx,0x0
+
+; BEGINNING OF LOOP
+
+; 3rd argument to printf: argv[i]
+ 80483d9: ff 34 9e              push   DWORD PTR [esi+ebx*4]
+
+; 2nd argument to printf: i
+ 80483dc: 53                    push   ebx
+
+; 1st argument to printf: "Argument %d is [%s]\n"
+ 80483dd: 68 c0 84 04 08        push   0x80484c0
+
+; printf("Argument %d is [%s]\n", i, argv[i])
+ 80483e2: e8 0d ff ff ff        call   80482f4 <printf@plt>
+
+; i++
+ 80483e7: 83 c3 01              add    ebx,0x1
+
+; remove printf's arguments from the stack
+ 80483ea: 83 c4 0c              add    esp,0xc
+
+; if (argc > i) goto 80483d9
+ 80483ed: 39 df                 cmp    edi,ebx
+ 80483ef: 7f e8                 jg     80483d9 <main+0x15>
+
+; END OF LOOP
+
+; return value = EXIT_SUCCESS
+ 80483f1: b8 00 00 00 00        mov    eax,0x0
+
+; restore stack pointer
+ 80483f6: 8d 65 f4              lea    esp,[ebp-0xc]
+
+; resotre registers (saved at 80483c7-80483c9)
+ 80483f9: 5b                    pop    ebx
+ 80483fa: 5e                    pop    esi
+ 80483fb: 5f                    pop    edi
+
+; restore old base pointer (saved at 80483c4)
+ 80483fc: 5d                    pop    ebp
+
+; return to caller
+ 80483fd: c3                    ret
+
+
+
+Hex dump of section '.rodata':
+ 80484b8: 03000000 01000200 41726775 6d656e74 ........Argument
+ 80484c8: 20256420 6973205b 25735d2e 0a00      %d is [%s]...

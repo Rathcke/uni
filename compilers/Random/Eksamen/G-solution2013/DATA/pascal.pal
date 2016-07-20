@@ -1,0 +1,61 @@
+program pascal;
+
+procedure pascal(rows : int)
+var
+    i : int;
+    j : int;
+    tmp : int;
+    currentRow : array of int;
+    tmpRow     : array of int;
+begin
+    if (rows < 1)
+    then return;
+    tmp := rows;
+    if (rows = 1)
+    then
+    begin
+        write(1); write('\n');
+        return;
+    end;
+
+    write(1); write('\n');
+    write(1); write("  "); write(1); write('\n');
+    rows := rows - 2;
+    currentRow := new(rows);
+    tmpRow     := new(rows);
+
+    currentRow[0] := 1;
+    currentRow[1] := 1;
+
+    i := 1;
+    while i < (rows+1) do
+    begin
+        j := 0;
+        tmpRow[j] := 1;
+        write(tmpRow[j]);
+
+        write("  ");
+        while j < i do
+        begin
+            tmpRow[j+1] := currentRow[j] + currentRow[j+1];
+            write(tmpRow[j+1]);
+            write("  ");
+            j := j + 1;
+        end;
+        tmpRow[j+1] := 1;
+        write(tmpRow[j+1]);
+        write("  ");
+
+        currentRow  := tmpRow;
+        tmpRow := new(tmp);
+
+        write("\n");
+
+        i := i + 1; 
+    end;
+end;
+
+procedure main()
+begin
+    pascal(19);
+end;

@@ -1,0 +1,20 @@
+program fibRec;
+
+function fib (n :  int) : int
+    if n < 2 then return 1
+    else return (fib(n-1) + fib(n-2));
+
+procedure main()
+var
+   n  : int;
+      
+begin
+   n := read();
+
+   write(n);
+   write('\n');
+   
+   write(fib(n));
+   write('\n');
+   
+end; // main

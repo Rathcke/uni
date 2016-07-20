@@ -1,0 +1,20 @@
+MODULE main
+VAR
+st : {sg00, sg01, sg10, sg11};
+
+ASSIGN
+  init(st) := {sg00, sg01, sg10, sg11};
+  
+  next(st) :=
+    case
+      st = sg00 : {sg00,sg01,sg11};
+      st = sg01 : {sg01,sg10,sg11};
+      st = sg10 : {sg00,sg01,sg10};
+      st = sg11 : {sg00,sg10,sg11};
+      esac;
+
+DEFINE
+a := st = sg10 | st = sg11;
+b := st = sg01| st = sg11;
+
+SPEC (a & EX !b) | (!a & EX b) | (a & EX b) | (!a & EX !b)

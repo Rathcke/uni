@@ -1,0 +1,86 @@
+program ArrayEqual;
+
+procedure main()
+var
+  arr  : array of array of char;
+  arr2 : array of array of char;
+  arr3 : array of char;
+  arr4 : array of char;
+  arr5 : array of array of bool;
+  arr6 : array of array of bool;
+  arr7 : array of array of int;
+  arr8 : array of array of int;
+begin
+  arr2 := new(1,2);
+  arr2[0,0] := 'a';
+  arr := new(1,2);
+  arr[0,0] := 'b';
+  if (arr = arr2)
+  then write("Passed")
+  else write("Failed\n");
+// should fail
+  arr2 := new(1,2);
+  arr2[0,0] := 'd';
+  arr2[0,1] := 'b';
+  arr := new(1,2);
+  arr[0,0] := 'd';
+  arr[0,1] := 'b';
+  if (arr = arr2)
+  then write("Passed\n")
+  else write("Failed");
+// should pass
+  arr3 := {'a','b','c'};
+  arr4 := {'a','c','b'};
+  if (arr3 = arr4)
+  then write("Passed")
+  else write("Failed\n");
+// should fail
+  arr3 := {'a','b',1};
+  arr4 := {'a','b','c'};
+  if (arr3 = arr4)
+  then write("Passed\n")
+  else write("Failed");
+// should pass
+  arr5 := new(1,2);
+  arr5[0,0] := true;
+  arr5[0,1] := false;
+  arr6 := new(1,2);
+  arr6[0,0] := true;
+  arr6[0,1] := true;
+  if (arr5 = arr6)
+  then write("Passed")
+  else write("Failed\n");
+// should fail
+  arr5 := new(1,2);
+  arr5[0,0] := true;
+  arr5[0,1] := false;
+  arr6 := new(1,2);
+  arr6[0,0] := true;
+  arr6[0,1] := false;
+  if (arr5 = arr6)
+  then write("Passed\n")
+  else write("Failed");
+// should pass
+  arr7 := new(2,1);
+  arr7[0,0] := 5;
+  arr7[1,0] := 7;
+  arr8 := new(2,1);
+  arr8[0,0] := 5;
+  arr8[1,0] := 7;
+  if (arr7 = arr8)
+  then write("Passed\n")
+  else write("Failed");
+// should pass
+  arr7 := new(1,3);
+  arr7[0,0] := 5;
+  arr7[0,1] := 7;
+  arr7[0,2] := 9;
+  arr8 := new(1,3);
+  arr8[0,0] := 5;
+  arr8[0,1] := 7;
+  arr8[0,2] := 8;
+  if (arr7 = arr8)
+  then write("Passed")
+  else write("Failed\n");
+// should fail
+end;

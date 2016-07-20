@@ -1,0 +1,16 @@
+There are two files corresponding to the first two questions. These are q1.py and q2.py. Both implementation are in python. There is also a main file called main.py which runs the code from the two files. This will produce all the results found in the report. To run it, you must have python installed and run the following:
+
+  PYTHON main.py
+
+This works with python version 2.7.6.
+
+--------------------------------
+
+You must also have the necessary libraries. The libraries being used are:
+
+  numpy
+  matplotlib
+  pylab
+  sklearn
+
+The results are produced from sklearn version 0.14.1.

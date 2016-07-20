@@ -1,0 +1,12 @@
+program nobegin;
+
+procedure f(x : int)
+begin
+   write(x);
+end;
+
+// no begin...end
+procedure main()
+var
+   f : int;
+f(1);

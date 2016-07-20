@@ -1,0 +1,8 @@
+program test;
+
+procedure main()
+  var x : int;
+begin
+  read() = read();
+  write(1);
+end;

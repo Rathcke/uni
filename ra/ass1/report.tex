@@ -1,0 +1,136 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Victor Petren Bach Hansen (grn762)}
+\title{Randomized Algorithms \\ Assignment 1}
+\lhead{Randomized Algorithms}
+\rhead{Assignment 1}
+
+\begin{document}
+\maketitle
+
+\section{Summary of covered material}
+TODO
+
+\section{Exercise 1.2}
+To prove there are inputs where the possibility of finding a min-cut is exponentially low, we just need to find some graph family $\mathbb{F}$ which has an exponentially low probability. \\
+Consider the graphs which consist of two complete graphs of size $n$, $K_n$, which are connected by a single edge. For analysis sake, both complete graphs must have size $n$. Figure \ref{fig1} shows the graph type with $n=3$.
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=2]{fig1.pdf}
+  \caption{Two complete graphs of size $n$ connected by a single edge}
+  \label{fig1}
+\end{figure}
+Now we want to show that the probability of getting a correct result with this type of graph is exponentially small when we contract vertices instead of edges. We see that if contract two vertices that belong to different $K_n$, it will join the graphs in a one vertex. This means our optimal cut no longer has size $1$. To see that the probability of this \textit{not} happening in any of the $n-2$ iteration, call the event of successfully contracting each complete graph into a single vertex (that the remaining two nodes are the contractions of all the nodes from their original $K_n$) for $A$. We also know that for a result to be correct, each of the remaining nodes are the contraction of exactly $n$ nodes (not nessecarily a correct solution). Call this type of event for $B$. Now, the number of events of type $B$ are actually the number of ways we can pick $n$ nodes out of $2n$ nodes, namely $\binom{2n}{n}$. Of this number, only $2$ of them are events of type $A$. These are the cases where we pick the $n$ nodes from either the first or the second complete graph. So we have the probability of success (event $A$) is:
+\begin{align*}
+  \mathbb{P}\left[ A \right] &= \mathbb{P}\left[A|B\right]\left[B\right] \\
+                             &\leq \frac{2}{\binom{2n}{n}} \comment{Bounding the probability by removing an event $B$} \\
+                             &\leq\frac{2}{\left(\frac{2ne}{n}\right)^n} \comment{As $\binom{n}{k}\leq \left(\frac{ne}{k}\right)^k$.} \\
+                             &=\frac{2}{\left(2e\right)^n}
+\end{align*}
+Which shows the probability is exponentially small. Note we remove the probability of event $B$ happening in the first place. This is because by removing it, it only makes the probability greater - an upper bound. It also allows us to disregard the probability of event $B$ happening in the first place to avoid counting all possible outcomes.
+
+\section{Exercise 1.3}
+To get an expected running time of $\frac{T(n)+t(n)}{\gamma (N)}$, we do the obvious. We run the Monte Carlo algorithm in $T(n)$ time and then validate it in $t(n)$ time. The fraction comes from getting the probability of getting the result right. We can expect that we need to run the Monte Carlo algorithm $1/\gamma (n)$ times and therefore we can expected the validation algorithm $1/\gamma (n)$ times. Multiplying the running times for two algorithm into the numerator yields the desired expected running time.
+
+\section{Problem 1.1}
+\subsection{(a)}
+Let $T$ be tails and $H$ be heads. We devise a scheme that tosses the coin twice. If the coin has the same result, then we disregard the result and toss it twice again. If the results are different, we pick the first (or second, as long as it is chosen beforehand) result. The reason this generates unbiased coin-flips is that the probability of gettings $TH$ is the same as getting $HT$ since they are independent flips. The other two scenarios are disregarded, meaning the probability the choice comes from either of these events is $0$. Thus we have a $50$ percent probability on the remaining events. Note that $p>0$ or we will end up throwing the coin forever.\\
+If the probability of getting $H$ is $p$, then obviously the probability of $T$ is $1-p$. Now, the expected number of rounds  (throwing it twice) before getting a result must be $\frac{1}{2p(1-p)}$ - the probability that either $TH$ or $HT$ happens . If we want to count the number of throws of the coin, we simply multiply the result by $2$, yielding:
+$$
+\mathbb{E}\left[ \mbox{\# of throws} \right]=\frac{2}{2p(1-p)}=\frac{1}{p(1-p)}
+$$
+which is what we wanted to show.
+
+\subsection{(b)}
+TODO
+
+\section{Problem 1.4}
+\subsection{(a)}
+TODO
+
+\subsection{(b)}
+TODO
+
+\subsection{(c)}
+TODO
+
+\section{Problem 1.8}
+\subsection{(a)}
+TODO
+
+\subsection{(b)}
+TODO
+
+\end{document}

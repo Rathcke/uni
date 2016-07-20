@@ -1,0 +1,223 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{boxproof}
+\usepackage{a4wide}
+\usepackage{daymonthyear}
+
+\def\meta#1{\mbox{$\langle\hbox{#1}\rangle$}}
+\def\macrowitharg#1#2{{\tt\string#1\bra\meta{#2}\ket}}
+
+{\escapechar-1 \xdef\bra{\string\{}\xdef\ket{\string\}}}
+
+\def\intro#1{{#1}{\cal I}}
+\def\elim#1{{#1}{\cal E}}
+
+\showboxbreadth 999
+\showboxdepth 999
+\tracingoutput 1
+
+
+\let\imp\to
+\def\elim#1{{{#1}{\cal E}}}
+\def\intro#1{{{#1}{\cal I}}}
+\def\lt{<}
+\def\eqdef{=}
+\def\eps{\mathrel{\epsilon}}
+\def\biimplies{\leftrightarrow}
+\def\flt#1{\mathrel{{#1}^\flat}}
+\def\setof#1{{\left\{{#1}\right\}}}
+\let\implies\to
+\def\KK{{\mathsf K}}
+\let\squashmuskip\relax
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 6}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Elementær Talteori}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\section*{Logic in Computer Science - Assignment 3}
+\section*{Exercise 2.2}
+\subsection*{3a}
+In the following, $m$ is a constant, $f$ is a function with one argument, $S$ and $B$ are predicate symbols with two arguments.
+\subsubsection*{i}
+$S(m,x)$ is a valid formula.
+
+\subsubsection*{ii}
+$B(m,f(m))$ is a valid formula.
+
+\subsubsection*{iii}
+$f(m)$ is a valid formula.
+
+\subsubsection*{iv}
+$B(B(m,x),y)$ is \textbf{not} a valid formula as $B$ can only take terms as arguments.
+
+\subsubsection*{v}
+$S(B(m),z)$ is \textbf{not} a valid formula as $S$ can not take terms as arguments and the inner $B$ only takes one argument.
+
+\subsubsection*{vi}
+$(B(x,y)\to (\exists z S(z,y)))$ is a valid formula.
+
+\subsubsection*{vii}
+$(S(x,y)\to S(y,f(f(x))))$ is a valid formula.
+
+\subsubsection*{viii}
+$(B(x)\to B(B(x)))$ is \textbf{not} a valid formula as all $B$'s only take one argument and one of them takes another predicate as argument.
+
+\subsection*{4c}
+We have $\phi$ is $\exists x(P(y,z)\land (\forall y(\neg Q(y,x)\lor P(y,z))))$ with $P$ and $Q$ as predicate symbols with two arguments.\\
+\\
+Yes, we see that the variable $y$ is both free and bound in $\phi$. It is free on the left side of the "or" in the inner expression and bound on the right side.
+
+\subsection*{4d}
+\subsubsection*{i}
+We compute $\phi [w/x]$\\
+$$\exists x(P(y,z)\land (\forall y(\neg Q(y,x)\lor P(y,z))))$$
+We see this is the same. This is because there are no free variable $x$ in $\phi$ that can be replaced.\\
+We now compute $\phi [w/y]$.\\
+$$\exists x(P(\textbf{w},z)\land (\forall y(\neg Q(y,x)\lor P(y,z))))$$
+Where one free $y$ has been replaced by $w$ (marked in bold).\\
+We then compute $\phi [f(x)/y$.\\
+$$\exists x(P(\textit{\textbf{f(x)}},z)\land (\forall y(\neg Q(y,x)\lor P(y,z))))$$
+Again, the same $y$ has been replaced.\\
+Lastly we compute $\phi [g(y,z)/z]$\\
+$$\exists x(P(y,\textit{\textbf{g(y,z)}})\land (\forall y(\neg Q(y,x)\lor P(y,\textit{\textbf{g(y,z)}}))))$$
+Where two replacement has been made.
+
+\subsubsection*{ii}
+Since there are no free $x$ in $\phi$, all three of them are free for $x$ in $\phi$ (using definition 2.8).
+
+\subsubsection*{iii}
+There is one free $y$.\\
+We see that $w$ is free for $y$ in $\phi$ as a replacement will not cause a $w$ to be under a quantifier involving $w$.\\
+\textit{f(x)} is not free for $y$ as the variable $x$ will become bound due to the quantifier "$\exists x$".\\
+\textit{g(y,z)} is free for $y$ as both $y$ and $z$ will not be bound by any quantifiers.
+
+\section*{Exercise 2.3}
+\subsection*{1a}
+We want to prove the validity of the sequent $(y=0)\land (y=x)\vdash 0=x$.
+\begin{proofbox}
+  \: (y=0) \land (y=x) \= \mbox{premise}\\
+  \: y=0 \= \land E_1(1) \\
+  \: y=x \= \land E_2(1) \\
+  \: 0=x \= =E(2,3)
+\end{proofbox}
+
+\subsection*{7c}
+We want to prove the validity of $\exists x\forall y P(x,y)\vdash \forall y\exists x P(x,y)$.
+\begin{proofbox}
+  \: \exists x\forall y P(x,y) \= \mbox{premise}\\
+  \[
+    \: y_0
+    \[
+      \: x_0 \\
+      \: \forall y P(x_0,y) \= \mbox{assumption} \\
+      \: P(x_0,y) \= \forall E(4) \\
+      \: \exists x P(x,y_0) \= \exists I(5  )      
+    \]
+    \: \exists xP(x,y_0) \= \exists E(1,3-6)
+  \]
+  \: \forall y \exists xP(x,y) \= \forall I(2-7)
+\end{proofbox}
+
+\subsection*{9a}
+We want to prove the validity of $\exists x(S\to Q(x))\vdash S\to \exists x Q(x)$ where $Q$ has arity $1$ and $S$ has arity $0$.
+\begin{proofbox}
+  \: \exists x(S\to Q(x)) \= \mbox{premise}\\
+  \[
+    \: S \= \mbox{assumption}
+    \[ 
+      \: x_0 \\
+      \: S \to Q(x_0) \= Somethingsomething \\
+      \: Q(x_0) \= \to E(2,4) \\
+      \: \exists x Q(x) \= \exists I(5)
+    \]
+    \: \exists x Q(x) \= \exists E(1,3-6)
+  \]
+  \: S\to \exists x Q(x) \= \to I(2-7)
+\end{proofbox}
+
+\subsection*{9l}
+We want to prove the validity of $\forall xP(x)\lor \forall xQ(x)\vdash \forall x(P(x)\lor Q(x))$ where $P$ and $Q$ have arity $1$.
+\begin{proofbox}
+  \: \forall xP(x)\lor \forall xQ(x) \= \mbox{premise}
+  \[
+    \: x_0
+  \[
+    \: \forall xP(x) \= \mbox{assumption} \\
+    \: P(x_0) \= \forall I(3) \\
+    \: P(x_0)\lor Q(x_0) \= \lor I_1(4)
+  \]
+  \[
+    \: \forall xQ(x) \= \mbox{assumption} \\
+    \: Q(x_0) \= \forall I(6) \\
+    \: P(x_0)\lor Q(x_0) \= \lor I_2(7)
+  \]
+  \: P(x_0)\lor Q(x_0) \= \lor E(1,3-5,6-8)
+  \]
+  \: \forall x(P(x)\lor Q(x)) \= \forall I(2-9)
+\end{proofbox}
+
+\section*{Exercise 2.4}
+\subsection*{5}
+$\phi$ is the sentence $\forall x \forall y \exists z (R(x,y) \imp R(y,z))$ and $R$ has arity $2$.
+
+\subsubsection*{a}
+We let $A \overset{def}{=} \{a,b,c,d\}$ and $R^{\mathcal{M}} \overset{def}{=} \{(b,c),(b,b),(b,a)\}$. We want to determine if we have $\mathcal{M}\models\phi$.\\
+\\
+$\phi$ is not valid for $\mathcal{M}$ as we have $(b,c)\in R^{\mathcal{M}}$, but there exists no element in $R^{\mathcal{M}}$ for which there is $(c,z)$ where $z$ an arbitrary element in $A$.
+
+\subsubsection*{b}
+We let $A \overset{def}{=} \{a,b,c\}$ and $R^{\mathcal{M}} \overset{def}{=} \{(b,c),(a,b),(c,b)\}$. We want to determine if we have $\mathcal{M}\models\phi$.\\
+\\
+$\phi$ is true in this model $\mathcal{M}$ as for any element in $R^{\mathcal{M}}$, $(x,y)$, there also exists an element in the form $(y,z)$ so the implication holds true.
+
+\subsection*{8}
+We want to show the semantic entailment $\forall xP(x)\lor\forall xQ(x)\models \forall x(P(x)\lor Q(x))$.\\
+\\
+We let a model, $\mathcal{M}$, satisfy $\forall xP(x)\lor\forall xQ(x)$. We then want to show that $\mathcal{M}$ satisfies $\forall x(P(x)\lor Q(x))$. This means that either the model satisfies $\forall xP(x)$ or $\forall xQ(x)$. \\
+We can conclude that all elements are in either $P^{\mathcal{M}}$ or they are in $Q^{\mathcal{M}}$. This means that all elements must also be in the union set, $P^{\mathcal{M}} \cup Q^{\mathcal{M}}$.\\
+This union can also be rewritten as $\forall x(P(x)\lor Q(x))$, thus $\mathcal{M}\models \forall x(P(x)\lor Q(x))$.
+
+\subsection*{10}
+We want to determine if $\forall x(P(x)\lor Q(x))\models \forall xP(x)\lor\forall xQ(x)$ is a semantic entailment or not.\\
+\\
+We suppose we have a model, $\mathcal{M}'$, that satisfy $\forall x(P(x)\lor Q(x))$. To show that it is \textit{\textbf{not}} a semantic entailment, we construct a counter-example model. Assume that either $P(x)$ or $Q(x)$ is always true (as in \textbf{xor}) and both $P(x)$ and $Q(x)$ assume $F$ at one $x$, then $\forall (P(x)\lor Q(x))$ will always be true. However, since $P(x)$ and $Q(x)$ both can assume $F$, then it will not hold for $\forall xP(x)\lor\forall xQ(x)$ as there exists $x$ where $P(x)$ is false and there exists $x$ where $Q(x)$ is false.
+
+\subsection*{Structural Induction}
+\subsubsection*{a}
+We want to show, by structural induction, the following hypothesis.\\
+\textbf{Inductive hypothesis}: We claim that any tree with height $h$ has at most $2^h$ propositional atoms (leaves).\\
+\textbf{Base case}: We see that if $\phi=\bot$ or $\phi=p$ then our height is $0$ and contains $1$ propositional atom. This holds to be less or equal to $2^h$, as $2^0=1$ and $1\leq 2^0$.\\
+\textbf{Inductive step}: We let a $T$ be a tree of height $k+1$. Since any propositional logic has at most two children, we have in worst case two subtrees of height $k$. By out inductive hypothesis, we know both of these trees have at most $2^k$ leaves, and as such, the amount of leaves in $T$ is equal to the number of leaves in each subtree. This amount is guaranteed to be less than or equal to $2^k+2^k=2^{k+1}$.\\
+This means that it holds for $k+1$, and the hypothesis is proved.
+
+\subsubsection*{b}
+We want to show the following using structural induction.\\
+\textbf{Induction hypothesis}: Any propositional logic of height $h$ contains strictly less than $2^h$ propositional atoms if the logic contains a $\neg$ anywhere. \\
+\textbf{Base case}: Our base is that $\neg p$ has a height of $1$ and $p$ adds $0$ to the height. It has $1$ propositional atom, which is strictly less than $2^1=2$.\\
+\textbf{Inductive step}: Lets assume we have a subtree $T_2$ with height $h_2$ that is a full binary tree. We know from our proof in (a) that the subtree has at most $2^h$ atoms. If now we add a $\phi=\neg \psi$ at the top, which we can do as it only has one child (the subtree $T_2$), we have a new subtree $T_3$ with height $h_2+1$. However, as there is only one subtree of height $h_2$ which is $T_2$ the amount of leaves will be the same. \\
+Let $l(\phi)$ be the amount of leaves of subtree $\phi$. We want to show
+\begin{align*}
+l(T_3)&<2^{h_2+1} \\
+&=2^h+2^h
+\end{align*}
+Since $l(T_3)=l(T_2)=2^h$ and $2^h<2^h+2^h$ we can conclude that any subtree $\phi$ with a $\neg$ has
+$$
+l(\phi)\leq 2^{height(\phi)-1} \Rightarrow l(\phi)<2^{height(\phi)}
+$$
+If we add to a subtree of this kind, we can use the proof from (a) to show that the number of leaves will still be strictly less than $2^h$. Thus, we can prove our induction hypothesis.
+
+\end{document}

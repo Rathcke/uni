@@ -1,0 +1,23 @@
+digraph { 
+
+
+rankdir="LR";
+
+node[shape = plaintext];
+	start [label = "start"];
+	end [label = "end"];
+
+node[shape = circle];
+	9 [label = "9"];
+	10 [label = "10"];
+	11 [label = "11"];
+	12 [label = "12"];
+
+start -> 9 [label = "&epsilon;"]
+9 -> 10 [label="&epsilon;"];
+10-> 11 [label="a"];
+11 -> 9 [label="b"];
+9 -> 12 [label="&epsilon;"]
+12-> end [label="c"];
+
+}

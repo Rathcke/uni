@@ -1,0 +1,147 @@
+%{
+open AbSyn
+%} 
+
+/******* Tokens *******/
+/* Keywords */
+%token <AbSyn.Pos> TProgram TFunction TProcedure TVar 
+%token <AbSyn.Pos> TBegin TEnd TIf TThen TElse TWhile TDo TReturn 
+
+/* Type of keyword*/
+%token <AbSyn.Pos> TArray TOf TInt TChar TBool 
+
+/* Symbols */
+%token <AbSyn.Pos> TSemi TColon TComma TAssign
+
+/* Operations */
+%token <AbSyn.Pos> TPlus TMinus TTimes TSlash TEq TLess TAnd TOr TNot
+
+/* Parentheses of different kind */
+%token <AbSyn.Pos> TLParen TRParen TLCurly TRCurly TLBracket TRBracket
+
+/* Identifiers */
+%token <string * AbSyn.Pos> TId
+
+/* Literals */
+%token <int * AbSyn.Pos> TNLit
+%token <bool * AbSyn.Pos> TBLit
+%token <char * AbSyn.Pos> TCLit
+%token <string * AbSyn.Pos> TSLit
+%token <AbSyn.Pos> TEOF
+
+
+/******* Precedence *******/
+
+%right TThen TElse
+%left TOr
+%right TAnd
+%nonassoc TNot
+%left TEq TLess
+%left TPlus TMinus
+%left TTimes TSlash
+
+
+%start Prog
+
+
+/******* Types *******/
+%type <AbSyn.Exp> Exp
+%type <AbSyn.Stmt> Stmt
+%type <AbSyn.Type> Type
+%type <AbSyn.LVAL> LVal
+%type <AbSyn.Dec> Dec
+%type <AbSyn.Dec list> Decs
+%type <AbSyn.FunDec list> FunDecs
+%type <AbSyn.FunDec> FunDec
+%type <AbSyn.Prog> Prog 
+%type <AbSyn.Exp option> Ret
+%type <AbSyn.Exp list> CallParams
+%type <AbSyn.Exp list> Exps
+%type <AbSyn.Stmt list> StmtSeq
+%type <AbSyn.Dec list> PDecl
+%type <AbSyn.Dec list> Params
+%type <AbSyn.StmtBlock> Block
+%type <AbSyn.Stmt list> SBlock
+%%
+/******* Rules *******/
+/* Program structure: */
+Prog        : TProgram TId TSemi FunDecs TEOF                                   
+									                                                        	{ $4 }
+
+FunDecs   	: FunDecs FunDec                                                { $1 @ [$2] }
+	          | FunDec                                                        { ([$1]) }
+;          
+FunDec	    : TFunction TId TLParen PDecl TRParen TColon Type Block TSemi   { Func ($7,#1 $2, $4, $8, $1) } 
+	          | TProcedure TId TLParen PDecl TRParen Block TSemi              { Proc (#1 $2, $4, $6, #2 $2) }
+;	          
+Block	      : TVar Decs SBlock                                              { Block ($2,$3) }
+	          |	SBlock                                                        { AbSyn.Block([],$1) }
+;          
+SBlock	    : TBegin StmtSeq TSemi TEnd	                                    { $2 }
+	          | Stmt                                                          { [$1] }
+;	          
+StmtSeq   	: StmtSeq TSemi Stmt                                            { $1 @ [$3] }
+	          | Stmt                                                          { [$1] }
+;
+ 
+/* Statements */
+Stmt      	: TId TLParen CallParams TRParen                                { ProcCall (#1 $1, $3, #2 $1)} 
+            | TIf Exp TThen Block TElse Block                               { IfThEl ($2,$4,$6,$1) }
+            | TIf Exp TThen Block                                           { IfThEl ($2,$4,Block([],[]),$1)}
+		        | TWhile Exp TDo Block                                          { While ($2,$4,$1) }
+		        | TReturn Ret                                                   { Return ($2,$1) }
+		        | LVal TAssign Exp                                              { Assign ($1,$3,$2) }
+            ;
+
+/* Variable and Parameter Declarations, Types */
+PDecl		    : Params                                                        { $1 }
+	       	  |                                                               { [] }
+;  
+Params 		  : Params TSemi Dec																							{ $1 @ [$3] }
+		        | Dec                                                           { [$1] }
+;
+Dec 		    : TId TColon Type                                               { Dec (#1 $1,$3,#2 $1) }
+;
+Decs 	    	: Decs Dec TSemi                                                { ($1@[$2]) }
+		        | Dec TSemi                                                     { [$1] }
+;
+Type 	     	: TInt                                                          { Int $1 }
+		        | TChar                                                         { Char $1 }
+		        | TBool                                                         { Bool $1 }
+		        | TArray TOf Type                                               { Array ($3,$1) }
+;
+
+/* Function and Procedure Parameters and Index Lists */
+CallParams 	: Exps                                                          { ($1) }
+		        |           	                                                  { [] }
+;
+Exps	    	: Exp TComma Exps                                               { ($1::$3) }
+		        | Exp                                                           { [$1] }
+;
+
+/* L-Values and Expressions*/
+LVal	      : TId                                                           { Var (#1 $1) }
+	          | TId TLBracket Exps TRBracket                                  { Index (#1 $1, $3) }
+;	          
+Ret		      : Exp                                                           { SOME $1 }
+		        |                                                               { NONE }
+		        
+Exp 	      : TNLit                                                         { Literal (BVal(Num(#1 $1)), #2 $1) }
+		        | TBLit                                                         { Literal (BVal(Log(#1 $1)), #2 $1) }
+		        | TCLit                                                         { Literal (BVal(Chr(#1 $1)), #2 $1) }
+		        | TSLit                                                         { StrLit (#1 $1, #2 $1) }
+		        | TLCurly Exps TRCurly                                          { ArrLit ($2, $1) }
+		        | LVal                                                          { LValue ($1,(0,0)) }
+		        | TNot Exp                                                      { Not ($2,$1) }
+		        | Exp TPlus Exp                                                 { Plus ($1,$3,$2) }
+		        | Exp TMinus Exp                                                { Minus ($1,$3,$2) }
+		        | Exp TTimes Exp                                                { Times ($1,$3,$2) }
+ 		        | Exp TSlash Exp                                                { Div ($1,$3,$2) }
+		        | Exp TEq Exp                                                   { Equal ($1,$3,$2) }
+		        | Exp TLess Exp                                                 { Less ($1,$3,$2) }
+		        | Exp TAnd Exp                                                  { And ($1,$3,$2) }
+		        | Exp TOr Exp                                                   { Or ($1,$3,$2) }
+		        | TLParen Exp TRParen                                           { $2 }
+		        | TId TLParen CallParams TRParen                                { FunApp (#1 $1, $3,#2 $1) }
+;
+%% 

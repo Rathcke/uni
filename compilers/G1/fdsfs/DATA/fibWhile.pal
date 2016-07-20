@@ -1,0 +1,27 @@
+program fibonacciWhile;
+
+procedure main()
+var
+   x1 : int;
+   x2 : int;
+   n  : int;
+
+begin
+   n := read();
+
+   x1 := 1;
+   x2 := 0;
+
+   while (0 < n) do
+      var tmp : int;
+      begin
+         n  := n - 1;
+         tmp := x2;
+         x2 := x1;
+         x1 := x2 + tmp;
+      end;
+
+   write(x1);
+   write('\n');
+
+end; // main

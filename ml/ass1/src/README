@@ -1,0 +1,5 @@
+To run the code, run the following:
+
+ python k-NN.py
+
+The implementation only uses the library "math".

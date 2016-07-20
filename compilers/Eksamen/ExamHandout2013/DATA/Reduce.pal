@@ -1,0 +1,23 @@
+program FlatReduceExample;
+function plus(x : int; y : int) : int
+return (x + y);
+
+function xor(x : bool; y : bool) : bool
+return (y);
+
+procedure main()
+var x : int; a : array of array of int; 
+    y : bool; b : array of array of bool;
+    z : int; c : array of int;
+begin
+a := {{2,3,4},{5,6,7}};
+x := reduce(plus, a);
+write(x);
+b := {{false,false,false},{false,false,true}};
+y := reduce(xor, b);
+write(y);
+c := {8};
+z := reduce(plus, c);
+write(z);
+write("\nOutput should be 2718");
+end;

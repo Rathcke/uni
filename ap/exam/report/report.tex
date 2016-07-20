@@ -1,0 +1,531 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+    language=,
+    literate=
+        {æ}{{\ae}}1
+        {ø}{{\o}}1
+        {å}{{\aa}}1
+        {Æ}{{\AE}}1
+        {Ø}{{\O}}1
+        {Å}{{\AA}}1,
+    backgroundcolor=\color{listinggray},
+    tabsize=3,
+    rulecolor=,
+    basicstyle=\scriptsize,
+    upquote=true,
+    aboveskip={0.2\baselineskip},
+    columns=fixed,
+    showstringspaces=false,
+    extendedchars=true,
+    breaklines=true,
+    prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=single,
+    showtabs=false,
+    showspaces=false,
+    showlines=true,
+    showstringspaces=false,
+    identifierstyle=\ttfamily,
+    keywordstyle=\color[rgb]{0,0,1},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+\title{Advanced Programming \\ Exam 2015}
+\lhead{Advanced Algorithms}
+\rhead{Exam}
+
+\begin{document}
+\maketitle
+
+\section{\texttt{SubScript}, Parser}
+The parser is built using the Parsec library. A program is parsed successfully when the input is well formed, based on the grammar, and we can build internal SubsAst representation. The source code for the implementation can be found \ref{src_Parser}.
+
+\subsection{The Grammar}
+The grammar has been changed slightly. The \texttt{Stms} has been redefined to look like
+\begin{verbatim}
+Stms      ::= Stm ';' Stms
+            | Stm ';'
+\end{verbatim}
+This is equivalent to the handed out grammar except that the grammar can not be used for empty programs.\\
+For \texttt{Stm}, though the grammar can not be expressed in the same way as it uses auxiliary functions, it should behave exactly the same. \\
+For \texttt{Expr} we wanted to avoid left recursion problems, as in the following (from the handed out grammar):
+\begin{verbatim}
+Expr      ::= Expr ',' Expr
+            | Expr1
+\end{verbatim}
+This is dealt with by converting the first \texttt{Expr} to an \texttt{Expr1}. When the grammar is left recursive, we can't determine where to go by looking at the first symbol (in top-down parsing). \\
+We also wanted \texttt{Expr1} to account for the fact that the arithmetic operators \texttt{*} and \texttt{\%} binds stronger than \texttt{+} and \texttt{-} which in turn binds stronger than \texttt{<} and then \texttt{===}. This was handled in the following way: \\
+\begin{lstlisting}
+expr1 :: Parser Expr
+expr1 = do
+      rv <- r
+      botbot rv
+
+botbot :: Expr -> ParsecT String () Data.Functor.Identity.Identity Expr
+botbot inval = do
+      void $ lexeme $ string "==="
+      rv <- r
+      botbot (Call "===" [inval, rv])
+  <|> return inval
+
+r :: ParsecT String () Data.Functor.Identity.Identity Expr
+r = do
+      sv <- s
+      bot sv
+
+bot :: Expr -> ParsecT String () Data.Functor.Identity.Identity Expr
+bot inval = (do
+      void $ lexeme $ char '<'
+      sv <- s
+      bot (Call "<" [inval, sv]))
+  <|> return inval
+\end{lstlisting}
+This is only for one level of precedence (\texttt{===} binds weaker than \texttt{<}), but it applies the same principle to the other levels of precedence. \\
+The rest of the grammar is all related to each other, so it is hard to distinctly explain a part of the grammar. However, the entire grammar is implemented. Note that it is not implemented in a straight forward manner (that something is parsed in the function corresponding to the grammar), as there are many auxiliary functions that are called and some parts might be parsed a different place compared to the grammar: However, a parsed program should correspond to abstract syntax tree that is handed out without changes to it.
+
+\subsection{Parser Solution and Testing}
+The following commands are supported for parsing a program
+\begin{verbatim}
+    SubsParser> parseFile "Path to file with a program"
+\end{verbatim}
+or
+\begin{verbatim}
+    SalsaParser> parseString "Program as string"
+\end{verbatim}
+To test the parser, I have used an \texttt{HUnit} test suite, which executes a number of tests based on assertions. To run these tests, load the module \texttt{ParserTest.hs} (in \texttt{../src/subs} or appendix \ref{ParserTest}) and use the following command
+\begin{verbatim}
+    ParserTest> runTestTT tests
+\end{verbatim}
+The main test is the program \texttt{intro.js}, which produces a \texttt{SubsAst} which is (almost) identical to the one in the handouts. The only difference is that sometimes there is a space after a comma in the handouts, but not in this parser. The \texttt{SubsAst}'s can be found in appendix \ref{A1}. This test covers most of the \texttt{for} and \texttt{if} statements as well as array and parentheses in the grammar. \\
+Other tests (denoted \texttt{TestSuccX}, where $X$ is a number) include small programs that succeed in precedence, associativity, \texttt{Ident} names and \texttt{FunName} . These parse correctly (this can also mean that it fails to parse when it should). These tests are about other things in the grammar that is not in \texttt{intro.js}
+
+\subsection{Assessment}
+First, an assessment of the code style. No warnings are produced, but there are $7$ suggestions when using \texttt{hlint}. All but on of these are "reduce duplication", which I have chosen to ignore. The last suggestion seem to break the code. \\
+The parser itself correctly parses most of the input. It successfully parses the \texttt{intro.js} program which uses a great part of the grammar. Precedence also works as intended. \\
+Testing could have been more thorough. Right now, I am aware of one mistake - when there is a space before an "." (this does parse, but it should not). But an immediate fix (removing that it parses spaces before it) breaks another part of the code , so we will call this a feature for now. I am sure there are a lot more edge cases that parses incorrectly, but the 'essential' aspects of the parser is working - I could have used QuickCheck to find the edge cases that parses incorrectly, but time constraints has kept me from this as I was not familiar with it.
+
+\section{\texttt{SubScript}, Interpreter}
+The source code can be found in appendix \ref{src_Interpreter}.
+
+\subsection{The \texttt{SubsM} Monad}
+The implemented SubsM monad is very similar to the state monad. To construct a SubsM instance of type $a$, we go from a \textit{context} to either an error (which is a string) or some \textit{(a, env)} where the environment, \textit{env}, is mapping from variable names to values. A context consists of an environment and another mapping, \textit{PEnv}, from function names and operands to the haskell functions implementing them. \\
+\\
+\textbf{Utility functions:}
+Three auxillary functions has been implemented, namely \texttt{getEnv}, \texttt{getPEnv} and \texttt{putEnv}. We use these to update the environment, \textit{env}, by getting the environment, inserting a key and value (overwriting if it exists), and putting the environment back in the context. We use them in the same manner to fetch values from the environment and getting function from the primitives environment, \textit{PEnv}. \\
+\\
+This function \texttt{evalExpr} implements the evaluation of expressions. The evaluation can raise errors when operands are not of the same type (besides the special case with a string and integer in addition, which results in a string) or when a non-existent variable or function is referred to. \\
+This function \texttt{stm} works in the same manner and the function \texttt{program} evaluates a statement and recursively calls itself until there are no more statements (end of program). \\
+\\
+The last function, \texttt{runProg}, invokes the function \texttt{runSubsM} wrapped inside of the type constructor for SubsM. We construct an initial context that consists of an empty environment \textit{env} and the primitives environment \textit{PEnv} where the haskell functions have been implemented. Since there is no API for updating the primitives environment, this is the same throughout the entire program. Given the initial context and a statement, we get an error or a new environment. If it succeeds, the context is updated with the new environment. This is repeated until there are no more statements, in which the program terminates.
+
+\subsection{Missing Implementation}
+Array comprehension has not been implemented (which makes the utility function \texttt{modify} superfluous, so it is commented out). This obviously means that the implemented version of \texttt{SubScript} lacks a lot of functionality.
+
+\subsection{Interpreter Testing}
+The testing that has been done is "blackbox" testing. In appendix \ref{B1} is the program \texttt{simpleProg.js} and the output from running the program. The program runs statements that should be legal and that they are evaluated correctly. \\
+All statement should be legal, which is verified by the interpreter not generating any error. The most interesting cases are that
+\begin{itemize}
+\item Variable 'a' can be referred to after having been declared (line $2$)
+\item Strings are compared by their lexicographic order (var 'e' and 'f' in line $6-7$)
+\item Variable 'i', which is a string, can be concatenated with integers and the other way around for 'j' (line $11-12$). Note that "2 * 3" is evaluated first.
+\item var 'l' is initialized with value 'undefined'
+\end{itemize}
+The other cases are just statements that are evaluated correctly.\\
+\\
+In appendix \ref{B2}, the errors that the interpreter can generate is listed. These are simply "bad types" and "Key does not exist" errors. However they state in what kind of expression, the error occurred.\\
+\\
+All other errors are generated by the parser which is tested in Section 1. Note that all tests associated with the interpreter has the prefix "intrp\_".
+
+\subsection{Assessment}
+The testing is very simple, but rightfully so, as array comprehension has not been implemented which would be a big part of it. \\
+However, leaving that aside, the supported functionality is working satisfactory. It generates errors when it should and evaluates legal statements correctly. I have not been able to produce a statement that is evaluated wrong. \\
+Running programs with the implemented parser might be faulty, but I feel the interpreter is working as intended (in what functionality is implemented) and if there are any "mistakes", my first suspicious would be that the parser might have parsed something wrong (as all tests have been made using the command: \texttt{runhaskell Subs.hs \_TestProgram}.
+
+\section{Generic Replicated Server Library}
+The module \texttt{gen\_replicated} has been implemented and the source code can be found in appendix \ref{src_Genrep}.
+\subsection{Implementation}
+The implementation for \textit{coordinator} loops with the argument \textit{Pids}, a list of process ID's on all the replicas.\\
+The implementation of \textit{replica} loops with the arguments \textit{State}, the state, and \textit{Mod}, the callback module. \\
+\\
+\textbf{Implementation of the client interface functions}: \\
+\texttt{start(NumReplica, Mod)}: The function in the implementation works by calling the \texttt{init()} function in the given callback module. If it is successfull, then \texttt{\{ok, State\}} is returned from \texttt{init()}. It then creates a new process, the coordinator with an enmpty \texttt{Pids} list, then sends a message to the newly created coordinator to spawn replicas corresponding to \texttt{NumReplica} with the \texttt{Mod} as its callback module and returned \texttt{\{ok, ServerRef\}}.
+If \texttt{NumReplica} is less than $2$, an error occurs as the implementation uses one replica as a dedicated writer (the first one). If some error should occur in \texttt{init()}, then \texttt{\{error, Reason\}} is returned. \\
+\\
+\texttt{stop(Server)}: The function sends a message to the coordinator to shutdown all replica and itself. If succesfull, then \texttt{\{ok, stopped\}} is returned. It has not been implemented that all clients get the error message \texttt{\{'ABORTED', server\_stopped\}} if they are waiting for a read or write. \\
+\\
+\texttt{read(Server, Req)}: The function sends a message to the coordinator directly (non-blocking) with some read request \texttt{Req}. The implementation supports an answer which is a successfull read request, a stop request or if the callback function has made a throw exception. \\
+\\
+\texttt{write(Server, Req)}: The function sends a message to the auxiliary function \texttt{Blocking} with some write request \texttt{Req}. The implementation supports an answer which is a successfull write request (both when an update is made to the state and when not), a stop request or if the callback function has made a throw exception. \\
+\\
+\textbf{Implementation of the coordinator and the replica} \\
+\texttt{coordinator(Pids)}: The coordinator is the one that keep track of what happens. It initiates tasks for the \textit{replica}. In the implementation it can match on the following messages:
+\begin{itemize}
+\item \texttt{make\_Replicas}, a call from \texttt{start} that creates the replicas with the auxiliary function \texttt{createReplica} which return a list of tuples which contain the process ID's and their status (free or busy, but this was used in the implementation).
+\item \texttt{getPids} which returns the list \texttt{Pids} - only used for testing purposes.
+\item \texttt{stop}, which makes the coordinator send a message to all replicas with the message stop. When this happens, the server does not call itself and therefore dies.
+\item \texttt{read}, which picks a random reader in the interval $[2..\text{NumReplica}]$ of \texttt{Pids} and assigns that replica to the read request. The original purpose was the make it find a process which was "free" (status in the tuple) and assign the request to that, but as this was not implemented, it was made randomized instead, so we do not pick the same over and over again. Note that it cannot pick the first element in the list as this is the dedicated writer.
+\item \texttt{write}, which assigns the write request to the first process in \texttt{Pids}.
+\item \texttt{update}, should the callback function \texttt{handle\_write} return with a new state, the replica sends this message to the coordinator, which then sends a message to all replica with the new state.
+\end{itemize}
+\texttt{replica(State, Mod)}: This function is the "worker", the one that actually performs the requests by calling the callback functions. It can match on the following messages:
+\begin{itemize}
+\item \texttt{stop}, if it gets this message, it will return \texttt{stopped, self()} and simply not loop and thus, dies.
+\item \texttt{read}, which calls the callback function \texttt{handle\_read}. It then tries to match one of $2$ cases: \texttt{\{reply, Reply} or \texttt{stop}. If it gets the \texttt{reply} message, it send the term \texttt{Reply} back to the caller (the read function). If it gets the \texttt{stop} message, it sends this back and instruct the caller to call the stop function. If the callback function should throw an exception, it returns the value given by throw back.
+\item \texttt{write}, which calls the callback function \texttt{handle\_write}. It then tries to match one of $3$ cases: \texttt{\{noUpdate, Reply\}}, \texttt{\{updated, Reply, NewState\}} or \texttt{stop}. If it gets the \texttt{noUpdate} message, it simply returns the term \texttt{Reply} to the caller (as in read). If it gets the \texttt{updated} message, it will instruct the coordinator to update states (with the \texttt{update} message) in all replicas and returns the reply to the write function along with the new state. If it gets stop, it instructs the caller to call the stop function. It also matches a throw exception as read does.
+\end{itemize}
+
+\subsection{Testing}
+To test the implementation, a module \texttt{callback\_mod} which can be seen in appendix \ref{C1} was made. The idea is that it is a simple callback module, which an array is used as the state. We can then test the implementation by invoke the returns as specified in the implementation to see if they behave as intended. \\
+The idea is our initial state is an array containing the number from $1$ to $9$. Our request, \textit{Req}, is defined by number which is treated as an index. \\
+As such, the \texttt{handle\_read} callback reads the number on the index $Req$ in the state and returns the state. Otherwise it can return \texttt{stop} (in which case \texttt{\{ok, stopped\}} is returned and all servers are shut down. It can also make the throw exception. \\
+The \texttt{handle\_write} works in the same manner with \texttt{stop} and throw exceptions. The request is also an index, but it replaces the value on that index with $99$ (always). It can return \texttt{\{noUpdate, Reply\}} (even though an update is made) where the \texttt{Reply} is the new state. It can return \texttt{\{updated, Reply, NewState\}} in which case it returns the old state in \texttt{Reply} and the new state in \texttt{NewState}. \\
+\\
+The tests and the output can be seen in appendix \ref{C2}, where each return from the callback module is handled correctly. There are descriptions to each test, though "Test 2" is probably the most interesting one as it shows we correctly spawn $5$ replicas with the correct state and that a write request is updated on all other servers.
+
+\subsection{Assessment}
+I know the testing is a bit laid back. But the tests all provide correct answer for all the different returns, which is actually quite exstensive as a lot of the edge cases lie in how the request is handled (by the callback module) which is not in the scope for this question. \\
+It does lack the functionality (and testing) for concurrent read and write requests. It did have the functionality to find a process that was not busy (the function \texttt{findAvailable} which is outcommented in the source code), but I did not get to implement the rest. \\
+I think the solution lacks the last couple of features, but the implementation that was done is correct.
+
+\section{AlzheimerDB}
+This implementation does not work, but I will go through what I have done so far. It is using \texttt{gen\_server}. The source code can be found in \ref{src_Alz}
+
+\subsection{Implementation}
+\texttt{start}:
+This is simply a call to \texttt{start/3} from \texttt{gen\_server}. This results in the callback function \texttt{init/1} which in the implementation returns \texttt{\{ok, dict:new()\}} where the dictionary is out \texttt{State}. \\
+\\
+\texttt{query}:
+This is a call to \texttt{gen\_server}'s \texttt{call/2} where the request is \texttt{\{read, P\}} where \texttt{P} is a function. This results in the callback function \texttt{handle\_call/3}. The idea was that it calls the auxiliary function \texttt{filterWithError} which returns the list of \texttt{\{Key, Value\}} pairs in the dictionary (made into an array using \texttt{dict:to\_list}) than returned true when \texttt{P} was applied on them. If an exception was thrown, we put that a \texttt{\{error, Row\}} in the front of the list that was returned, so we'd know whether to return the error or \texttt{\{ok, Rows\}}. This was also why I could not just use the filter function as it did not handle thrown exceptions. \\
+\\
+\texttt{upsert}:
+This also called \texttt{gen\_server}'s \texttt{call/2} with the request \texttt{\{write, Id, F\}} where \texttt{F} is a function. It would then look up the identifier \texttt{Id} in the dictionary using \texttt{dict:find}. If it existed, we call the function \texttt{F} on the argument \texttt{\{existing, \{Id, Value\}\}}  - Where \texttt{Value} is returned from \texttt{dict:find}). If the did not exists we call \texttt{F} on \texttt{\{new, Id\}}. \\
+This function \texttt{F} can return \texttt{\{modify, NewData\}} (does not matter if there was a key or not) in which case we insert/replace the value under the \texttt{Id} with the value in \texttt{NewData}. This works with the function \texttt{dict:store}. This returns \texttt{\{modify, NewData\}}. \\
+It could also return \texttt{ignore}, in which case we do nothing and return \texttt{ignore}. \\
+In case \texttt{F} makes an exception, this is also what should be returned.\\
+\\
+I could not finish the task due to time restraints.
+
+\newpage
+\appendix
+
+\section{Parser}
+\subsection{\texttt{intro.js}}
+\label{A1}
+The abstract syntax tree produced by the parser for \texttt{intro.js}
+\begin{verbatim}
+Prog [
+    VarDecl "xs" (
+        Just (Array [
+            Number 0,Number 1,Number 2,
+            Number 3,Number 4,Number 5,
+            Number 6,Number 7,Number 8,Number 9])),
+    VarDecl "squares" (
+        Just (Compr ("x",Var "xs",Nothing)
+            (Call "*" [Var "x",Var "x"]))),
+    VarDecl "evens" (
+        Just (Compr ("x",Var "xs",
+            Just (ArrayIf (
+                Call "===" [
+                    Call "%" [Var "x",Number 2],Number 0]) Nothing))
+                (Var "x"))),
+    VarDecl "many_a" (
+        Just (Compr ("x",Var "xs",
+            Just (ArrayForCompr ("y",Var "xs",Nothing)))
+                (String "a"))),
+    VarDecl "hundred" (
+        Just (Compr ("i",Array [Number 0],
+            Just (ArrayForCompr ("x",Var "xs",
+                Just (ArrayForCompr ("y",Var "xs",Nothing)))))
+                    (Assign "i" (Call "+" [Var "i",Number 1]))))
+]
+\end{verbatim}
+The handed out abstract syntax tree for \texttt{intro.js}
+\begin{verbatim}
+Prog [
+    VarDecl "xs" (
+        Just (Array [
+            Number 0, Number 1, Number 2,
+            Number 3, Number 4, Number 5,
+            Number 6, Number 7, Number 8, Number 9])),
+    VarDecl "squares" (
+        Just (Compr ("x",Var "xs", Nothing)
+            (Call "*" [Var "x",Var "x"]))),
+    VarDecl "evens" (
+        Just (Compr ("x",Var "xs",
+            Just (ArrayIf (
+                Call "===" [
+                    Call "%" [Var "x",Number 2], Number 0]) Nothing))
+                (Var "x"))),
+    VarDecl "many_a" (
+        Just (Compr ("x",Var "xs",
+            Just (ArrayForCompr ("y",Var "xs", Nothing)))
+                (String "a"))),
+    VarDecl "hundred" (
+        Just (Compr ("i",Array [Number 0],
+            Just (ArrayForCompr ("x",Var "xs",
+                Just (ArrayForCompr ("y",Var "xs", Nothing)))))
+                    (Assign "i" (Call "+" [Var "i", Number 1]))))
+]
+\end{verbatim}
+
+\newpage
+\section{Interpreter}
+
+\subsection{simpleProg.js}
+\label{B1}
+The program \texttt{simlpeProg.js}:
+\begin{verbatim}
+1    var a = 3+3*2;
+2    a = a-4%3;
+3    b = a === 8;
+4    c = 'c' === 'd';
+5    var d = true === 2 < 4;
+6    e = 'ab' < 'ba';
+7    f = 'cab' < 'ba';
+8    g = 4 % 2 < 3;
+9    h = 4 < 3;
+10   var i = 'i';
+11   i = i + 2 * 3;
+12   var j = 2 + 'j';
+13   k = [3, 2, 2%2];
+14   var l;
+15   var m = 'a' + 'b';
+\end{verbatim}
+This is the output of running the program \texttt{simpleProg.js} with the command: \\
+"runhaskell Subs.hs tests/simpleProg.js" from the \texttt{./src} folder.
+\begin{verbatim}
+a = 8
+b = true
+c = false
+d = true
+e = true
+f = false
+g = true
+h = false
+i = "i6"
+j = "2j"
+k = [3, 2, 0]
+l = undefined
+m = "ab"
+\end{verbatim}
+
+\subsection{Errors}
+\label{B2}
+Errors than can be generated by the interpreter.
+\begin{verbatim}
+$ runhaskell Subs.hs tests/intrp_invalidVar
+Subs.hs: Error "Key does not exist in 'getVar'"
+
+$ runhaskell Subs.hs tests/intrp_isEqualBadTypes
+Subs.hs: Error "Bad argument types in '==='"
+
+$ runhaskell Subs.hs tests/intrp_lessThanBadTypes
+Subs.hs: Error "Bad argument types in '<'"
+
+$ runhaskell Subs.hs tests/intrp_minusBadTypes
+Subs.hs: Error "Both operators must be in '-'"
+
+$ runhaskell Subs.hs tests/intrp_moduloBadTypes
+Subs.hs: Error "Both operator must be integers in '%'"
+
+$ runhaskell Subs.hs tests/intrp_multiplyBadTypes
+Subs.hs: Error "Both operators must be integers in '*'"
+
+$ runhaskell Subs.hs tests/intrp_plusBadTypes
+Subs.hs: Error "Bad argument types in '+'"
+\end{verbatim}
+
+\newpage
+\section{Generic Replicated Server Library}
+\subsection\texttt{callback\_mod} \label{C1}
+\lstinputlisting[language=Erlang]{../src/alzheimer/callback_mod.erl}
+
+\subsection{Testing}\label{C2}
+\begin{verbatim}
+%%%%%%% TEST 1 %%%%%%%
+% Test if the error in init is handled correctly
+
+1> c(gen_replicated).
+{ok,gen_replicated}
+2> c(callback_mod).
+{ok,callback_mod}
+3> {_, P1} = gen_replicated:start(5, callback_mod).
+{error,something_went_wrong}
+
+%%%%%%% TEST 2 %%%%%%%
+% Test to see if handle_write (which returns updated) actually updates on all servers.
+% That means the read requests should return the initial state with the change.
+% Furthermore we test that 5 replpicas are actually made.
+
+1> c(gen_replicated).
+{ok,gen_replicated}
+2> c(callback_mod).
+{ok,callback_mod}
+3> {_, P1} = gen_replicated:start(5, callback_mod).
+{ok,<0.47.0>}
+4> gen_replicated:write(P1, 4).
+{ok,[1,2,3,4,5,6,7,8,9],[1,2,3,99,5,6,7,8,9]}
+5> gen_replicated:read(P1, 4).
+{ok,99}
+6> gen_replicated:read(P1, 5).
+{ok,5}
+7> gen_replicated:get_pids(P1).
+{ok,[{<0.48.0>,free},
+     {<0.49.0>,free},
+     {<0.50.0>,free},
+     {<0.51.0>,free},
+     {<0.52.0>,free}]}
+
+%%%%%%% TEST 3 %%%%%%%
+% Test to see if handle_write (which now returns noUpdate) work.
+% This is seen by the return from handle_read.
+
+1> c(gen_replicated).
+{ok,gen_replicated}
+2> c(callback_mod).
+{ok,callback_mod}
+3> {_, P1} = gen_replicated:start(5, callback_mod).
+{ok,<0.47.0>}
+4> gen_replicated:write(P1, 4).
+{ok,[1,2,3,99,5,6,7,8,9]}
+5> gen_replicated:read(P1, 4).
+{ok,4}
+
+%%%%%%% TEST 4 %%%%%%%
+% Test to see if the stop returned from handle_read stops the servers,
+% but handle_write (which sends updated) still works.
+
+1> c(gen_replicated).
+{ok,gen_replicated}
+2> c(callback_mod).
+callback_mod.erl:8: Warning: variable 'Req' is unused
+callback_mod.erl:8: Warning: variable 'State' is unused
+{ok,callback_mod}
+3> {_, P1} = gen_replicated:start(5, callback_mod).
+{ok,<0.47.0>}
+4> gen_replicated:write(P1, 4).
+{ok,[1,2,3,4,5,6,7,8,9],[1,2,3,99,5,6,7,8,9]}
+5> gen_replicated:write(P1, 3).
+{ok,[1,2,3,99,5,6,7,8,9],[1,2,99,99,5,6,7,8,9]}
+6> gen_replicated:read(P1, 3).
+{ok,stopped}
+
+%%%%%%% TEST 5 %%%%%%%
+% Test to see if the throw returned by handle_read works,
+% while the write requests still works.
+
+1> c(gen_replicated).
+{ok,gen_replicated}
+2> c(callback_mod).
+callback_mod.erl:8: Warning: variable 'Req' is unused
+callback_mod.erl:8: Warning: variable 'State' is unused
+{ok,callback_mod}
+3> {_, P1} = gen_replicated:start(5, callback_mod).
+{ok,<0.47.0>}
+4> gen_replicated:write(P1, 4).
+{ok,[1,2,3,4,5,6,7,8,9],[1,2,3,99,5,6,7,8,9]}
+5> gen_replicated:re
+read/2     replica/2
+5> gen_replicated:read(P1, 3).
+{'ABORTED',exception,something_happened}
+
+%%%%%%% TEST 6 %%%%%%%
+% Test to see if the stop returned from handle_write works,
+% while the read requests still work.
+
+1> c(gen_replicated).
+{ok,gen_replicated}
+2> c(callback_mod).
+callback_mod.erl:13: Warning: variable 'Req' is unused
+callback_mod.erl:13: Warning: variable 'State' is unused
+{ok,callback_mod}
+3> {_, P1} = gen_replicated:start(5, callback_mod).
+{ok,<0.47.0>}
+4> gen_replicated:read(P1, 4).
+{ok,4}
+5> gen_replicated:read(P1, 3).
+{ok,3}
+6> gen_replicated:write(P1, 3).
+{ok,stopped}
+
+%%%%%%% TEST 7 %%%%%%%
+% Test to see if the throw returned from handle_write works,
+% while the read requests still work.
+
+1> c(gen_replicated).
+{ok,gen_replicated}
+2> c(callback_mod).
+callback_mod.erl:13: Warning: variable 'Req' is unused
+callback_mod.erl:13: Warning: variable 'State' is unused
+{ok,callback_mod}
+3> {_, P1} = gen_replicated:start(5, callback_mod).
+{ok,<0.47.0>}
+4> gen_replicated:read(P1, 4).
+{ok,4}
+5> gen_replicated:write(P1, 4).
+{'Aborted',exception,something_happened}
+\end{verbatim}
+
+\newpage
+\section{Unit Tests}
+\subsection{ParserTest.hs}\label{ParserTest}
+\lstinputlisting[language=Haskell]{../src/subs/ParserTest.hs}
+
+\newpage
+\section{Source Code}
+\subsection{SubsParser.hs}\label{src_Parser}
+\lstinputlisting[language=Haskell]{../src/subs/SubsParser.hs}
+
+\newpage
+\subsection{SubsInterpreter.hs}\label{src_Interpreter}
+\lstinputlisting[language=Haskell]{../src/subs/SubsInterpreter.hs}
+
+\newpage
+\subsection{gen\_replicated.erl}\label{src_Genrep}
+\lstinputlisting[language=Erlang]{../src/alzheimer/gen_replicated.erl}
+
+\newpage
+\subsection{alzheimer}\label{src_Alz}
+\lstinputlisting[language=Erlang]{../src/alzheimer/alzheimer.erl}
+
+
+\end{document}

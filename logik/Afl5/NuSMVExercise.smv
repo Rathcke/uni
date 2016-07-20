@@ -1,0 +1,45 @@
+MODULE main
+VAR
+  turn  : {0,1};
+  flag  : array 0..1 of boolean;
+  p0    : process prc(turn, flag, 0);
+  p1    : process prc(turn, flag, 1);
+-- safety
+SPEC AG !((p0.label = l5) & (p1.label = l5));
+-- liveness
+SPEC AG ((p0.label in {l1,l2,l3,l4}) -> AF (p0.label = l5));
+
+MODULE prc(turn, flag, id)
+VAR
+  label : {l1,l2,l3,l4,l5,l6,l7};
+ASSIGN
+  init(label)   := l1;
+  init(flag[id]):= TRUE;
+  next(label)   :=
+    case
+      (label = l1)                          : l2;
+      (label = l2) & (turn = 0) & (id = 0)  : l5;
+      (label = l2) & (turn = 1) & (id = 1)  : l5;
+      (label = l2) & (turn = 1) & (id = 0)  : l3;
+      (label = l2) & (turn = 0) & (id = 1)  : l3;
+      (label = l3) & (flag[1])  & (id = 0)  : l3;
+      (label = l3) & !(flag[1]) & (id = 0)  : l4;
+      (label = l3) & (flag[0])  & (id = 1)  : l3;
+      (label = l3) & !(flag[0]) & (id = 1)  : l4;
+      (label = l4)                          : l2;
+      (label = l5)                          : l6;
+      (label = l6)                          : l7;
+      (label = l7)                          : l1;
+    esac;
+  next(turn)    :=
+    case
+      (label = l4)                : 1 - turn;
+      TRUE                        : turn;
+    esac;
+  next(flag[id]):=
+    case
+      (label = l1)                : TRUE;
+      (label = l6)                : FALSE; 
+      TRUE                        : flag[id];
+    esac;
+FAIRNESS running

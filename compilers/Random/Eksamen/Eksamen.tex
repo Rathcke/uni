@@ -1,0 +1,154 @@
+\documentclass[12pt]{article}
+\usepackage[dot, autosize, outputdir="dotgraphs/"]{dot2texi}
+\usepackage{tikz}
+\usetikzlibrary{shapes}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 5}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Oversætter}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\section*{Compiler - Exam}
+
+\subsection*{Task 1 - Grammar transformation for LL(1)}
+We have the following grammar $G_{T_{UP}}$ with the 4 terminals: id ( ) ,
+\begin{align*}
+S &\rightarrow id \\
+S &\rightarrow (\:T\:) \\
+T &\rightarrow S\:,\:T \\
+T &\rightarrow S
+\end{align*}
+for tuple expressions for LL(1) parsing.
+\subsubsection*{a}
+Give a short reason why this grammar is not LL(1), and transform the grammar (using a well-known transformation) to obtain a grammar $G'_{T_{UP}}$ suitable for LL(1) parsing.\\
+\\
+To make the grammer LL(1), we want to
+\begin{enumerate}
+\item Eliminate ambiguity
+\item Eliminate left-recursion
+\item Perform left factorisation where required
+\end{enumerate}
+Since the two productions for $T$ begins with the same symbol, this means they have overlapping \textit{FIRST} sets and is not LL(1). Therefore we need to left-factor $T$ by making the a simple production with the same common prefix, $S$ and creating another nonterminal, so we get the following grammar $G'_{T_{UP}}$
+\begin{align*}
+S &\rightarrow id \\
+S &\rightarrow (\:T\:) \\
+T &\rightarrow S\:R \\
+R &\rightarrow \:,\:T \\
+R &\rightarrow \varepsilon
+\end{align*}
+
+\subsubsection*{b}
+For $G'_{T_{UP}}$, determine \textit{FIRST} sets for all right-hand sides.\\
+\\
+We calculate these through fixed-point iteration using the rules from \textbf{Algorithm 2.5}\footnote{Torben Ægidius Mogensen, Introduction to Compiler Design, page 55}.  \\
+\\
+\begin{tabular}{c|c|c|c|c}
+\hline 
+Right-hand side & Initialisation & Iteration 1 & Iteration 2 & Iteration 3 \\ 
+\hline 
+id & $\emptyset$ & \{id\} & \{id\} & \{id\} \\ 
+( T ) & $\emptyset$ & \{$\:$($\:$\} & \{$\:$($\:$\} & \{$\:$($\:$\} \\ 
+S R & $\emptyset$ & $\emptyset$ & \{id, ($\:$\} & \{id, ($\:$\} \\ 
+, T & $\emptyset$ & \{$\:$,$\:$\} & \{$\:$,$\:$\} & \{$\:$,$\:$\} \\  
+$\varepsilon$ & $\emptyset$ & $\emptyset$ & $\emptyset$ & $\emptyset$ \\ 
+\hline
+\end{tabular} \\
+\\
+And then we reach a fixed point.\\
+So we have the following \textit{FIRST} sets
+\begin{align*}
+FIRST(id) &=\{id\} \\
+FIRST(\:(\:T\:)\:) &= \{\:(\:\} \\
+FIRST(S\:R) &= \{id,\:(\:\} \\
+FIRST(,\:T) &= \{\:,\:\} \\
+FIRST(\varepsilon) &= \emptyset
+\end{align*}
+
+\subsubsection*{c}
+Add a start production $S' \rightarrow S\$$ and determine \textit{FOLLOW} sets for all nonterminals.\\
+\\
+This yields the grammar
+\begin{align*}
+S' &\rightarrow S\$ \\
+S &\rightarrow id \\
+S &\rightarrow (\:T\:) \\
+T &\rightarrow S\:R \\
+R &\rightarrow \:,\:T \\
+R &\rightarrow \varepsilon
+\end{align*}
+To calculate the \textit{FOLLOW} sets, we follow an algorithm\footnote{Torben Ægidius Mogensen, Introduction to Compiler Design, page 59} and get the following constraints \\
+\\
+For the production $S' \rightarrow S\$$ we add the following constraint since '\$' is seen as a terminal and is therefore the \textit{FIRST} set of what follows $S$ but '\$' is not nullable.
+\begin{align*}
+\{\$\} \subseteq \{S\}
+\end{align*}
+For the production $S \rightarrow id$ there are no nonterminals, so no constraints are added.\\\\
+For the production $S \rightarrow (\:T\:)$ we add the following constraint since ')' is the \textit{FIRST} set of what follows $T$ but is not nullable.
+\begin{align*}
+\{\:)\:\} \subseteq \{T\}
+\end{align*}
+For the production $T \rightarrow S\:R$ we make a split for each occurence. Looking at the nonterminal $S$ we get the constraint
+$$ \{\:,\:\} \subseteq \{S\} $$
+since it is the \textit{FIRST} set of $R$. Furthermore, since $R$ is nullable, we add the following constraint
+$$ \{T\} \subseteq \{S\} $$
+Now looking at $R$ there is nothing in the \textit{FIRST} set, so no constraint is added. However, that nothing follows means that it is nullable, so we add the constraint
+$$ \{T\} \subseteq \{R\} $$
+For the production $R \rightarrow \:,\:T$ we get nothing in the \textit{FIRST} set for what follows $T$ meaning it is the same case as above so we add the following constraint
+$$ \{R\} \subseteq \{T\} $$
+For the last production $R \rightarrow \varepsilon$ there are no nonterminals, so no constraints are added.\\
+\\
+Now we need to solve these constraints. For each constraint on the form $terminal \subseteq nonterminal$ we put those into $FOLLOW(nonterminal)$ so we get
+\begin{align*}
+FOLLOW(S) &= \{\$,\:','\} \\ 
+FOLLOW(T) &= \{\:)\:\} \\
+FOLLOW(R) &= \emptyset
+\end{align*}
+Now for each constraint on the form $nonterminal \subseteq nonterminal$ we add the content from the \textit{FOLLOW} set of the first nonterminal to the second until a fixed point is reached and we get
+\begin{align*}
+FOLLOW(S) &= \{\$,\:',',\:)\} \\
+FOLLOW(T) &= \{\:)\:\} \\
+FOLLOW(R) &= \{\:)\:\}
+\end{align*}
+Whereas a fixed point is reached and we have our \textit{FOLLOW} sets.
+
+\subsubsection*{d}
+Determine the look-ahead sets for all productions and point out that $G'_{T_{UP}}$ is LL(1).\\
+\\
+Having calculated \textit{FIRST} and \textit{FOLLOW} we can use the following rules to determine look-ahead (LA) sets.
+$$
+LA(X\rightarrow \alpha) = \left\{ \begin{array}{rl}
+FIRST(\alpha) \cup FOLLOW(X) &\mbox{ if NULLABLE(X)} \\
+FIRST(\alpha) &\mbox{ otherwise}
+\end{array} \right.
+$$
+So we get the following look ahead sets (disregarding the added start production) \\
+$$LA(S \rightarrow id) = \{id\}$$
+Since the right hand side is not nullable.
+$$LA(S \rightarrow (\:T\:)) = \{\:(\:\}$$
+Since the right hand side is not nullable.
+$$LA(T \rightarrow S\:R) = \{id,\:(\}$$
+Since the right hand side is not nullable.
+$$LA(R \rightarrow \:,\:T) = \{\:,\:\}$$
+Since the right hand side is not nullable.
+$$LA(R \rightarrow \varepsilon) = \{\:)\:\}$$
+Since the right hand side is nullable.\\
+\\
+Since for each nonterminal $X$ in the grammar, the look ahead sets for each production for this nonterminal are disjoint, it means the grammar is LL(1).
+
+\newpage
+
+\subsection*{Task 2 - Extend the equality operation in Paladim to work on arrays}
+\end{document}
+

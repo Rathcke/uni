@@ -1,0 +1,37 @@
+program TestArrayLiteral;
+
+procedure main() 
+var arr : array of array of int; 
+    res : array of array of char; 
+    ch  : char;
+    i   : int; 
+    j   : int;
+    N   : int;
+begin
+    N   := 100;
+    res := { { 'h', 'e', 'l', 'l', 'o' }, {'w', 'o', 'r', 'l', 'd'} };
+
+    // Print `res` to stdout
+    write(" { ");
+    i := 0;
+    while i < 2 do
+    begin
+        write(" { ");
+        j := 0;
+        while j < 5 do
+        begin
+            write(res[i,j]);
+            write(", ");
+            j := j + 1;
+        end;
+        write(" }, ");
+        i := i + 1;
+    end;
+    write(" } ");
+
+    write("\n\nLengths: ");
+    write( len(0, res) );
+    write(" ");
+    write( len(1, res) );
+    write("\n\n");
+end;

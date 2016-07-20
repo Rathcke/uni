@@ -1,0 +1,66 @@
+a)
+
+Functional requirements:
+\begin{enumerate}
+\item Login capability.
+\item Purchase ebooks and audiobooks in the Android application.
+\item Show purchased ebooks and audiobooks in an account specific bookshelf.
+\item Download purchased ebooks and audiobooks available from the eBogreolen website.
+\end{enumerate}
+
+Non-functional requirements:
+\begin{enumerate}
+\item Internet access when downloading and buying ebooks.
+\item Android version 2.3 or higher.
+\item Ability to open bought books when offline.
+\end{enumerate}
+
+b)
+case model.png
+c)
+\begin{enumerate}
+\item 
+Title: Logging in
+Main Success Scenario:
+  Step 1: The user presses the log in button.
+  Step 2: Then the user enters his/her username and password.
+  Step 3: He/she then submits the information by pressing a button.
+  Step 4: His/her books are now loaded to the device.
+Extensions:
+  Extension 2a: The user writes a wrong username and/or password.
+  Extension 3a: There is no internet connection.
+\item 
+Title: Buying book
+Main Success Scenario:
+  Step 1: The user presses the buy button.
+  Step 2: Then the user enters his/her credit card details.
+  Step 3: He/she then submits the information by pressing a button.
+  Step 4: The book is added to the users account.
+Extensions:
+  Extension 2a: The user writes wrong card details.
+  Extension 3a: There is no internet connection.
+  Extension 3b: The transaction was denied.
+\item 
+Title: Search for a book
+Main Success Scenario:
+  Step 1: The user presses the search bar.
+  Step 2: A search query is written.
+  Step 3: The query is commited.
+  Step 4: The results are shown.
+  Step 5: A book is chosen
+Extensions:
+  Extension 3a: There is no internet connection.
+  Extension 4a: The query returned no books.
+\end{enumerate}
+d)
+NEJ
+e)
+This sequence diagram shows the chain of inner workings that is executed when the user tries to log in.
+SequenceDiagramLogin.png
+
+This sequence diagram shows the chain of inner workings that is executed when the user tries to buy a book.
+SequenceDiagramBuyBook.png
+
+This sequence diagram shows the chain of inner workings that is executed when the user tries to search for books.
+SequenceDiagramBookSearch.png
+

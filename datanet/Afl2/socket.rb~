@@ -1,0 +1,21 @@
+require 'socket'
+
+serv = TCPServer.new('localhost', 1339)
+
+dir = Dir.new("jqapi/")
+loop do
+  Thread.start(serv.accept) do |s|
+    req = s.gets
+    puts req
+    trimreq = req.gsub(/GET\ \//, '').gsub(/\ HTTP.*/, '')
+    puts trimreq
+    dir.entries.each do |f|
+      if File.directory? f
+        s.write("#{f}/")
+      else
+        s.write("#{f}")
+      end
+    end
+    s.close
+  end
+end

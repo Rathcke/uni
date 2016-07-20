@@ -1,0 +1,659 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage[fleqn]{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{boxproof}
+\usepackage{a4wide}
+\usepackage{daymonthyear}
+\usepackage{textcomp}
+
+\def\meta#1{\mbox{$\langle\hbox{#1}\rangle$}}
+\def\macrowitharg#1#2{{\tt\string#1\bra\meta{#2}\ket}}
+
+{\escapechar-1 \xdef\bra{\string\{}\xdef\ket{\string\}}}
+
+\def\intro#1{{#1}{\cal I}}
+\def\elim#1{{#1}{\cal E}}
+
+\showboxbreadth 999
+\showboxdepth 999
+\tracingoutput 1
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+ 	literate={\$}{{\textcolor{blue}{\$}}}1,
+}
+\let\imp\to
+\def\elim#1{{{#1}{\cal E}}}
+\def\intro#1{{{#1}{\cal I}}}
+\def\lt{<}
+\def\eqdef{=}
+\def\eps{\mathrel{\epsilon}}
+\def\biimplies{\leftrightarrow}
+\def\flt#1{\mathrel{{#1}^\flat}}
+\def\setof#1{{\left\{{#1}\right\}}}
+\let\implies\to
+\def\KK{{\mathsf K}}
+\let\squashmuskip\relax
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 24}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+\lhead{Exam 2014}
+\rhead{28/10-29/10}
+\title{Logic in Computer Science - Exam 2014}
+
+\begin{document}
+
+\maketitle
+\newpage
+
+\section*{1: Propositional Logic}
+
+\subsection*{Question 1.1}
+\subsubsection*{a(i)}
+We show the sequent $\vdash (p\to\neg q)\to q\to \neg p$ by natural deduction
+\begin{proofbox}
+   \[
+      \: p\to\neg q		  \=\mbox{assumption}
+        \[ 
+          \: q \=\mbox{assumption} \\
+          \: \neg\neg q \= \neg\neg I(2) \\
+          \: \neg p \= MT(1,3)
+        \]
+      \: q\to\neg p \= \to I(2-4)
+   \]
+   \: (p\to\neg q)\to q\to\neg p \= \to I(1-5) \\
+\end{proofbox}
+
+\subsubsection*{a(ii)}
+We show the sequent $\neg p \lor \neg\neg q\vdash p\to q$ by natural deduction
+\begin{proofbox}
+      \: \neg p\lor \neg\neg q		  \=\mbox{premise}
+        \[ 
+          \: p  \=\mbox{assumption} \\
+          \[ 
+            \: \neg p \=\mbox{assumption} \\
+            \: \bot \= \neg E(2,3) \\
+            \: q \=\bot E(4)
+          \]
+          \[ 
+            \: \neg\neg q \=\mbox{assumption} \\
+            \: q \= \neg\neg E(6)
+          \]
+        \: q \= \lor E(1,3-5,6-7)
+      \]
+      \: p\to q \=\to I(2-8)
+\end{proofbox}
+
+\subsubsection*{b(i)}
+We want to show the rule, $\frac{\phi\to \psi\lor \chi}{\phi\land\neg\psi\to \chi}$, is derivable by the following proof schema.
+\begin{proofbox}
+      \: \phi\to \psi\lor\chi		  \=\mbox{premise}
+        \[ 
+          \: \phi\land\neg\psi  \=\mbox{assumption} \\
+          \: \phi \=\land E_1(2) \\
+          \: \psi\lor\chi  \=\to E(3,1)
+          \[
+            \: \psi \=\mbox{assumption} \\
+            \: \neg\psi \=\land E_2(2) \\
+            \: \bot \= \neg E(5,6) \\
+            \: \chi \= \bot E(7)
+          \]
+          \[
+            \: \chi \=\mbox{assumption}
+          \]
+          \: \chi \= \lor E(4,5-8,9)
+        \]
+      \: \phi\land\neg\psi \to \chi \= \to I(2-10)
+\end{proofbox}
+
+\subsubsection*{b(ii)}
+We want to show the rule, $\frac{\phi\land\psi\to\chi}{\phi\to\neg\psi\lor\chi}$, is derivable by the following proof schema.
+\begin{proofbox}
+      \: \phi\land\psi\to\chi		  \=\mbox{premise}
+        \[ 
+          \: \phi \= \mbox{assumption} \\
+          \: \psi \lor \neg\psi \= LEM
+          \[
+            \: \psi \= \mbox{assumption} \\
+            \: \phi \land \psi \= \land I(2,4) \\
+            \: \chi \= \to E(5,1) \\
+            \: \neg\psi\lor\chi \= \lor I_2(6)
+          \] 
+          \[
+            \: \neg\psi \= \mbox{assumption} \\
+            \: \neg\psi \lor \chi \= \lor I_1(8)
+          \] 
+          \: \neg\psi\lor\chi \= \lor E(3,4-7,8-9)
+        \]
+      \: \phi\to\neg\psi\lor\chi \= \to I(2-10)
+\end{proofbox}
+
+\section*{Question 1.2}
+\subsubsection*{a(i)}
+We want to determine if, $(p\to \neg q)\land (\neg q\to \neg p)$, is satisfiable and they are valid by the truth table
+\begin{center}
+\begin{tabular}{|c|c||c|c||c|}
+\hline 
+$p$ & $q$ & $(p\to \neg q)$ & $(\neg q\to \neg p)$ & $(p\to \neg q)\land (\neg q\to \neg p)$\\ 
+\hline 
+F & F & T & T & T\\ 
+\hline 
+F & T & T & T & T\\ 
+\hline 
+T & F & T & F & F\\ 
+\hline
+T & T & F & T & F\\ 
+\hline
+\end{tabular} 
+\end{center}
+So we can conclude it is satisfiable but \textbf{not} valid.
+
+\subsubsection*{a(ii)}
+We want to determine if, $\neg(p\lor q)\land (\neg p\to q)$, is satisfiable and they are valid by the truth table
+\begin{center}
+\begin{tabular}{|c|c||c|c||c|}
+\hline 
+$p$ & $q$ & $\neg(p\lor q)$ & $(\neg p\to q)$ & $\neg(p\lor q)\land (\neg p\to q)$\\ 
+\hline 
+F & F & T & F & F\\ 
+\hline 
+F & T & F & T & F\\ 
+\hline 
+T & F & F & T & F\\ 
+\hline
+T & T & F & T & F\\ 
+\hline
+\end{tabular} 
+\end{center}
+So we can conclude it is neither satisfiable or valid.
+
+\subsection*{b(i)}
+We fill out the 2 remaining definition for $U(\cdot)$.
+\begin{align*}
+U(\phi_1\land \phi_2) &\stackrel{\mathop def}= (U(\phi_1)\to U(\neg\phi_2))\to\bot \\
+U(\phi_1\lor \phi_2) &\stackrel{\mathop def}=  U(\neg\phi_1)\to U(\phi_2)
+\end{align*}
+Where we have used the previously defined $U(\neg\phi)$ in our definition for these two.
+
+\subsection*{b(ii)}
+We prove this by the following truth table and by rewriting $U(\cdot)$ to their translations, but keeping $U(\phi)$.
+\begin{center}
+\begin{tabular}{|c|c||c|c||c|c|}
+\hline 
+$\phi_1$ & $\phi_2$ & $\phi_1\lor\phi_2$ & $(U(\phi_1)\to\bot)\to U(\phi_2)$ & $\phi_1\land\phi_2$ & $(U(\phi_1)\to U(\phi_2)\to\bot) \to\bot$\\ 
+\hline 
+F & F & F & F & F & F\\ 
+\hline 
+F & T & T & T & F & F\\ 
+\hline 
+T & F & T & T & F & F\\ 
+\hline
+T & T & T & T & T & T\\ 
+\hline
+\end{tabular} 
+\end{center}
+And we can see that the evaluations are the same.
+
+\section*{2: Propositional Logic}
+\subsection*{Question 2.1}
+\subsubsection*{a}
+We want to determine if $\Phi_1$ and $\Phi_2$ are satisfiable, valid and/or a HornCNF formula.\\
+\\
+We construct a truth table to determine satisfiability and validity.
+\begin{center}
+\begin{tabular}{|c|c||c|c|}
+\hline 
+$p$ & $q$ & $\Phi_1=(p\lor q)\land (\neg p\lor\neg q)$ & $\Phi_2=p\land (\neg p\lor q)\land (\neg p\lor \neg q)$\\ 
+\hline 
+F & F & F & F\\ 
+\hline 
+F & T & T & F\\ 
+\hline 
+T & F & T & F\\ 
+\hline
+T & T & F & F\\ 
+\hline
+\end{tabular} 
+\end{center}
+Then, for $\Phi_1$, we see that
+\begin{itemize}
+\item It is satisfiable.
+\item It is \textbf{not} valid.
+\item It is \textbf{not} a HornCNF formula as it has two positive literals in the first clause.
+\end{itemize}
+For $\Phi_2$, we see that
+\begin{itemize}
+\item It is \textbf{not} satisfiable.
+\item It is \textbf{not} valid.
+\item It is a HornCNF formula.
+\end{itemize}
+
+\subsubsection*{b}
+We write the translated formula $T(\Phi_1)$.\\
+\\
+From [\textbf{H\&R}, page 69] we can rewrite the formula to
+\begin{align*}
+T(\Phi_1)&=(\neg(\neg T(\phi_1)\land \neg T(\phi_2)))\land(\neg(\neg\neg T(\phi_1)\land \neg\neg T(\phi_2))) \\
+&=(\neg(\neg T(p)\land \neg T(q)))\land(\neg(\neg\neg T(p)\land \neg\neg T(q))) \\
+&=(\neg(\neg p\land \neg q))\land(\neg(\neg\neg p\land \neg\neg q))
+\end{align*}
+
+\subsubsection*{c}
+In the picture below, the DAG can be seen.\\
+\begin{center}
+\includegraphics[scale=0.1]{1}
+\end{center}
+
+\newpage
+
+\subsubsection*{d}
+After running the linear SAT solver, we get the following
+\begin{center}
+\includegraphics[scale=0.1]{2}
+\end{center}
+Since we can not determine anything from 2 false "and"'s, we are stuck and therefore it is undecidable.
+
+\subsection*{Question 2.2}
+We want to determine if the statements (a-f) are true or false by providing proof or a counter example.
+\subsubsection*{a}
+True. If $\Phi$ is valid, then it is by definition also satisfiable as satisfiability requires one evaluation to be true and validity requires all evaluations to be true, so this is easily seen to be true.
+
+\subsubsection*{b}
+False. Demonstrated by the following example
+$$\Phi=p\land q$$
+Where it is true for $p=T$ and $q=T$ (satisfiable), but not for $p=F$ and $q=F$.
+
+\subsubsection*{c}
+True. As $\neg\phi$ says that one evaluation of $\neg\Phi$ is true, this means that not all evaluations of $\Phi$ are true, and thus it is not valid.
+
+\subsubsection*{d}
+True. If $\Phi$ is not always true, that means there is one evaluation to false, which means $\neg\Phi$ is true and is then satisfiable.
+
+\subsubsection*{e}
+True. If $\neg\Phi$ is always true, that means all evaluations of $\Phi$ are false and it is therefore not valid.
+
+\subsubsection*{f}
+False. As demonstrated by the following example
+$$\Phi=p\land q$$
+Where an evaluation of $\Phi$ where $p=F$ and $q=F$ is not true and $\Phi$ is not valid.\\
+And the evaluation of $\neg\Phi$ where $p=T$ and $q=T$ is not true and $\neg\Phi$ is not valid.
+
+\subsection*{Question 2.3}
+\subsubsection*{a}
+Consider the formula 
+$$\Phi=\neg(p\lor\neg q)\land\neg(p\lor\neg q)$$
+It is a HornCNF formula as there are no clauses with more than one positive literal. Then we get the following translation $T(\Phi)$.
+$$T(\Phi)=(\neg(\neg p\land\neg\neg q))\land(\neg(\neg p\land \neg\neg q))$$
+\newpage
+We can now draw the DAG and run the linear solver, so we get
+\begin{center}
+\includegraphics[scale=0.1]{3}
+\end{center}
+Which gets stuck when the two "and"'s are false.
+
+\section*{3: Predicate Logic}
+\subsection*{Question 3.1}
+\subsubsection*{i}
+This translates into the following predicate logic formula
+$$\forall x(P(x)\land \neg\forall y(L(y)\to K(x,y)))$$
+
+\subsubsection*{ii}
+This translates into the following predicate logic formula
+$$\exists x\exists y(P(x)\land L(y)\land K(x,y)\land \forall z(L(z)\land K(x,z)\to y=z))$$
+
+\subsection*{3.2}
+\subsubsection*{a}
+We want to prove the sequent, $\forall x\forall y(R(x,y)\to\neg R(y,x))\vdash \forall x\forall y(R(x,y)\to \neg(x=y))$ with natural deduction for predicate logic.
+\begin{proofbox}
+\: \forall x\forall y(R(x,y)\to\neg R(y,x)) \= \mbox{premise} \\
+  \[
+    \: x_0 \\
+    \: \forall y(R(x_0,y)\to\neg R(y,x_0)) \= \forall E(1)
+    \[
+      \: y_0 \\
+      \: R(x_0,y_0)\to\neg R(y_0,x_0) \= \forall E(3)
+      \[
+        \: R(x_0,y_0) \= \mbox{assumption} \\
+        \: \neg R(y_0,x_0) \= \to E(6,5)
+        \[
+          \: x_0=y_0 \= \mbox{assumption} \\
+          \: R(x_0,x_0) \= =E(8,6;\phi \stackrel{\mathop def}= R(x_0,x)) \\
+          \: \neg R(x_0,x_0) \= =E(8,7;\phi \stackrel{\mathop def}= \neg R(x,x_0)) \\
+          \: \bot \= \neg E(9,10)
+        \]
+        \: \neg (x_0=y_0) \= \neg I(8-11)  
+      \]
+      \: R(x_0,y_0)\to\neg (x_0=y_0)  \= \to I(6-12)
+    \]
+    \: \forall y R(x_0,y)\to\neg (x_0=y) \= \forall I(4-13)
+  \]
+\: \forall x\forall y(R(x,y)\to \neg(x=y)) \= \forall I(2-14)
+\end{proofbox}
+
+\subsubsection*{b}
+For it to be consistent, we need to find a model that satisfies both $\phi$ and $\psi$. \\
+Consider the model $\mathcal{M}=(A,\cdot,{L^{\mathcal{M}}})$ with universe $A={a,b,c}$ and $L^{\mathcal{M}}={(a,b),(b,c),(c,a)}$.\\
+This means $\forall v\forall w(R(v,w)\to \neg R(w,v))$ is satisfiable as you can only get $[[F\to T]],[[F\to F]], [[T\to\neg F]]$ which are all true - or $\mathcal{M}\vdash \phi$.\\
+Furthermore $\forall v\exists w(R(v,w))$ is satisfiable as you can always pick an element $w$ no matter the element $v$ - or that $\mathcal{M}\vdash \psi$.\\
+This means that our answer uses completeness as we can not prove anything is wrong.
+
+
+\section*{4: Linear-Time Temporal Logic}
+\subsection*{Question 4.1}
+We find an LTL formula equivalent $S\phi$ given by
+$$G((\phi\to X(\neg\phi)\land XX(\phi))\land F(\phi))$$
+Now, we want to show that the formal semantics of our formula is equivalent to $S$.
+First, lets rewrite the $G$ according to its formal semantics
+$$\forall i\geq 1.\pi^i\models\phi$$
+Then we rewrite the implication and the right side of the last \texttt{and}
+$$\forall i\geq 1.[\pi^i\models\phi \mbox{ implies } \pi\models\psi \mbox{ and } [\exists j\geq 1.\pi^{i+j}\models \phi]]$$
+Now we rewrite the last part - $X(\neg \phi)\land XX(\phi)$ which is the part that corresponds to $\psi$
+$$\forall i\geq 1.[(\pi^i\models\phi \mbox{ implies } [\mbox{not}(\pi^{i+1}\models \phi)\mbox{ and } \pi^{i+2}\models\phi]) \mbox{ and } [\exists j\geq 1.\pi^{i+j}\models \phi]]$$
+Which corresponds to the semantics given in the assignment text.
+
+\subsection*{Question 4.2}
+\subsubsection*{a}
+We want to show the equivalence $GS\phi\equiv S\phi$ using the semantics for $S$. We start with the semantics for $GS\phi$ and rewrite, so
+\begin{align*}
+&GS\phi \\
+&\Leftrightarrow \forall k\geq 1.[pi^k\models\forall i\geq 1.[(\pi^i\models\phi \mbox{ implies } [\mbox{not}(\pi^{i+1}\models \phi)\mbox{ and } \pi^{i+2}\models\phi]) \mbox{ and } [\exists j\geq 1.\pi^{i+j}\models \phi]]] \\
+&\Leftrightarrow \forall i\geq 1.[(\pi^i\models\phi \mbox{ implies } [\mbox{not}(\pi^{i+1}\models \phi)\mbox{ and } \pi^{i+2}\models\phi]) \mbox{ and } [\exists j\geq 1.\pi^{i+j}\models \phi]] \\
+&\Leftrightarrow S\phi
+\end{align*}
+Where the last step before we conclude the equivalence is due to the easily seen equivalence $GG\phi\equiv G\phi$.
+
+\newpage
+\subsection*{Question 4.3}
+\subsubsection*{a}
+This equivalence does not hold as demonstrated below
+\begin{center}
+\includegraphics[scale=0.1]{9}
+\end{center}
+Where $S\phi\lor S\psi$ (for both actually) but $S(\phi\lor\psi)$ does not as it holds in every state.
+
+\subsubsection*{b}
+This equivalence does not hold as demonstrated by the same model shown in (4.3a). The reasoning is the same, as both $S\phi$ and $S\psi$ holds, but not $S(\phi\lor\psi)$.
+
+\subsubsection*{c}
+\textbf{The assignment text says} $S\phi\land S\phi\equiv S[\phi\land\psi]$.\\
+This means, again, we can use our model from (4.3a) to show the equivalence does not hold as $S\phi$ holds, and thus $S\phi\land S\phi$ holds. However, there is not state where $\phi\land\psi$ and $S(\phi\land\psi)$ can not hold.
+
+\newpage
+\section*{5: Computation Tree Logic}
+\subsection*{Question 5.1}
+Below is seen a model where both statements hold
+\begin{center}
+\includegraphics[scale=0.6]{4}
+\end{center}
+The model holds as $p$ holds until there exists a next where $q$ holds (transition from s1 to s2). However, $q$ does hold for all next states from s1 (transition from s1 to s3).\\
+In appendix A1, you can see the NuSMV code and terminal output. The code also be seen in \texttt{5-1.smv}. These conclude that the model satisfies both properties.
+
+\subsection*{Question 5.2}
+\subsubsection*{a}
+We name the states $S=\{s_{g00},s_{g01},s_{g10},s_{g11}\}$ with the transitions and labeling as shown below.
+\begin{center}
+\includegraphics[scale=0.1]{5}
+\end{center}
+
+\subsubsection*{b}
+The NuSMV code can be found in \texttt{5-2-b.smv} or in appendix A2. It corresponds to the model as there are 4 states implemented and there are 3 transitions to from each each state to another as implemented.
+
+\subsubsection*{c}
+A CTL formula has been given and implemented as a specification in \texttt{5-2-b.smv} or in A2. This gives us that the specification is true for our model.
+
+\subsection*{Question 5.3}
+We want to compute the set $S=[[a\to E[aUAG(b\lor c)]]]$ using the SAT algorithm.\\
+\\
+We note that
+\begin{align*}
+SAT(a)&=\{0,3,4,7\} \\
+SAT(b)&=\{0,1,5\} \\
+SAT(c)&=\{0,2,6\}
+\end{align*}
+Then we compute $SAT(a\to E[aUAG(b\lor c)])$.
+\begin{align*}
+SAT(\phi):&=SAT(a\to E[aUAG(b\lor c)]) \\
+&=SAT(\neg a\lor E[aUAG(b\lor c)]) \\
+&=SAT(\neg a)\cup SAT(E[aUAG(b\lor c)]) \\
+&=S-SAT(a)\cup SAT_{EU}(a,AG(b\lor c) \\
+(*)\:\:\:&=(S-\{0,3,4,7\})\cup  \{0,1,2,3,4\} \\
+&=\{0,1,2,3,4,5,6,8\}
+\end{align*}
+(*) is obtained from the following calculations.
+\begin{align*}
+W:&=SAT(a) \\
+&=\{0,3,4,7\} \\
+X:&=S \\
+Y:&=SAT(AG(b\lor c)) \\
+&=SAT(\neg EF\neg(b\lor c)) \\
+&=S-SAT(EF\neg(b\lor c)) \\
+&=S-SAT(E[\top U\neg(b\lor c)) \\
+&=S-SAT_{EU}(\top,\neg(b\lor c)) \\
+(**)\:\:\:&=S-\{0,3,4,5,6,7,8\} \\
+&=\{1,2\} \\
+X:&=Y=\{1,2\} \\
+Y:&=\{1,2\} \cup (\{0,3,4,7\} \cap \mbox{pre}_{\exists}(\{1,2\})) \\
+&=\{1,2\} \cup (\{0,3,4,7\} \cap \{0,1,2,3\}) \\
+&=\{1,2\} \cup \{0,3\} \\
+&=\{0,1,2,3\} \\
+X:&=Y=\{0,1,2,3\} \\
+Y:&=\{0,1,2,3\} \cup (\{0,3,4,7\} \cap \mbox{pre}_{\exists}(\{0,1,2,3\})) \\
+&=\{0,1,2,3\} \cup (\{0,3,4,7\} \cap \{0,1,2,3,4\}) \\
+&=\{0,1,2,3\} \cup \{0,3,4\} \\
+&=\{0,1,2,3,4\} \\
+X:&=Y=\{0,1,2,3,4\} \\
+Y:&=\{0,1,2,3,4\} \cup (\{0,3,4,7\} \cap \mbox{pre}_{\exists}(\{0,1,2,3,4\})) \\
+&=\{0,1,2,3,4\} \cup (\{0,3,4,7\} \cap \{0,1,2,3,4,5\}) \\
+&=\{0,1,2,3,4\} \cup \{0,3,4\} \\
+&=\{0,1,2,3,4\}
+\end{align*}
+(**) is obtained from the following calculations.
+\begin{align*}
+W:&=SAT(\top) \\
+&=S \\
+X:&=S\\
+Y:&=SAT(\neg(b\lor c)) \\
+&=S-SAT(b\lor c)) \\
+&=S-(SAT(b)\cup SAT(c)) \\
+&=S-(\{0,1,5\}\cup \{0,2,6\}) \\
+&=S-(\{0,1,2,5,6\} \\
+&=\{3,4,7,8\} \\
+X:&=Y=\{3,4,7,8\} \\
+Y:&=\{3,4,7,8\}\cup (S\cap \mbox{pre}_{\exists}(\{3,4,7,8\})) \\
+&=\{3,4,7,8\}\cup (S\cap \{0,3,4,5,6,7,8\} \\
+&=\{3,4,7,8\}\cup \{0,3,4,5,6,7,8\} \\
+&=\{0,3,4,5,6,7,8\} \\
+X:&=Y=\{0,3,4,5,6,7,8\}\\
+Y:&=\{0,3,4,5,6,7,8\}\cup (S\cap \mbox{pre}_{\exists}(\{0,3,4,5,6,7,8\})) \\
+&=\{0,3,4,5,6,7,8\}\cup \{0,3,4,5,6,7,8\} \\
+&=\{0,3,4,5,6,7,8\}
+\end{align*}
+Which means our resultare the states $=\{0,1,2,3,4,5,6,8\}$.
+
+\section*{6: Binary Decision Diagrams}
+\subsection*{Question 6.1}
+\subsubsection*{a(i)}
+From appendix A3, The OBDD is provided using the \texttt{reduce} algorithm
+
+\newpage
+\subsubsection*{a(ii)}
+From the OBDD in (a(i)), it allows us to create the following ROBDD.
+\begin{center}
+\includegraphics[scale=0.1]{7}
+\end{center}
+
+\newpage
+\subsubsection*{b}
+We create the following truth table\\
+\begin{center}
+\begin{tabular}{cccc|c}
+$x_1$ & $x_1'$ & $x_2$ & $x_2'$ & $\rightarrow$ \\ 
+\hline 
+0 & 0 & 0 & 0 & 1 \\ 
+0 & 0 & 0 & 1 & 1 \\ 
+0 & 0 & 1 & 0 & 0 \\ 
+0 & 0 & 1 & 1 & 1 \\
+\hline
+0 & 1 & 0 & 0 & 0 \\ 
+0 & 1 & 0 & 1 & 0 \\
+0 & 1 & 1 & 0 & 1 \\
+0 & 1 & 1 & 1 & 0 \\
+\hline
+1 & 0 & 0 & 0 & 0 \\
+1 & 0 & 0 & 1 & 0 \\
+1 & 0 & 1 & 0 & 1 \\
+1 & 0 & 1 & 1 & 0 \\
+\hline
+1 & 1 & 0 & 0 & 1 \\
+1 & 1 & 0 & 1 & 1 \\
+1 & 1 & 1 & 0 & 0 \\
+1 & 1 & 1 & 1 & 1 \\
+\end{tabular}
+\end{center}
+This means we can produce our CTL model, by making the transitions where the truth table produces $1$ as seen below
+\begin{center}
+\includegraphics[scale=0.1]{8}
+\end{center}
+
+\subsection*{Question 6.2}
+We want to compute $exists(p',exists(q',apply(\cdot,B_{\rightarrow},B_{Y'})))$ and by computing $apply(\cdot,B_{\rightarrow},B_{Y'}$.\\
+$B{Y'}$ is simply the given $B_Y$ tree, but with the variables primed, hence we split $B_{\rightarrow}$ into two subproblem and we can apply the operation $\cdot$ directly and get $B_{app}$.
+\begin{center}
+\includegraphics[scale=0.1]{10}
+\end{center}
+Which is reduced to
+\begin{center}
+\includegraphics[scale=0.1]{11}
+\end{center}
+Now we calculate $exists(q',B_{app})$.\\
+We now find $restict(0,q',B_{app})$ and $restict(1,q',B_{app})$ respectively.
+\begin{center}
+\includegraphics[scale=0.1]{12}
+\end{center}
+And calculate $B_{app2}=apply(+,restict(0,q',B_{app},restict(1,q',B_{app}))$
+\begin{center}
+\includegraphics[scale=0.1]{13}
+\end{center}
+\newpage
+Now we find $exists(p',B_{app2})$ with $restict(0,p',B_{app2})$ and $restict(1,p',B_{app2})$ respectively
+\begin{center}
+\includegraphics[scale=0.1]{14}
+\end{center}
+And lastly we find $apply(+,restict(0,q',B_{app},restict(1,q',B_{app}))$
+\begin{center}
+\includegraphics[scale=0.1]{15}
+\end{center}
+Which is the BDD that satisfying $EX(p\leftrightarrow \neg q)$.
+
+\newpage
+\section*{A1}
+\begin{verbatim}
+MODULE main
+VAR
+st : {st1, st2, st3};
+
+ASSIGN
+  init(st) := st1;
+  
+  next(st) :=
+    case
+      st = st1 : {st2,st3};
+      st = st2 : st2;
+      st = st3 : st3;
+      esac;
+      
+DEFINE
+p := st = st1;
+q := st = st2;
+
+SPEC A[p U EX q]
+SPEC A[p U AX q]
+
+-- specification A [ p U (EX q) ]   is true
+-- specification A [ p U (AX q) ]   is false
+-- as demonstrated by the following execution sequence
+Trace Description: CTL Counterexample
+Trace Type: Counterexample
+-> State: 1.1 <-
+  st = st1
+  q = FALSE
+  p = TRUE
+-- Loop starts here
+-> State: 1.2 <-
+  st = st3
+  p = FALSE
+-> State: 1.3 <-
+\end{verbatim}
+\newpage
+\section*{A2}
+\begin{verbatim}
+MODULE main
+VAR
+st : {sg00, sg01, sg10, sg11};
+
+ASSIGN
+  init(st) := {sg00, sg01, sg10, sg11};
+  
+  next(st) :=
+    case
+      st = sg00 : {sg00,sg01,sg11};
+      st = sg01 : {sg01,sg10,sg11};
+      st = sg10 : {sg00,sg01,sg10};
+      st = sg11 : {sg00,sg10,sg11};
+      esac;
+
+DEFINE
+a := st = sg10 | st = sg11;
+b := st = sg01| st = sg11;
+
+SPEC (a & EX !b) | (!a & EX b) | (a & EX b) | (!a & EX !b)
+
+-- specification ((((a & EX !b) | (!a & EX b)) | (a & EX b)) | (!a & EX !b)) is
+   true
+\end{verbatim}
+\newpage
+\section*{A3}
+\begin{center}
+\includegraphics[scale=0.75]{6}
+\end{center}
+
+\end{document}

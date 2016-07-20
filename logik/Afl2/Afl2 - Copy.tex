@@ -1,0 +1,353 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{boxproof}
+\usepackage{a4wide}
+\usepackage{daymonthyear}
+
+\def\meta#1{\mbox{$\langle\hbox{#1}\rangle$}}
+\def\macrowitharg#1#2{{\tt\string#1\bra\meta{#2}\ket}}
+
+{\escapechar-1 \xdef\bra{\string\{}\xdef\ket{\string\}}}
+
+\def\intro#1{{#1}{\cal I}}
+\def\elim#1{{#1}{\cal E}}
+
+\showboxbreadth 999
+\showboxdepth 999
+\tracingoutput 1
+
+
+\let\imp\to
+\def\elim#1{{{#1}{\cal E}}}
+\def\intro#1{{{#1}{\cal I}}}
+\def\lt{<}
+\def\eqdef{=}
+\def\eps{\mathrel{\epsilon}}
+\def\biimplies{\leftrightarrow}
+\def\flt#1{\mathrel{{#1}^\flat}}
+\def\setof#1{{\left\{{#1}\right\}}}
+\let\implies\to
+\def\KK{{\mathsf K}}
+\let\squashmuskip\relax
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 6}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Elementær Talteori}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+
+\subsection*{Completeness exercise}
+We want to prove completeness of
+$$(p\to q)\to q \vdash (q\to p)\to p$$
+We follow the steps described in the assignment text.\\
+We start with
+$$(p\to q)\to q \models (q\to p)\to p$$
+Now we move the premises to the right hand side, so we get
+$$\models ((p\to q)\to q)\to((q\to p)\to p)$$
+We proceed by creating a truth table
+\begin{center}
+\begin{tabular}{|c|c||c|c|c|c||c|}
+\hline 
+$p$ & $q$ & $p\to q$ & $(p\to q)\to q$ & $q\to p$ & $(q\to p)\to p$ & $((p\to q)\to q)\to((q\to p)\to p)$ \\ 
+\hline 
+T & T & T & T & T & T & T \\ 
+\hline 
+T & F & F & T & T & T & T \\ 
+\hline 
+F & T & T & T & F & T & T \\ 
+\hline 
+F & F & T & F & T & F & T \\ 
+\hline 
+\end{tabular} 
+\end{center}
+This means we have the following constructed sequents
+\begin{align*}
+p,q&\vdash((p\to q)\to q)\to((q\to p)\to p) &:\alpha_1\\
+p,\neg q&\vdash((p\to q)\to q)\to((q\to p)\to p) &:\alpha_2\\
+\neg p,q&\vdash((p\to q)\to q)\to((q\to p)\to p) &:\alpha_3\\
+\neg p,\neg q&\vdash((p\to q)\to q)\to((q\to p)\to p)&:\alpha_4 \\
+\end{align*}
+As explained in the assignment text, we start by proving $\alpha_1$, meaning we prove
+\begin{align*}
+p&\vdash \gamma_{\textit{l}}[p] &(a) \\
+q&\vdash \gamma_{\textit{l}}[q] &(b)\\
+p,q&\vdash \gamma_{\textit{l}}[p\to q]&(c)\\
+p,q&\vdash \gamma_{\textit{l}}[(p\to q)\to q]&(d)\\
+p,q&\vdash \gamma_{\textit{l}}[q\to p]&(e)\\
+p,q&\vdash \gamma_{\textit{l}}[(q\to p)\to p]&(f)\\
+p,q&\vdash \gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]&(g)
+\end{align*}
+In (a), we prove $p\vdash\gamma_{\textit{l}}[p]$ where $\gamma_{\textit{l}}[p]=p$ meaning it is trivially true.\\
+In (b), we prove $q\vdash\gamma_{\textit{l}}[q]$ where $\gamma_{\textit{l}}[q]=q$ meaning it is trivially true.\\
+In (c), we prove $p,q\vdash\gamma_{\textit{l}}[p\to q]$ where $\gamma_{\textit{l}}[p\to q]=p\to q$. A box proof is provided below
+\begin{proofbox}
+   \: p 	 \=\mbox{premise}\\
+   \: q \= \mbox{premise}
+   \[
+      \: p		  \=\mbox{assumption}\\
+      \: q \=   (2)
+   \]
+   \: p\to q \= \to I(3-4)
+\end{proofbox}
+\\
+In (d), we prove $p,q\vdash\gamma_{\textit{l}}[(p\to q)\to q]$ where $\gamma_{\textit{l}}[(p\to q)\to q]=(p\to q)\to q$. A box proof is provided below
+\begin{proofbox}
+   \: p 	 \=\mbox{premise}\\
+   \: q \= \mbox{premise}
+   \[
+     \: p\to q		  \=\mbox{assumption} \\
+     \: q \= \to E(1,3)
+   \]
+   \: (p\to q)\to q \= \to I(3-4)
+\end{proofbox}
+\\
+In (e), we prove $p,q\vdash\gamma_{\textit{l}}[q\to p]$ where $\gamma_{\textit{l}}[q\to p]=q\to p$. This is the exact same proof as in (c), so we reuse this proof with the atoms $p$ and $q$ switched.\\
+In (f), we prove $p,q\vdash\gamma_{\textit{l}}[(q\to p)\to p]$ where $\gamma_{\textit{l}}[(q\to p)\to p]=(q\to p)\to p$. This is the exact same proof as in (d), so we reuse this proof with the atoms $p$ and $q$ switched.\\
+In (g), we prove $p,q\vdash\gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]$ where $\gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]=((p\to q)\to q)\to((q\to p)\to p)$. A boxproof is provided below
+\begin{proofbox}
+   \: p 	 \=\mbox{premise}\\
+   \: q \= \mbox{premise}\\
+   \: (p\to q)\to q \= \mbox{proved in (d)}\\
+   \: (q\to p)\to p \= \mbox{proved in (f)}
+   \[
+     \: (p\to q)\to q		  \=\mbox{assumption} \\
+     \: (q\to p)\to p \= (4)
+   \]
+   \: ((p\to q)\to q)\to ((q\to p)\to p) \= \to I(5-6)
+\end{proofbox}
+We now prove $\alpha_2$ in the same manner.
+\begin{align*}
+p&\vdash \gamma_{\textit{l}}[p] &(a) \\
+\neg q&\vdash \gamma_{\textit{l}}[q] &(b)\\
+p,\neg q&\vdash \gamma_{\textit{l}}[p\to q]&(c)\\
+p,\neg q&\vdash \gamma_{\textit{l}}[(p\to q)\to q]&(d)\\
+p,\neg q&\vdash \gamma_{\textit{l}}[q\to p]&(e)\\
+p,\neg q&\vdash \gamma_{\textit{l}}[(q\to p)\to p]&(f)\\
+p,\neg q&\vdash \gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]&(g)
+\end{align*}
+In (a), we prove $p\vdash\gamma_{\textit{l}}[p]$ where $\gamma_{\textit{l}}[p]=p$ meaning it is trivially true.\\
+In (b), we prove $\neg q\vdash\gamma_{\textit{l}}[q]$ where $\gamma_{\textit{l}}[q]=\neg q$ meaning it is trivially true.\\
+In (c), we prove $p,\neg q\vdash\gamma_{\textit{l}}[p\to q]$ where $\gamma_{\textit{l}}[p\to q]=\neg(p\to q)$. A box proof is provided below
+\begin{proofbox}
+   \: p 	 \=\mbox{premise}\\
+   \: \neg q \= \mbox{premise}
+   \[
+      \: (p\to q)		  \=\mbox{assumption}\\
+      \: q \= \to E(1,3) \\
+      \: \bot \= \neg E(4,2) 
+   \]
+   \: \neg(p\to q) \= \neg I(3-5)
+\end{proofbox}
+\\
+In (d), we prove $p,\neg q\vdash\gamma_{\textit{l}}[(p\to q)\to q]$ where $\gamma_{\textit{l}}[(p\to q)\to q]=(p\to q)\to q$. A box proof is provided below
+\begin{proofbox}
+   \: p 	 \=\mbox{premise}\\
+   \: \neg q \= \mbox{premise}
+   \[
+     \: p\to q		  \=\mbox{assumption} \\
+     \: q \= \to E(1,3)
+   \]
+   \: (p\to q)\to q \= \to I(3-4)
+\end{proofbox}
+\\
+In (e), we prove $p,\neg q\vdash\gamma_{\textit{l}}[q\to p]$ where $\gamma_{\textit{l}}[q\to p]=q\to p$. A box proof is provided below
+\begin{proofbox}
+   \: p 	 \=\mbox{premise}\\
+   \: \neg q \= \mbox{premise}
+   \[
+     \: q		  \=\mbox{assumption} \\
+     \: \bot \= \neg E(3,2)
+     \: p
+   \]
+   \: q\to p \= \to I(3-5)
+\end{proofbox}
+\\
+In (f), we prove $p,q\vdash\gamma_{\textit{l}}[(q\to p)\to p]$ where $\gamma_{\textit{l}}[(q\to p)\to p]=(q\to p)\to p$. A box proof is provided below
+\begin{proofbox}
+   \: p 	 \=\mbox{premise}\\
+   \: \neg q \= \mbox{premise}
+   \[
+     \: (q\to p)		  \=\mbox{assumption} \\
+     \: p \= (1)
+   \]
+   \: (q\to p)\to p \= \to I(3-4)
+\end{proofbox}
+\\
+In (g), we prove $p,\neg q\vdash\gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]$ where $\gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]=((p\to q)\to q)\to((q\to p)\to p)$. A boxproof is provided below
+\begin{proofbox}
+   \: p 	 \=\mbox{premise}\\
+   \: \neg q \= \mbox{premise}\\
+   \: (p\to q)\to q \= \mbox{proved in (d)} \\
+   \: (q\to p)\to p \= \mbox{proved in (f)} \\
+   \[
+     \: (p\to q)\to q		  \=\mbox{assumption} \\
+     \: (q\to p)\to p \= (4)
+   \]
+   \: ((p\to q)\to q)\to((q\to p)\to p) \= \to I(5-6)
+\end{proofbox}
+We now prove $\alpha_3$ in the same manner.
+\begin{align*}
+\neg p&\vdash \gamma_{\textit{l}}[p] &(a) \\
+q&\vdash \gamma_{\textit{l}}[q] &(b)\\
+\neg p,q&\vdash \gamma_{\textit{l}}[p\to q]&(c)\\
+\neg p,q&\vdash \gamma_{\textit{l}}[(p\to q)\to q]&(d)\\
+\neg p,q&\vdash \gamma_{\textit{l}}[q\to p]&(e)\\
+\neg p,q&\vdash \gamma_{\textit{l}}[(q\to p)\to p]&(f)\\
+\neg p,q&\vdash \gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]&(g)
+\end{align*}
+In (a), we prove $\neg p\vdash\gamma_{\textit{l}}[p]$ where $\gamma_{\textit{l}}[p]=\neg p$ meaning it is trivially true.\\
+In (b), we prove $q\vdash\gamma_{\textit{l}}[q]$ where $\gamma_{\textit{l}}[q]=q$ meaning it is trivially true.\\
+In (c), we prove $\neg p,q\vdash\gamma_{\textit{l}}[p\to q]$ where $\gamma_{\textit{l}}[p\to q]=p\to q$. A box proof is provided below
+\begin{proofbox}
+   \: \neg p 	 \=\mbox{premise}\\
+   \: q \= \mbox{premise}
+   \[
+      \: p		  \=\mbox{assumption}\\
+      \: \bot \= \neg E(3,1) \\
+      \: q \= \bot E(4)
+   \]
+   \: p\to q \= \to I(3-5)
+\end{proofbox}
+\\
+In (d), we prove $\neg p,q\vdash\gamma_{\textit{l}}[(p\to q)\to q]$ where $\gamma_{\textit{l}}[(p\to q)\to q]=(p\to q)\to q$. A box proof is provided below
+\begin{proofbox}
+   \: \neg p 	 \=\mbox{premise}\\
+   \: q \= \mbox{premise}
+   \[
+     \: p\to q		  \=\mbox{assumption} \\
+     \: q \= (2)
+   \]
+   \: (p\to q)\to q \= \to I(3-4)
+\end{proofbox}
+\\
+In (e), we prove $\neg p,q\vdash\gamma_{\textit{l}}[q\to p]$ where $\gamma_{\textit{l}}[q\to p]=\neg(q\to p)$. A box proof is provided below
+\begin{proofbox}
+   \: \neg p 	 \=\mbox{premise}\\
+   \: q \= \mbox{premise}
+   \[
+     \: q\to p		  \=\mbox{assumption} \\
+     \: p \= \to E(2,3) \\
+     \: \bot \= \neg I(4,1)
+   \]
+   \:  \neg(q\to p) \= \neg E(3-5)
+\end{proofbox}
+\\
+In (f), we prove $\neg p,q\vdash\gamma_{\textit{l}}[(q\to p)\to p]$ where $\gamma_{\textit{l}}[(q\to p)\to p]=(q\to p)\to p$. A box proof is provided below
+\begin{proofbox}
+   \: \neg p 	 \=\mbox{premise}\\
+   \: q \= \mbox{premise}
+   \[
+     \: q\to p		  \=\mbox{assumption} \\
+     \: p \= \to E(2,3)
+   \]
+   \:  (q\to p)\to p \= \to I(3-4)
+\end{proofbox}
+\\
+In (g), we prove $\neg p,q\vdash\gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]$ where $\gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]=((p\to q)\to q)\to((q\to p)\to p)$. A boxproof is provided below
+\begin{proofbox}
+   \: \neg p 	 \=\mbox{premise}\\
+   \: q \= \mbox{premise}\\
+   \: (p\to q)\to q \= \mbox{proved in (d)} \\
+   \: (q\to p)\to p \= \mbox{proved in (f)}
+   \[
+     \: (p\to q)\to q	  \=\mbox{assumption} \\
+     \: (q\to p)\to p\= (4)
+   \]
+   \: ((p\to q)\to q)\to((q\to p)\to p) \= \to I(5-6)
+\end{proofbox}
+We now prove $\alpha_4$ in the same manner.
+\begin{align*}
+\neg p&\vdash \gamma_{\textit{l}}[p] &(a) \\
+\neg q&\vdash \gamma_{\textit{l}}[q] &(b)\\
+\neg p,\neg q&\vdash \gamma_{\textit{l}}[p\to q]&(c)\\
+\neg p,\neg q&\vdash \gamma_{\textit{l}}[(p\to q)\to q]&(d)\\
+\neg p,\neg q&\vdash \gamma_{\textit{l}}[q\to p]&(e)\\
+\neg p,\neg q&\vdash \gamma_{\textit{l}}[(q\to p)\to p]&(f)\\
+\neg p,\neg q&\vdash \gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]&(g)
+\end{align*}
+In (a), we prove $\neg p\vdash\gamma_{\textit{l}}[p]$ where $\gamma_{\textit{l}}[p]=\neg p$ meaning it is trivially true.\\
+In (b), we prove $\neg q\vdash\gamma_{\textit{l}}[q]$ where $\gamma_{\textit{l}}[q]=\neg q$ meaning it is trivially true.\\
+In (c), we prove $\neg p,\neg q\vdash\gamma_{\textit{l}}[p\to q]$ where $\gamma_{\textit{l}}[p\to q]=p\to q$. A box proof is provided below
+\begin{proofbox}
+   \: \neg p 	 \=\mbox{premise}\\
+   \: \neg q \= \mbox{premise}
+   \[
+      \: p		  \=\mbox{assumption}\\
+      \: \bot \= \to E(3,1) \\
+      \: q \= \bot E(4)
+   \]
+   \: p\to q \= \to I(3-5)
+\end{proofbox}
+\\
+In (d), we prove $\neg p,\neg q\vdash\gamma_{\textit{l}}[(p\to q)\to q]$ where $\gamma_{\textit{l}}[(p\to q)\to q]=\neg((p\to q)\to q)$. A box proof is provided below
+\begin{proofbox}
+   \: \neg p 	 \=\mbox{premise}\\
+   \: \neg q \= \mbox{premise} \\
+   \: p\to q	 \= \mbox{proved in (c)}
+   \[
+     \: (p\to q)\to q		  \=\mbox{assumption} \\
+     \: q \= \to E(3,4) \\
+     \: \bot \= \neg E(5,2)
+   \]
+   \: \neg((p\to q)\to q) \= \neg I(4-6)
+\end{proofbox}
+\\
+In (e), we prove $\neg p,\neg q\vdash\gamma_{\textit{l}}[q\to p]$ where $\gamma_{\textit{l}}[q\to p]=q\to p$. A box proof is provided below
+\begin{proofbox}
+   \: \neg p 	 \=\mbox{premise}\\
+   \: \neg q \= \mbox{premise}
+   \[
+     \: q		  \=\mbox{assumption} \\
+     \: \bot \= \neg E(3,2) \\
+     \: p \= \bot E(4)
+   \]
+   \:  q\to p \= \to I(3-5)
+\end{proofbox}
+\\
+In (f), we prove $\neg p,\neg q\vdash\gamma_{\textit{l}}[(q\to p)\to p]$ where $\gamma_{\textit{l}}[(q\to p)\to p]=\neg((q\to p)\to p)$. A box proof is provided below
+\begin{proofbox}
+   \: \neg p 	 \=\mbox{premise}\\
+   \: \neg q \= \mbox{premise} \\
+   \: (q\to p) \= \mbox{proved in (e)}
+   \[
+     \: (q\to p)\to p		  \=\mbox{assumption} \\
+     \: p \= \to E(3,4) \\
+     \: \bot \= \neg E(5,1)
+   \]
+   \:  \neg((q\to p)\to p) \= \neg I(4-6)
+\end{proofbox}
+\newpage
+In (g), we prove $\neg p,\neg q\vdash\gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]$ where $\gamma_{\textit{l}}[((p\to q)\to q)\to((q\to p)\to p)]=((p\to q)\to q)\to((q\to p)\to p)$. A boxproof is provided below
+\begin{proofbox}
+   \: p 	 \=\mbox{premise}\\
+   \: q \= \mbox{premise}\\
+   \: \neg((p\to q)\to q) \= \mbox{proved in (d)} \\
+   \: \neg((q\to p)\to p) \= \mbox{proved in (f)}
+   \[
+     \: (p\to q)\to q	  \=\mbox{assumption} \\
+     \: \bot \= \neg E(5,3) \\
+     \: (q\to p)\to p \= \bot E(6)
+   \]
+   \: ((p\to q)\to q)\to((q\to p)\to p) \= \to I(5-7)
+\end{proofbox}
+These proofs $\alpha_1,\alpha_2,\alpha_3$ and $\alpha_4$ together can be used to prove that 
+$$\vdash ((p\to q)\to q)\to((q\to p)\to p)$$
+as all combination of truth values are used.\\
+We extend this to to the proof
+$$(p\to q)\to q\vdash (q\to p)\to p$$
+As so we have proved completeness of the formula.
+
+\end{document}

@@ -1,0 +1,87 @@
+Sets
+    nodes             /a*j/;
+
+alias (nodes,nodes2)
+* Allow the set nodes to be refererenced as both nodes and nodes2 to create cross product sets
+
+Sets
+    arcs(nodes,nodes);
+
+* Add the correct arcs to the set arcs
+arcs('a','b')=yes;
+arcs('a','e')=yes;
+arcs('a','h')=yes;
+arcs('b','c')=yes;
+arcs('b','e')=yes;
+arcs('c','d')=yes;
+arcs('c','e')=yes;
+arcs('c','f')=yes;
+arcs('d','f')=yes;
+arcs('d','g')=yes;
+arcs('e','f')=yes;
+arcs('e','h')=yes;
+arcs('e','i')=yes;
+arcs('f','g')=yes;
+arcs('f','i')=yes;
+arcs('f','j')=yes;
+arcs('g','j')=yes;
+arcs('h','i')=yes;
+arcs('h','j')=yes;
+
+parameters
+   c(nodes,nodes);
+
+* Define the costs for the arcs
+c('a','b')=2;
+c('a','e')=4;
+c('a','h')=2;
+c('b','c')=2;
+c('b','e')=1;
+c('c','d')=3;
+c('c','e')=3;
+c('c','f')=2;
+c('d','f')=2;
+c('d','g')=2;
+c('e','f')=1;
+c('e','h')=3;
+c('e','i')=2;
+c('f','g')=3;
+c('f','i')=3;
+c('f','j')=1;
+c('g','j')=1;
+c('h','i')=1;
+c('h','j')=2;
+
+display c,nodes;
+
+Variable
+    z
+* declare z as variable so it can be objective value
+
+Positive variable
+    x(nodes,nodes2)
+* Declare x and constraint x>=0
+
+Equations
+    obj
+*   flow_balance(nodes);
+* declare objective function equation and constraints
+
+    obj.. z =e= sum((nodes,nodes2)$arcs(nodes,nodes2), c(nodes,nodes2)*x(nodes,nodes2));
+* Sum over all c_ij x_ij with (i,j) in arcs.
+* The $ command restricts the sum so that it only sums over pairs of nodes in the set arcs
+
+* flow_balance(nodes) ..  sum(nodes2$arcs(nodes2,nodes), x(nodes2,nodes))-sum(nodes2$arcs(nodes,nodes2), x(nodes,nodes2)) =e= -b(nodes);
+* Sum of ingoing flow - outgoing flow equals the demand.
+* define objective function equation and constraints
+
+Model my_model /all/;
+* define the model "my_model" using all equations
+
+solve my_model using lp minimizing z;
+* solve my_model using lp maximization
+* use "minimizing z" for min problem
+
+display
+    x.l, z.l;
+* display the values of the decision variables x and the objective value z

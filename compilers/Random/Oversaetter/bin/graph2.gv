@@ -1,0 +1,14 @@
+digraph { 
+
+rankdir="LR";
+
+node[shape = circle];
+	s1 [label = "s1 : p"];
+	s2 [label = "s2 : q"];
+	s3 [label = "s3"];
+	
+s1 -> s2;
+s1 -> s3;
+s2 -> s2;
+s3 -> s3;
+}

@@ -1,0 +1,8 @@
+program decs;
+
+procedure f()
+write("passed.\n");
+
+procedure main()
+var i : int;
+f();

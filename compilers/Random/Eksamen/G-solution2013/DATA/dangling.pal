@@ -1,0 +1,9 @@
+program dangling;
+
+procedure main()
+var i : int;
+begin
+   i := 0;
+   if false then if true then i := 1 else i := 2;
+   if i = 0 then write("passed.\n") else write("failed.\n");
+end;

@@ -1,0 +1,14 @@
+program withbegin;
+
+procedure f(x : int)
+begin
+   write(x);
+end;
+
+// has a begin...end
+procedure main()
+var
+   f : int;
+begin
+   f(1);
+end;

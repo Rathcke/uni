@@ -1,0 +1,562 @@
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                      03/12/15 03:24:29 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  Sets
+   2      i /a*j/;
+   3   
+   4  alias (i,j)
+   5   
+   6  Sets
+   7      arcs(i,i);
+   8   
+   9  arcs('a','b')=yes;
+  10  arcs('a','e')=yes;
+  11  arcs('a','h')=yes;
+  12  arcs('b','c')=yes;
+  13  arcs('b','e')=yes;
+  14  arcs('c','d')=yes;
+  15  arcs('c','e')=yes;
+  16  arcs('c','f')=yes;
+  17  arcs('d','f')=yes;
+  18  arcs('d','g')=yes;
+  19  arcs('e','f')=yes;
+  20  arcs('e','h')=yes;
+  21  arcs('e','i')=yes;
+  22  arcs('f','g')=yes;
+  23  arcs('f','i')=yes;
+  24  arcs('f','j')=yes;
+  25  arcs('g','j')=yes;
+  26  arcs('h','i')=yes;
+  27  arcs('i','j')=yes;
+  28   
+  29  arcs('b','a')=yes;
+  30  arcs('e','a')=yes;
+  31  arcs('h','a')=yes;
+  32  arcs('c','b')=yes;
+  33  arcs('e','b')=yes;
+  34  arcs('d','c')=yes;
+  35  arcs('e','c')=yes;
+  36  arcs('f','c')=yes;
+  37  arcs('f','d')=yes;
+  38  arcs('g','d')=yes;
+  39  arcs('f','e')=yes;
+  40  arcs('h','e')=yes;
+  41  arcs('i','e')=yes;
+  42  arcs('g','f')=yes;
+  43  arcs('i','f')=yes;
+  44  arcs('j','f')=yes;
+  45  arcs('j','g')=yes;
+  46  arcs('i','h')=yes;
+  47  arcs('j','i')=yes;
+  48   
+  49  parameters
+  50     c(i,i);
+  51   
+  52  c('a','b')=2;
+  53  c('a','e')=4;
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                      03/12/15 03:24:29 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+  54  c('a','h')=2;
+  55  c('b','c')=2;
+  56  c('b','e')=1;
+  57  c('c','d')=3;
+  58  c('c','e')=3;
+  59  c('c','f')=2;
+  60  c('d','f')=2;
+  61  c('d','g')=2;
+  62  c('e','f')=1;
+  63  c('e','h')=3;
+  64  c('e','i')=2;
+  65  c('f','g')=3;
+  66  c('f','i')=3;
+  67  c('f','j')=1;
+  68  c('g','j')=1;
+  69  c('h','i')=1;
+  70  c('i','j')=2;
+  71   
+  72  c('b','a')=2;
+  73  c('e','a')=4;
+  74  c('h','a')=2;
+  75  c('c','b')=2;
+  76  c('e','b')=1;
+  77  c('d','c')=3;
+  78  c('e','c')=3;
+  79  c('f','c')=2;
+  80  c('f','d')=2;
+  81  c('g','d')=2;
+  82  c('f','e')=1;
+  83  c('h','e')=3;
+  84  c('i','e')=2;
+  85  c('g','f')=3;
+  86  c('i','f')=3;
+  87  c('j','f')=1;
+  88  c('j','g')=1;
+  89  c('i','h')=1;
+  90  c('j','i')=2;
+  91   
+  92  Variable
+  93      z;
+  94   
+  95  Integer variable
+  96      t(i);
+  97   
+  98  Binary variable
+  99      x(i,j);
+ 100   
+ 101  Equations
+ 102      obj
+ 103      const1(i)
+ 104      const2(i)
+ 105      const3(i,j)
+ 106      const4(i)
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                      03/12/15 03:24:29 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+ 107      const5(i);
+ 108   
+ 109      obj.. z =e= sum((i,j)$arcs(i,j), c(i,j)*x(i,j));
+ 110      const1(j).. sum(i$arcs(i,j), x(i,j)) =e= 1;
+ 111      const2(i).. sum(j$arcs(i,j), x(i,j)) =e= 1;
+ 112      const3(i,j)$(arcs(i,j) and ord(i)>=1 and ord(j)>=2).. t(i)+1-card(i)*(1-x(i,j)) =l= t(j);
+ 113      const4(i).. t(i) =l= card(i);
+ 114      const5(i).. t(i) =g= 1;
+ 115   
+ 116  Model tsp /all/;
+ 117   
+ 118  solve tsp using mip minimizing z;
+ 119   
+ 120  display
+ 121      t.l, z.l;
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  24.4.1 r50296 LEX-LEG
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                      03/12/15 03:24:29 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE tsp Using MIP From line 118
+
+
+---- obj  =E=  
+
+obj..  z - 2*x(a,b) - 4*x(a,e) - 2*x(a,h) - 2*x(b,a) - 2*x(b,c) - x(b,e) - 2*x(c,b) - 3*x(c,d) - 3*x(c,e) - 2*x(c,f) - 3*x(d,c) - 2*x(d,f) - 2*x(d,g) - 4*x(e,a) - x(e,b) - 3*x(e,c) - x(e,f) - 3*x(e,h) - 2*x(e,i) - 2*x(f,c) - 2*x(f,d) - x(f,e) - 3*x(f,g)
+     
+      - 3*x(f,i) - x(f,j) - 2*x(g,d) - 3*x(g,f) - x(g,j) - 2*x(h,a) - 3*x(h,e) - x(h,i) - 2*x(i,e) - 3*x(i,f) - x(i,h) - 2*x(i,j) - x(j,f) - x(j,g) - 2*x(j,i) =E= 0 ; (LHS = 0)
+     
+
+---- const1  =E=  
+
+const1(a)..  x(b,a) + x(e,a) + x(h,a) =E= 1 ; (LHS = 0, INFES = 1 ****)
+     
+const1(b)..  x(a,b) + x(c,b) + x(e,b) =E= 1 ; (LHS = 0, INFES = 1 ****)
+     
+const1(c)..  x(b,c) + x(d,c) + x(e,c) + x(f,c) =E= 1 ; (LHS = 0, INFES = 1 ****)
+     
+REMAINING 7 ENTRIES SKIPPED
+
+
+---- const2  =E=  
+
+const2(a)..  x(a,b) + x(a,e) + x(a,h) =E= 1 ; (LHS = 0, INFES = 1 ****)
+     
+const2(b)..  x(b,a) + x(b,c) + x(b,e) =E= 1 ; (LHS = 0, INFES = 1 ****)
+     
+const2(c)..  x(c,b) + x(c,d) + x(c,e) + x(c,f) =E= 1 ; (LHS = 0, INFES = 1 ****)
+     
+REMAINING 7 ENTRIES SKIPPED
+
+
+---- const3  =L=  
+
+const3(a,b)..  t(a) - t(b) + 10*x(a,b) =L= 9 ; (LHS = 0)
+     
+const3(a,e)..  t(a) - t(e) + 10*x(a,e) =L= 9 ; (LHS = 0)
+     
+const3(a,h)..  t(a) - t(h) + 10*x(a,h) =L= 9 ; (LHS = 0)
+     
+REMAINING 32 ENTRIES SKIPPED
+
+
+---- const4  =L=  
+
+const4(a)..  t(a) =L= 10 ; (LHS = 0)
+     
+const4(b)..  t(b) =L= 10 ; (LHS = 0)
+     
+const4(c)..  t(c) =L= 10 ; (LHS = 0)
+     
+REMAINING 7 ENTRIES SKIPPED
+
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                      03/12/15 03:24:29 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE tsp Using MIP From line 118
+
+
+---- const5  =G=  
+
+const5(a)..  t(a) =G= 1 ; (LHS = 0, INFES = 1 ****)
+     
+const5(b)..  t(b) =G= 1 ; (LHS = 0, INFES = 1 ****)
+     
+const5(c)..  t(c) =G= 1 ; (LHS = 0, INFES = 1 ****)
+     
+REMAINING 7 ENTRIES SKIPPED
+
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                      03/12/15 03:24:29 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE tsp Using MIP From line 118
+
+
+---- z  
+
+z
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       obj
+
+
+---- t  
+
+t(a)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+        1       const3(a,b)
+        1       const3(a,e)
+        1       const3(a,h)
+        1       const4(a)
+        1       const5(a)
+
+t(b)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -1       const3(a,b)
+        1       const3(b,c)
+        1       const3(b,e)
+       -1       const3(c,b)
+       -1       const3(e,b)
+        1       const4(b)
+        1       const5(b)
+
+t(c)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -1       const3(b,c)
+        1       const3(c,b)
+        1       const3(c,d)
+        1       const3(c,e)
+        1       const3(c,f)
+       -1       const3(d,c)
+       -1       const3(e,c)
+       -1       const3(f,c)
+        1       const4(c)
+        1       const5(c)
+
+REMAINING 7 ENTRIES SKIPPED
+
+---- x  
+
+x(a,b)
+                (.LO, .L, .UP, .M = 0, 0, 1, 0)
+       -2       obj
+        1       const1(b)
+        1       const2(a)
+       10       const3(a,b)
+
+x(a,e)
+                (.LO, .L, .UP, .M = 0, 0, 1, 0)
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                      03/12/15 03:24:29 Page 7
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE tsp Using MIP From line 118
+
+
+     x  
+
+       -4       obj
+        1       const1(e)
+        1       const2(a)
+       10       const3(a,e)
+
+x(a,h)
+                (.LO, .L, .UP, .M = 0, 0, 1, 0)
+       -2       obj
+        1       const1(h)
+        1       const2(a)
+       10       const3(a,h)
+
+REMAINING 35 ENTRIES SKIPPED
+
+****
+****  10 Integer +INF Bounds have been reset to 100
+****
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                      03/12/15 03:24:29 Page 8
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE tsp Using MIP From line 118
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           6     SINGLE EQUATIONS           76
+BLOCKS OF VARIABLES           3     SINGLE VARIABLES           49
+NON ZERO ELEMENTS           240     DISCRETE VARIABLES         48
+
+
+GENERATION TIME      =        0.003 SECONDS      4 MB  24.4.1 r50296 LEX-LEG
+
+
+EXECUTION TIME       =        0.003 SECONDS      4 MB  24.4.1 r50296 LEX-LEG
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                      03/12/15 03:24:29 Page 9
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE tsp Using MIP From line 118
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   tsp                 OBJECTIVE  z
+     TYPE    MIP                 DIRECTION  MINIMIZE
+     SOLVER  CPLEX               FROM LINE  118
+
+**** SOLVER STATUS     1 Normal Completion         
+**** MODEL STATUS      1 Optimal                   
+**** OBJECTIVE VALUE               17.0000
+
+ RESOURCE USAGE, LIMIT          0.019      1000.000
+ ITERATION COUNT, LIMIT        72    2000000000
+
+IBM ILOG CPLEX   24.4.1 r50296 Released Dec 20, 2014 LEG x86 64bit/Linux      
+Cplex 12.6.1.0
+
+Space for names approximately 0.00 Mb
+Use option 'names no' to turn use of names off
+MIP status(101): integer optimal solution
+Cplex Time: 0.01sec (det. 3.38 ticks)
+Fixing integer variables, and solving final LP...
+Fixed MIP status(1): optimal
+Cplex Time: 0.00sec (det. 0.04 ticks)
+Proven optimal solution.
+
+MIP Solution:           17.000000    (72 iterations, 0 nodes)
+Final Solve:            17.000000    (0 iterations)
+
+Best possible:          17.000000
+Absolute gap:            0.000000
+Relative gap:            0.000000
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU obj                 .              .              .             1.0000      
+
+---- EQU const1  
+
+         LOWER          LEVEL          UPPER         MARGINAL
+
+a         1.0000         1.0000         1.0000          .          
+b         1.0000         1.0000         1.0000          .          
+c         1.0000         1.0000         1.0000          .          
+d         1.0000         1.0000         1.0000          .          
+e         1.0000         1.0000         1.0000          .          
+f         1.0000         1.0000         1.0000          .          
+g         1.0000         1.0000         1.0000          .          
+h         1.0000         1.0000         1.0000          .          
+i         1.0000         1.0000         1.0000          .          
+j         1.0000         1.0000         1.0000          .          
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                     03/12/15 03:24:29 Page 10
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE tsp Using MIP From line 118
+
+
+---- EQU const2  
+
+         LOWER          LEVEL          UPPER         MARGINAL
+
+a         1.0000         1.0000         1.0000          .          
+b         1.0000         1.0000         1.0000          .          
+c         1.0000         1.0000         1.0000          .          
+d         1.0000         1.0000         1.0000          .          
+e         1.0000         1.0000         1.0000          .          
+f         1.0000         1.0000         1.0000          .          
+g         1.0000         1.0000         1.0000          .          
+h         1.0000         1.0000         1.0000          .          
+i         1.0000         1.0000         1.0000          .          
+j         1.0000         1.0000         1.0000          .          
+
+---- EQU const3  
+
+           LOWER          LEVEL          UPPER         MARGINAL
+
+a.b        -INF           -9.0000         9.0000          .          
+a.e        -INF           -3.0000         9.0000          .          
+a.h        -INF            9.0000         9.0000          .          
+b.c        -INF            1.0000         9.0000          .          
+b.e        -INF            6.0000         9.0000          .          
+c.b        -INF            9.0000         9.0000          .          
+c.d        -INF            1.0000         9.0000          .          
+c.e        -INF            5.0000         9.0000          .          
+c.f        -INF            4.0000         9.0000          .          
+d.c        -INF            9.0000         9.0000          .          
+d.f        -INF            3.0000         9.0000          .          
+d.g        -INF            1.0000         9.0000          .          
+e.b        -INF           -6.0000         9.0000          .          
+e.c        -INF           -5.0000         9.0000          .          
+e.f        -INF            9.0000         9.0000          .          
+e.h        -INF            2.0000         9.0000          .          
+e.i        -INF            1.0000         9.0000          .          
+f.c        -INF           -4.0000         9.0000          .          
+f.d        -INF           -3.0000         9.0000          .          
+f.e        -INF            1.0000         9.0000          .          
+f.g        -INF           -2.0000         9.0000          .          
+f.i        -INF            2.0000         9.0000          .          
+f.j        -INF            9.0000         9.0000          .          
+g.d        -INF            9.0000         9.0000          .          
+g.f        -INF            2.0000         9.0000          .          
+g.j        -INF            1.0000         9.0000          .          
+h.e        -INF           -2.0000         9.0000          .          
+h.i        -INF            9.0000         9.0000          .          
+i.e        -INF            9.0000         9.0000          .          
+i.f        -INF           -2.0000         9.0000          .          
+i.h        -INF            1.0000         9.0000          .          
+i.j        -INF           -3.0000         9.0000          .          
+j.f        -INF            1.0000         9.0000          .          
+j.g        -INF            9.0000         9.0000          .          
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                     03/12/15 03:24:29 Page 11
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE tsp Using MIP From line 118
+
+
+     EQU const3  
+
+           LOWER          LEVEL          UPPER         MARGINAL
+
+j.i        -INF            3.0000         9.0000          .          
+
+---- EQU const4  
+
+         LOWER          LEVEL          UPPER         MARGINAL
+
+a        -INF            1.0000        10.0000          .          
+b        -INF           10.0000        10.0000          .          
+c        -INF            9.0000        10.0000          .          
+d        -INF            8.0000        10.0000          .          
+e        -INF            4.0000        10.0000          .          
+f        -INF            5.0000        10.0000          .          
+g        -INF            7.0000        10.0000          .          
+h        -INF            2.0000        10.0000          .          
+i        -INF            3.0000        10.0000          .          
+j        -INF            6.0000        10.0000          .          
+
+---- EQU const5  
+
+         LOWER          LEVEL          UPPER         MARGINAL
+
+a         1.0000         1.0000        +INF             .          
+b         1.0000        10.0000        +INF             .          
+c         1.0000         9.0000        +INF             .          
+d         1.0000         8.0000        +INF             .          
+e         1.0000         4.0000        +INF             .          
+f         1.0000         5.0000        +INF             .          
+g         1.0000         7.0000        +INF             .          
+h         1.0000         2.0000        +INF             .          
+i         1.0000         3.0000        +INF             .          
+j         1.0000         6.0000        +INF             .          
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR z                 -INF           17.0000        +INF             .          
+
+---- VAR t  
+
+         LOWER          LEVEL          UPPER         MARGINAL
+
+a          .             1.0000        +INF            EPS         
+b          .            10.0000        +INF            EPS         
+c          .             9.0000        +INF            EPS         
+d          .             8.0000        +INF            EPS         
+e          .             4.0000        +INF            EPS         
+f          .             5.0000        +INF            EPS         
+g          .             7.0000        +INF            EPS         
+h          .             2.0000        +INF            EPS         
+i          .             3.0000        +INF            EPS         
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                     03/12/15 03:24:29 Page 12
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE tsp Using MIP From line 118
+
+
+     VAR t  
+
+         LOWER          LEVEL          UPPER         MARGINAL
+
+j          .             6.0000        +INF            EPS         
+
+---- VAR x  
+
+           LOWER          LEVEL          UPPER         MARGINAL
+
+a.b          .              .             1.0000         2.0000      
+a.e          .              .             1.0000         4.0000      
+a.h          .             1.0000         1.0000         2.0000      
+b.a          .             1.0000         1.0000         2.0000      
+b.c          .              .             1.0000         2.0000      
+b.e          .              .             1.0000         1.0000      
+c.b          .             1.0000         1.0000         2.0000      
+c.d          .              .             1.0000         3.0000      
+c.e          .              .             1.0000         3.0000      
+c.f          .              .             1.0000         2.0000      
+d.c          .             1.0000         1.0000         3.0000      
+d.f          .              .             1.0000         2.0000      
+d.g          .              .             1.0000         2.0000      
+e.a          .              .             1.0000         4.0000      
+e.b          .              .             1.0000         1.0000      
+e.c          .              .             1.0000         3.0000      
+e.f          .             1.0000         1.0000         1.0000      
+e.h          .              .             1.0000         3.0000      
+e.i          .              .             1.0000         2.0000      
+f.c          .              .             1.0000         2.0000      
+f.d          .              .             1.0000         2.0000      
+f.e          .              .             1.0000         1.0000      
+f.g          .              .             1.0000         3.0000      
+f.i          .              .             1.0000         3.0000      
+f.j          .             1.0000         1.0000         1.0000      
+g.d          .             1.0000         1.0000         2.0000      
+g.f          .              .             1.0000         3.0000      
+g.j          .              .             1.0000         1.0000      
+h.a          .              .             1.0000         2.0000      
+h.e          .              .             1.0000         3.0000      
+h.i          .             1.0000         1.0000         1.0000      
+i.e          .             1.0000         1.0000         2.0000      
+i.f          .              .             1.0000         3.0000      
+i.h          .              .             1.0000         1.0000      
+i.j          .              .             1.0000         2.0000      
+j.f          .              .             1.0000         1.0000      
+j.g          .             1.0000         1.0000         1.0000      
+j.i          .              .             1.0000         2.0000      
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                     03/12/15 03:24:29 Page 13
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----    121 VARIABLE t.L  
+
+a  1.000,    b 10.000,    c  9.000,    d  8.000,    e  4.000,    f  5.000,    g  7.000,    h  2.000,    i  3.000,    j  6.000
+
+
+----    121 VARIABLE z.L                   =       17.000  
+
+
+EXECUTION TIME       =        0.001 SECONDS      3 MB  24.4.1 r50296 LEX-LEG
+
+
+USER: Course License Spring 2015                     A150112:0736AO-GEN
+      Copenhagen University, Department of Mathematical Sciences DC9510
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      /home/vix/Dropbox/Vix/Uni/qOR1/Afl2/exp.gms
+Output     /home/vix/Dropbox/Vix/Uni/qOR1/Afl2/exp.lst

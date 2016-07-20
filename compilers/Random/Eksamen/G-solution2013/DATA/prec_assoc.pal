@@ -1,0 +1,56 @@
+program prec_assoc;
+// Precedence, associativity
+
+procedure pass()
+write("passed.\n");
+
+procedure fail()
+write("failed.\n");
+
+function modulo(i : int;
+                j : int) : int
+return i - j * i / j;
+
+function isLeapYear(year : int) : bool
+return modulo(year, 4) = 0 and (not modulo(year, 100) = 0 or
+                                modulo(year, 400) = 0);
+
+
+procedure main()
+var a : bool;
+    b : bool;
+    c : bool;
+    d : bool;
+    i : int;
+    j : int;
+begin
+    // not binds tighter than and
+    a := not false and true; // should be true;
+    if a then pass() else fail();
+
+    // not binds tighter than or
+    b := not true or false; // should be false;
+    if b then fail() else pass();
+
+    // and binds tighter than or
+    c := false and true or true; // should be true
+    if c then pass() else fail();
+
+    // arithmetic operator precedences
+    if 2 + 3 * 4 = 14 then pass() else fail();
+    if 2 * 3 + 4 = 10 then pass() else fail();
+    if 2 - 3 * 4 = 0 - 10 then pass() else fail();
+    if 2 * 3 - 4 = 2 then pass() else fail();
+
+    // another test
+    i := 2012;
+    if isLeapYear(i)
+       then pass()
+       else fail();
+
+    j := 2000;
+    if isLeapYear(j)
+       then pass()
+       else fail();
+
+end;

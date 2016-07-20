@@ -1,0 +1,16 @@
+program binaryoperatortest;
+
+procedure main()
+var 
+    a : array of int;
+
+    
+begin
+   
+   a := new(4);
+
+   a[0] := 1;
+
+   write(a[0]); 
+
+end;

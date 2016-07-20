@@ -1,0 +1,55 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage[margin=2.5cm]{geometry}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\begin{document}
+
+\subsection*{Intro}
+En Gaussian quadrature rule er en estimering af et bestemt integrale af en funktion, vi kigger på quadrature rules af formen 
+$$
+\int_a^b f(x)w(x)dx \approx \sum_{i=0}^n A_if(x_i)
+$$
+hvor $w(x)$ er positiv vægt funktion. Dette giver $2n+2$ ukendte og $n+1$ ligninger.\\
+Ideen er så man kan bruge varieteten af noder for at få quadrature formlen til at være eksakt for polynomier af højst orden $2n+1$ (dette kan vises ved brug af noget bevis).
+
+
+
+\subsection*{Gaussian quadrature}
+Der er 3 metoder til at finde punkter og vægte i en Gaussian quadrature
+\begin{itemize}
+\item Finde ukendte koefficienter ved at løse
+$$
+\int_a^b x^kw(x)dx=\sum_{j=0}^n A_jx_j^k,\:\:\:k=0..2n+1
+$$
+\item (i) Find alle $q$. (ii) Find alle 0'er af $q$. (iii) Find $A_j=\int_a^bl_j^n(x)w(x)dx$.
+\item Brug af tables.
+\end{itemize}
+
+\subsection*{Lore}
+Convergens egenskab:\\
+Hvis $f\in C([a,b])$ så
+$$
+lim_{n\rightarrow\infty}(If-I_nf)=0
+$$
+\\
+Error egenskab:\\
+Hvis $f\in C^{2n}([a,b])$ så
+$$
+If-I_nf=\frac{1}{(2n+2)!}f^{(2n+2)}(\epsilon)\int_a^b\prod_{j=0}^n (x-x_j)^2w(x)dx
+$$
+For $\epsilon\in ]a,b[$.
+
+\end{document}

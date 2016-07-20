@@ -1,0 +1,559 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{listings}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 19}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Operating Systems and Multiprogramming\\Exam}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Practical Part}
+I use fyams.harddisk and my volume name is arkimedes. Tests used are \texttt{getclock} and \texttt{deadline}.
+\subsection{Obtaining the system time}
+To implement the system call \texttt{getclock}, it was sufficient to work in file \texttt{proc/syscall.c}. The wrapper to the syscall, \texttt{syscall\_getclock()} is seen here.
+\begin{verbatim}
+int syscall_getclock()
+{
+    return rtc_get_msec();
+}
+\end{verbatim}
+Calling a function from \texttt{drivers/metadev.h} which returns the number of milliseconds since startup. We then add the syscall to the switch statement
+\begin{verbatim}
+void syscall_handle(context_t *user_context) {
+
+  (..)
+  
+  case SYSCALL_GETCLOCK:
+      user_context->cpu_regs[MIPS_REGISTER_V0] =
+          syscall_getclock();
+      break;
+      
+  (..)
+}
+\end{verbatim}
+The function requires no argument and simply puts the result in register $V_0$.\\
+\\
+A simple test is made to see if this works is seen below
+\begin{verbatim}
+#include "tests/lib.h"
+
+int main(void)
+{     
+    int a = syscall_getclock();
+    printf("Running time is %d ms\n", a);
+    int b = syscall_getclock();
+    while (b-a < 1000) {
+      b = syscall_getclock();
+    }
+    printf("Running time is now %d ms\n", b);   
+    syscall_halt();
+
+    return 0;
+}
+\end{verbatim}
+Which simply prints the running time, $a$, since startup, then checks running time minus $a$ until this is 1000 ms later (waiting one second). It then prints the running time since startup again.\\
+This printed, for me, 940 and then 1940, which is exactly what was expected since it should be 1000 ms later than $a$ meaning the implementation was successful.
+
+\subsection{Deadline scheduling in Buenos}
+
+
+\subsubsection{Kernel Implementation}
+The implementation is done in \texttt{kernel/thread.[ch]} and \texttt{kernel/scheduler.c}.\\
+Changes made to \texttt{thread.h} is to the data structure \texttt{thread\_table\_t} where following fields were added/modified.
+\begin{verbatim}
+typedef struct {
+  (..)
+  
+  /* A pointer to the previous thread in list */
+  /* Used to make scheduler_ready_to_run doubly-linked */
+  TID_t previous;    
+
+  /* pad to 64 bytes */
+  uint32_t dummy_alignment_fill[7];
+  
+  /* deadline */
+  int deadline;
+  
+} thread_table_t;
+\end{verbatim}
+An int \texttt{deadline} in order to use deadline scheduling.\\
+A TID\_t \texttt{previous} is added, since I discovered, during the implementation in \texttt{scheduler.c} that, in order to move an element from a singly linked list to the head, it was easier to keep track of the element before, so it could be linked with the element afterwards.\\
+The amount that is filled is reduced by 2, because 2 new field has been introduced.\\
+\\
+In \texttt{thread.c} the new field \texttt{deadline} is initialized to $0$ (which is the lowest priority) and \texttt{previous} to $-1$ in the thread table.
+\begin{verbatim}
+void thread_table_init(void) {
+
+  (..)
+  
+  thread_table[tid].previous   = -1;
+  thread_table[i].deadline     = 0;
+  
+  (..)
+}
+\end{verbatim}
+And when creating a thread, \texttt{previous} is set to $-1$ and \texttt{deadline}, if given, is set to the given deadline plus the the running time since startup to give a determining value for the deadline. That is, so no thread can 'overtake' other threads just because it has a lower deadline, e.g. a thread with a deadline on $500$ will run before a thread created $400$ ms later but with a deadline on $200$.\\
+If no deadline is given it is initialized to $0$.
+\begin{verbatim}
+TID_t thread_create(void (*func)(uint32_t), uint32_t arg, int deadline) {
+
+  (..)
+  
+  thread_table[tid].previous     = -1;
+  if (deadline > 0) {
+    thread_table[tid].deadline   = deadline + rtc_get_msec();
+  }
+  else {
+    thread_table[tid].deadline   = 0;
+  }
+  
+  (..)
+}
+\end{verbatim}
+The implementation of deadline schedule is made in the function \texttt{scheduler\_schedule} in the section before \texttt{scheduler\_remove\_first\_ready} is called.\\
+\texttt{scheduler\_remove\_first\_ready} is the function that removes the head of the singly linked list \texttt{scheduler\_ready\_to\_run} and then runs this thread.\\
+A \texttt{TID\_t}, \texttt{t} and \texttt{lowestDL}, is used in the implementation.
+\begin{verbatim}
+void scheduler_schedule(void)
+{
+  TID_t t;
+  TID_t lowestDL = -1;
+  
+  (..)
+  
+  t = scheduler_ready_to_run.head;
+  
+  while (lowestDL == -1 && t != -1) {
+    if (thread_table[t].deadline > 0) {
+      lowestDL = t;
+      break;
+    }
+    t = thread_table[t].next;
+  }
+\end{verbatim}
+\texttt{t} is set to head. Because of the way the implementation works, \texttt{lowestDL} needs to be set to a \texttt{TID\_t} whose deadline is larger than $0$ if possible. This is seen later why this is necessary. The while-loop runs through the entire linked list and if such a deadline exists, \texttt{lowestDL} is set to the \texttt{TID\_t} with a deadline and the while loop is broken out of.
+\begin{verbatim}
+  t = scheduler_ready_to_run.head;
+
+  if (lowestDL != -1) {
+
+    while (t != -1) {
+      if (thread_table[t].deadline < thread_table[lowestDL].deadline &&
+          thread_table[t].deadline > 0) {
+        lowestDL = t;
+      }
+      t = thread_table[t].next;
+    }
+\end{verbatim}
+Now, \texttt{t} is reset to be the head of the list, so we can traverse through the entire list again.\\
+A check to see if a \texttt{TID\_t} with a deadline larger than $0$ is made. If it does not exist, it skips the list modification and simply runs the head, since all deadlines must be $0$ (low priority).\\
+If it does exist, the entire list is traversed to find the thread with the lowest deadline. This is why, \texttt{lowestDL} had to be initialized to a \texttt{TID\_t} with a deadline larger than 0, since otherwise this deadline could not be 'beaten' ad deadlines have values larger than $0$.
+\begin{verbatim}
+    if (lowestDL == scheduler_ready_to_run.tail &&
+          lowestDL != scheduler_ready_to_run.head) { 
+      scheduler_ready_to_run.tail = thread_table[lowestDL].previous;
+      thread_table[scheduler_ready_to_run.tail].next = -1;
+      thread_table[lowestDL].next = scheduler_ready_to_run.head;
+      thread_table[scheduler_ready_to_run.head].previous = lowestDL;
+      thread_table[lowestDL].previous = -1;
+      scheduler_ready_to_run.head = lowestDL;
+    } 
+\end{verbatim}
+Now when the thread with the lowest deadline is found, it needs to be inserted in the head. We have to check in the case that it lies in the tail first. If it does \textit{and} it is not the head, since it would be a list consisting of one element and we do not want to link it with itself, we make the proper changes to the list. This is, setting a new tail, the previous element, with a new \texttt{next} to $-1$ (end of list) and inserts it in the head by linking it together with the old head and setting its \texttt{previous} to $-1$.
+\begin{verbatim}
+    else if (lowestDL != scheduler_ready_to_run.head) {
+      thread_table[thread_table[lowestDL].previous].next = 
+                                          thread_table[lowestDL].next;
+      thread_table[thread_table[lowestDL].next].previous = 
+                                          thread_table[lowestDL].previous;
+      thread_table[lowestDL].next = scheduler_ready_to_run.head;
+      thread_table[scheduler_ready_to_run.head].previous = lowestDL;
+      thread_table[lowestDL].previous = -1;
+      scheduler_ready_to_run.head = lowestDL;
+    }
+  } 
+\end{verbatim}
+In the case where it is not the tail or the head, it removes this element by linking its next element and previous element together and the inserts it in the head in the same manner as above. \\
+This ensures that we now have the thread with the lowest deadline or one with no deadline if no thread with a deadline exists in the head of the list and we can run this thread.
+\begin{verbatim}
+  t = scheduler_remove_first_ready();
+  thread_table[t].state = THREAD_RUNNING;
+  
+  (..)
+} 
+\end{verbatim}
+\textit{Note}: A spinlock is acquired before making these changes since we are accessing the thread table.
+
+\subsubsection{Userland API with Deadlines}
+This sort of merges with task (a). However it is simply giving the exec call a new argument, an \texttt{int deadline}.\\
+To follow this, the function \texttt{process\_spawn} requires the deadline. When this function creates a thread, it gives it deadline with it, and as such the thread inherits the deadline given when \texttt{syscall\_exec} is called.\\
+All other references for \texttt{process\_spawn} are also given a deadline with it.
+In \texttt{syscall.c}, the\texttt{ SYSCALL\_EXEC} is modified to take an extra argument
+\begin{verbatim}
+  case SYSCALL_EXEC:
+      user_context->cpu_regs[MIPS_REGISTER_V0] =
+         syscall_exec((char *)A1, A2);
+\end{verbatim}
+Since the deadline is an \texttt{int} it is not necessary to cast it to anything.
+
+\subsubsection{Testing and Discussion}
+To test the implementation, a testfile \texttt{tests/deadline.c} was made. It makes a call for 7 other testfiles called deadlinetest[1-7] (resides in \texttt{tests} folder). These tests \textbf{only} prints their deadline. These child processes are then joined and the \texttt{syscall\_halt()} is called before terminating.
+\begin{verbatim}
+#include "tests/lib.h"
+
+static const char prog1[] = "[arkimedes]dtest1";
+static const char prog2[] = "[arkimedes]dtest2";
+static const char prog3[] = "[arkimedes]dtest3";
+static const char prog4[] = "[arkimedes]dtest4";
+static const char prog5[] = "[arkimedes]dtest5";
+static const char prog6[] = "[arkimedes]dtest6";
+static const char prog7[] = "[arkimedes]dtest7";
+
+int main(void)
+{
+  uint32_t child1;
+  uint32_t child2;
+  uint32_t child3;
+  uint32_t child4;
+  uint32_t child5;
+  uint32_t child6;
+  uint32_t child7;
+
+  child1 = syscall_exec(prog1, 15000);
+  child2 = syscall_exec(prog2, 0);
+  child3 = syscall_exec(prog3, 1000);
+  child4 = syscall_exec(prog4, 22500);
+  child5 = syscall_exec(prog5, 0);
+  child6 = syscall_exec(prog6, 7500);
+  child7 = syscall_exec(prog7, 4000);
+
+  syscall_join(child1);
+  syscall_join(child2);
+  syscall_join(child3);
+  syscall_join(child4);
+  syscall_join(child5);
+  syscall_join(child6);
+  syscall_join(child7);
+ 
+  syscall_halt();
+  return 0;
+}
+\end{verbatim}
+This was expected to return the print statement in the following order: (1000, 4000, 7500, 15000, 22500, 0, 0). This was the result when running it with a single CPU. \\
+However when running it with multiple CPUs it would still print the low priorities last, but the order of thread with priorities would be scrambled (at least 4000 is the last occuring before the 0's in this scenario, but the rest is ordered). I was not able to identify or resolve this issue. \\
+I used several orders of my calls to ensure that, on one CPU, that it was not just a 'coincidence' that the order was correct.  
+
+\subsection{Named pipes - Buenos Process Communication}
+\subsubsection{Initialization and mounting at startup}
+To do this, the function \texttt{pipe\_init()} is called in \texttt{init/main.c}
+\begin{verbatim}
+void init(void)
+{
+  (..)
+  
+  kprintf("Initializing Pipe Filesystem\n");
+  fs_t* pipe = pipe_init();
+  vfs_mount(pipe, pipe->volume_name);
+  
+  (..)
+}
+\end{verbatim}
+After this, it is mounted by use of function \texttt{vfs\_mount} where volume name is given with the \texttt{fs\_t} from calling \texttt{pipe\_init()}.\\
+In \texttt{fs/pipe.c}, two structures are modified.
+\begin{verbatim}
+typedef struct {
+  /* Data needed */
+} pipe_t;
+
+typedef struct {
+  semaphore_t *lock;
+  pipe_t pipes[16];
+} pipefs_t;
+\end{verbatim}
+We have a fixed array with a new type \texttt{pipe\_t} which has some data. There is no data in the structure since implementation of (3b) has not been done.
+
+\subsubsection{Implement VFS methods}
+Not implemented.
+
+\subsubsection{Test and discuss your implementation}
+Due to (3b) has not been implemented, this task is not completed.
+
+\newpage
+
+\section{Theoretical Part}
+\subsection{Semaphores}
+
+\subsubsection{a}
+Devise a synchronization of these delivery processes using semaphores. Explain for each
+semaphore how it is initialized and which role it plays. Then insert calls to P and V into
+the code for the three activities.\\
+\\
+Start by initializing the semaphores.\\
+One is needed for how much space there is in the factory, $space$, initialized to 12.
+\begin{verbatim}
+createSemaphore(space, 12);
+\end{verbatim}
+One is needed for the amount of chairs, $chair$, initialized to 0.
+\begin{verbatim}
+createSemaphore(chair, 0);
+\end{verbatim}
+One is needed for the amount of tables, $table$, initialized to 0.
+\begin{verbatim}
+createSemaphore(table, 0);
+\end{verbatim}
+There is also need for a semaphore to check if the platform is free or not, $free$, initialized to 1.
+\begin{verbatim}
+createSemaphore(free, 1);
+\end{verbatim}
+Now the three activities are rewrote to use the semaphores.
+\begin{verbatim}
+void deliverTable() {
+  while (true) {
+    P(table);
+    P(free);
+    approach(platform);
+    load(table);
+    leave(platform);
+    deliver(table);
+    V(space);
+    V(free);
+  }
+}
+
+void deliverChair() {
+  while (true) {
+    P(chair);
+    P(free);
+    approach(platform);
+    load(chair);
+    leave(platform);
+    deliver(chair);
+    V(space);
+    V(free);
+  }
+}
+
+void fromFactory() {
+  while (true) {
+    P(space);
+    P(space);
+    P(space);
+    P(free);
+    approach(platform);
+    unload(table);
+    unload(chair);
+    unload(chair);
+    leave(platform);
+    V(table);
+    V(chair);
+    V(chair);
+    V(free);
+  }
+}
+\end{verbatim}
+
+\subsubsection{b}
+Argue that your solution synchronizes correctly and that deadlocks cannot happen.
+Can several vans and lorries be used?\\
+\\
+For both \texttt{deliverChair()} and \texttt{deliverTable()} it waits for a table or chair is ready to be loaded before checking if the platform is free. This is because otherwise one could come to the platform and no chair or table is ready to be loaded causing a deadlock. However the way it's implemented makes sure they can only come to the platform if something is ready to be loaded.\\
+If something is loaded, then \texttt{space} is increased once and platform is freed.\\
+\\
+For \texttt{fromFactory()} it waits until \texttt{space} has at least 3 free items before taking the platform, since if it did it the other way around it would be the same case as above, where a deadlock might happen if there is no space.\\
+Otherwise the unloading is done and \texttt{chair} and \texttt{table} is incremented twice and once, respectively, and the platform is freed.\\
+\\
+Since \texttt{space} is only incremented once every time P is called on it, this ensures \texttt{space} is between 0 and 12 and if it is between 0 and 2, then either \texttt{deliverChair()} or \texttt{deliverTable()} is being used.\\
+\\
+With this implementation, several vans and lorries \textit{can not} be used, since a deadlock can happen if multiple lorries calls P on \texttt{space} only one time. If 12 lorries do this, nothing will ever be delivered.\\
+However, by ensuring that only 1 lorry can call P on \texttt{space}, it is possible to have multiple lorries (and vans). This is completed by creating another semaphore, $access$, initialized to 1.
+\begin{verbatim}
+createSemaphore(access, 1);
+\end{verbatim}
+and then rewriting the activity \texttt{fromFactory} as seen below
+\begin{verbatim}
+void fromFactory() {
+  while (true) {
+    P(access);
+    P(space);
+    P(space);
+    P(space);
+    V(access);
+    P(free);
+    approach(platform);
+    unload(table);
+    unload(chair);
+    unload(chair);
+    leave(platform);
+    V(table);
+    V(chair);
+    V(chair);
+    V(free);
+  }
+}
+\end{verbatim}
+where the semaphore \texttt{access} is called P on before lorries are able to call P on \texttt{space}, thus ensuring that the deadlock described above can not happen, since just one 'lorry' can call P on \texttt{space}. This makes it possible to have several lorries and vans.
+
+\subsection{Paging}
+$k$ denotes the amount of frames available.\\
+$\rho$ denotes the request sequence of pages.\\
+$cost_{k,A}(\rho)$ denotes the number of pagefaults made by an algorithm $A$.\\
+\\
+In following cases, determine if the claims are true or false.
+\subsubsection{a}
+There exists a request sequence $\rho_1$ for which $cost_{3,LRU}(\rho_1) < cost_{3,FIFO}(\rho_1)$. What is $cost_{3,MIN}(\rho_1)$.\\
+\\
+This is true. To justify, an example is created where this is the case. The sequence (0,1,2) has already been put into the frames (since this is 3 pagefaults for both algorithms). The full sequence $\rho_1$ is (0,1,2,0,3,0)\\
+\\
+FIFO example for the sequence (0,3,0) following (0,1,2).\\
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline 
+0 & 3 & 0 \\ 
+\hline 
+0 & 3 & 3 \\ 
+1 & 1 & 0 \\ 
+2 & 2 & 2 \\ 
+\hline
+No pagefault & Pagefault & Pagefault \\
+\hline
+\end{tabular}
+\end{center}
+$ $
+\\
+LRU example for the sequence (0,3,0) following (0,1,2).\\
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline 
+0 & 3 & 0 \\ 
+\hline 
+0 & 0 & 0 \\ 
+1 & 3 & 3 \\ 
+2 & 2 & 2 \\ 
+\hline
+No pagefault & Pagefault & No Pagefault \\
+\hline
+\end{tabular}
+\end{center}
+$ $
+\\
+In this case LRU has less pagefaults than FIFO. This is because FIFO does not update the "queue" when there is a hit.\\
+\\
+For the sequence $\rho_1 =(0,1,2,0,3,0)$, $cost_{3,MIN}(\rho_1)$ is 4 total (or 1 extra) where removing either page 1 or 2 in the second (or fifth for the full sequence) request does not matter.
+
+\subsubsection{b}
+There exists a request sequence $\rho_2$ for which $cost_{3,FIFO}(\rho_2) < cost_{3,LRU}(\rho_2)$.\\
+\\
+This is true. Again this is justified with an example. Consider the sequence $\rho_2=(0,1,2,0,3,1)$.
+\\
+\\
+FIFO example for the sequence (0,3,1) following (0,1,2).\\
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline 
+0 & 3 & 1 \\ 
+\hline 
+0 & 3 & 3 \\ 
+1 & 1 & 1 \\ 
+2 & 2 & 2 \\ 
+\hline
+No pagefault & Pagefault & No pagefault \\
+\hline
+\end{tabular}
+\end{center}
+$ $
+\\
+LRU example for the sequence (0,3,1) following (0,1,2).\\
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline 
+0 & 3 & 1 \\ 
+\hline 
+0 & 0 & 0 \\ 
+1 & 3 & 3 \\ 
+2 & 2 & 2 \\ 
+\hline
+No pagefault & Pagefault & Pagefault \\
+\hline
+\end{tabular}
+\end{center}
+$ $
+\\
+Where FIFO only has one (extra) pagefault compared to LRU's (extra) 2 pagefaults.
+
+\subsubsection{c}
+For some $k$, there exists a request sequence $\rho_3$ for which $cost_{3,MFU}(\rho_3)$ is significantly higher than $cost_{3,MIN}(\rho_3)$.\\
+\\
+This is true. MFU removes the page request that is most frequent. Considering a case where the same page, called $p$, is requested almost all the time and the rest of the pages are only requested \textit{once}. Call this arbitrary page for $q$. This means that every time a replacement is needed, $p$ is replaced, and then $p$ is requested again. This takes 2 replacements whereas if one of the other pages had been replaced, it would only take 1 replacement.\\
+For clearance, take the sequence ($p$, $p$, $q$, .., $p$, $p$, $q$)  where all $k$ frames are used. Every time a new $q$ is requested a replacement is needed. This means that $p$ is replaced and inserted again in the request right after, taking 2 replacements. If another arbitrary page $q$ had been replaced, it would only take 1 replacement, thus making MFU making twice the amount of pagefaults which is significantly higher.
+
+\subsubsection{d}
+LRU cannot exhibit Belady's anomaly.\\
+\\
+This is true. According to (SGG 8th edition, page 377), LRU does not suffer from Belady's anomaly due to the fact that it is a stack algorithm. A stack algorithm is shown to never exhibit Belady's anomaly.\\
+From (SGG 8th edition, page 377):
+\begin{quote}
+For LRU replacement, the set of pages in memory would be the n most
+recently referenced pages. If the number of frames is increased, these n pages
+will still be the most recently referenced and so will still be in memory.
+\end{quote}
+So LRU cannnot exhibit Belady's anomaly.
+
+\subsubsection{e}
+For no request sequence, the cost of a premature page-replacement algorithm can be smaller than the cost of MIN.\\
+\\
+This is false. Since page replacements has no cost, but only misses has, then theoretically, if a premature page-replacement algorithm works the same way as MIN (that is, knowing what page requests will come), that means it can simply make the replacement instead of actually making a miss first.\\
+Therefore a premature page-replacement algorithm \textit{can} be smaller since there are no page faults at all.\\
+However, if the page requests are unknown, then it would be true because it is not possible.
+
+\subsection{Memory Management}
+\subsubsection{a}
+The buddy system is a way to allocate memory where the segments have size equal to the powers of 2. So a request to allocate $n$ units will use the nearest power of 2 (rounded up) segment.\\
+The main advantage of this is that two segments quickly can be merged to former larger segments. Another advantage is that every segment is at an address that is divisible with its size.\\
+The datastructure used to handle this is a binary tree since it 'splits' in two for each step.\\
+\\
+To implement \texttt{malloc()} and \texttt{free()} with the buddy system and make it run in O(lg N) time, we have a list for each block size that contains free blocks, starting with one large block containing the entire memory. If we want to allocate $b$ bytes, we round it up to the nearest power of 2 and look through the list which contains the blocks of this size. If there is one free, we can allocate this.\\
+If not, we multiply this by 2 (to get the next block size) and check if there are any free blocks here. This works recursively up the binary tree until a free block is found.\\
+If a free block is found that is larger than $b$ rounded up to the next power of 2, we remove this block from its 'free' list, add one half of the block to their corresponding free list, return the other half and keep doing this until we have the initial block size we wanted. This is then returned to the process requesting it.\\
+If there is no free block available, this will return \texttt{NULL}.\\
+To free the memory again, we look for the buddy block and if it is free, merge them into one block that is double the size. We keep doing this until the blocks can no longer can be merged.
+
+\subsubsection{b}
+Using the buddy system can lose up to 50\% of the bytes that needs to be allocated since it is powers of 2. So if there is a need to allocate $2^n+1$ bytes, then there will be allocated $2^{n+1}$ bytes. The overhead of 8 bytes is not counted towards the loss from internal fragmentation (otherwise, the worst case would be $50\%+7$ bytes, where it is $50\%$ of the bytes allocated).\\
+\\
+External fragmentation occurs when a small segment in memory is not used between two segments of allocated memory. Observe the following scenario, a small portion of memory, where a process, $p1$, allocates 1 KB, and another process, $p2$, allocates 2 KB. In the buddy system it will be allocated as seen here
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+1 KB & 1 KB & 1 KB & 1 KB \\ 
+\hline 
+p1 & unused & \multicolumn{2}{c|}{p2} \\ 
+\hline 
+\end{tabular}
+\end{center}
+$ $
+\\
+In the middle 1 KB is 'wasted'. Considering this happens several places in memory, these \textit{could} have been combined to create a larger segment to be allocated. For example, if this happened two places in memory and a process $p3$ requested 2 KB to be allocated, these could have been merged to fulfill this request.
+
+\subsubsection{c}
+Explain how realloc can be optimized to do better than this in terms of memory consumption and performance. Which conditions must be fulfilled for the optimization to be possible?\\
+\\
+One optimization would be to check if there is enough room adjacent to the memory already allocated. If there is, simply allocate the adjacent space in memory, otherwise \texttt{realloc} can work as in the simple implementation.
+
+\end{document}
+

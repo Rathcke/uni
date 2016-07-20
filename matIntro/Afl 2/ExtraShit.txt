@@ -1,0 +1,13 @@
+
+\subsection*{Opgave 3.3(v)}
+\textbf{Definition 3.1\footnote{Fra Vækstmodeller af Henrik Laurberg Pedersen}}\\
+For positive parametre $a,b$ og $g$ defineres
+$$y(x)=c+\frac{d-c+fe^{-x^{-a}}}{1+e^{b(lnx-lng)}}=c+\frac{d-c+fe^{-x^{-a}}}{1+(x/g)^{b}}$$
+
+\subsubsection*{D}
+Antag, at alle parametre er positive. Vis at $y(x)$ fra Definition 3.1 opfylder
+$$c+\frac{d-c}{1+e^{b(lnx-lng)}}\leq y(x)\leq c+\frac{d-c+f}{1+e^{b(lnx-lng)}}$$
+og slut heraf, at kurven ligger mellem to logistiske kurver.\\
+\\
+Vi kan omskrive uligheden, da alle nævnere er den samme og alle har et $c$ som indgår.
+$$d-c\leq d-c+fe^{-x^{-a}}\leq d-c+f$$

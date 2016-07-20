@@ -1,0 +1,41 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 2}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{MatIntroNat}
+\author{Nikolaj Dybdahl Rathcke}
+\lhead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\section{Anden Frivillige opgave}
+
+\subsection{}
+Beregn ordenen af elementet $\bar{4}$ i den multiplikative gruppe $(\mathbb{Z}/9\mathbb{Z})^{\times}$ og angiv et andet element $\bar{a}$ i $(\mathbb{Z}/9\mathbb{Z})^{\times}$ af samme orden som $\bar{4}$.\\
+\\
+Da det er under multiplikation vil vi se hvor mange gange 4 skal multipliceres med sig selv før den modulo 9 giver identitetselementet. Vi vil egentlig løse ligningen $4^x$ mod $9 = 1$, hvor 1 er identitetselementet.\\
+Dette giver os at elementet $\bar{4}$ har ordenen 3.
+Ligeledes har elementet $\bar{7}$ ordenen 3, da $7^3$ mod $9 = 1$, mens de forrige potenser af $7$ ikke opfylder ligningen.
+
+\subsection{}
+Lad $\psi:\:C_{15}\rightarrow C_{10}$ være en ikke-triviel gruppehomomorfi. Vis, at kernen for $\psi$ har orden $3$, og at billedet for $\psi$ har orden 5. Vis, at der findes en sådan homomorfi.\\
+\\
+lol
+
+\subsection{}
+Lad $G$ være en abelsk gruppe. Vis, at $\{g \in G\:|\:|g|<\infty\}$ er en undergruppe af $G$. Giv et eksempel hvor dette sæt ikke er en undergruppe når $G$ er ikke-abelsk.\\
+\\
+Vi kalder $\{g \in G\:|\:|g|<\infty\}$ for $H$.\\
+Da $H$ er endelig er det nok at se om $H$ er lukket under multiplikation og den ikke er tom.
+
+\end{document}

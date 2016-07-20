@@ -1,0 +1,119 @@
+program regs;
+
+// This function uses all available registers (forced by read() calls).
+// Uses maximum number of arguments, and regs 16-24 for intermediate
+// values. Computed result is the sum of all arguments.
+function eatregs(r2 : int;
+                 r3 : int;
+                 r4 : int;
+                 r5 : int;
+                 r6 : int;
+                 r7 : int;
+                 r8 : int;
+                 r9 : int;
+                 r10 : int;
+                 r11 : int;
+                 r12 : int;
+                 r13 : int;
+                 r14 : int;
+                 r15 : int
+                 ) : int
+var r16 : int;
+   r17  : int;
+   r18  : int;
+   r19  : int;
+   r20  : int;
+   r21  : int;
+   r22  : int;
+   r23  : int;
+   r24  : int;
+begin
+   write("enter 0 9 times.\n");
+   r16 := read()+r2 + r11;
+   r17 := read()+r3 + r12;
+   r18 := read()+r4 + r13;
+   r19 := read()+r5 + r14;
+   r20 := read()+r6;
+   r21 := read()+r7;
+   r22 := read()+r8;
+   r23 := read()+r9;
+   r24 := read()+r10;
+   return (r16 + r17 + r18 + r19 + r20 + r21 + r22 + r23 + r24 );
+end;
+
+// Computed result is again the sum of all arguments.
+function eatregs2(r2 : int;
+                 r3 : int;
+                 r4 : int;
+                 r5 : int;
+                 r6 : int;
+                 r7 : int;
+                 r8 : int;
+                 r9 : int;
+                 r10 : int;
+                 r11 : int
+                 ) : int
+var r16 : int;
+   r17  : int;
+   r18  : int;
+   r19  : int;
+   r20  : int;
+   r21  : int;
+   r22  : int;
+   r23  : int;
+   r24  : int;
+// and some more, these should be allocated to
+// caller-saves regs (or spilled in the best case)
+   r12  :int;
+   r13  : int;
+   r14  : int;
+   r15  : int;
+begin
+   r12 := 32;
+   r13 := r12-32;
+   r14 := r13-r12; r15 := r14 + r12;
+   // any values are fine here. Calls we use give r14 = -r12, r13 = r15 = 0
+   r16 := r2+r11;
+   r17 := r3+r12;
+   r18 := r4+r13;
+   r19 := r5+r14;
+   r20 := r6+r15;
+   r21 := r7+r11;
+   r22 := r8+r12;
+   r23 := r9+r13;
+   r24 := r10+r14;
+   return (r16 + r17 + r18 + r19 + r20 + r21 + r22 + r23 + r24 - r11
+           - r12 - r13 - r14 - r15 - r12 - r13 - r14  );
+end;
+
+procedure main()
+var x : int;
+   y  : int;
+begin
+   write ("Enter a natural number, expect 10* your number afterwards: ");
+   x := read();
+
+   y := eatregs(x, x, x, x, x, x, x, x, x, x, x, x, x, x, x);
+   write(y);
+   write('\n');
+
+   y := eatregs2(x, x, x, x, x, x, x, x, x, x);
+   write(y);
+   write('\n');
+
+   // this should always yield 0
+   write ("Enter any natural number, expect 0 as output afterwards: ");
+   y := read();
+   y := eatregs2(x-eatregs2(y, y, y, y, y, y, y, y, y, y, y),
+                 eatregs2(y, y, y, y, y, y, y, y, y, y, y)-x,
+                 x-eatregs2(y, y, y, y, y, y, y, y, y, y, y),
+                 eatregs2(y, y, y, y, y, y, y, y, y, y, y)-x,
+                 x-eatregs2(y, y, y, y, y, y, y, y, y, y, y),
+                 eatregs2(y, y, y, y, y, y, y, y, y, y, y)-x,
+                 x-eatregs2(y, y, y, y, y, y, y, y, y, y, y),
+                 eatregs2(y, y, y, y, y, y, y, y, y, y, y)-x,
+                 x-eatregs2(y, y, y, y, y, y, y, y, y, y, y),
+                 eatregs2(y, y, y, y, y, y, y, y, y, y, y)-x);
+   write(y);
+   write('\n');
+end;

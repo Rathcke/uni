@@ -1,0 +1,53 @@
+   0  $accept : %entry% $end
+
+   1  A : A CharA
+   2    | CharB
+
+   3  %entry% : '\001' A
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . A  (3)
+
+	CharB  shift 3
+	.  error
+
+	A  goto 4
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	A : CharB .  (2)
+
+	.  reduce 2
+
+
+state 4
+	A : A . CharA  (1)
+	%entry% : '\001' A .  (3)
+
+	CharA  shift 5
+	$end  reduce 3
+
+
+state 5
+	A : A CharA .  (1)
+
+	.  reduce 1
+
+
+6 terminals, 3 nonterminals
+4 grammar rules, 6 states

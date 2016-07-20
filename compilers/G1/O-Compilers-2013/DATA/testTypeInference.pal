@@ -1,0 +1,32 @@
+Inference;
+
+function f(a : int) : char
+begin
+    return read();
+end;
+
+procedure main()
+var n : int;
+    i  : int;
+    a  : array of array of int;
+    b  : array of array of int;
+    c  : array of array of char;
+begin
+
+   n := 3 + 8 - read();
+   a := map(ff, new(n,n));
+
+   c := map( f, map(ff, new(n,n)) );
+
+   if (5 + read() - n) = read()
+    then write("\nOK\n")
+    else write("\nNot OK\n");
+
+   write( c ); write(a);
+   write( map(ff, new(n,n) ) );
+end;
+
+function ff(a : char) : int
+begin
+    if ( a = chr(0) ) then return ord(read()) else return read();
+end;

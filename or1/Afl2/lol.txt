@@ -1,0 +1,44 @@
+\section*{Opgave 3}
+\subsection*{a}
+Problemet er skrevet nedenfor
+\begin{equation}
+\begin{array}{rrrrl}
+&\text{Min: } &\sum_{i\in \mathcal{N},j\in \mathcal{N}(i,j)\in \mathcal{A}}c_{ij}x_{ij} &\\
+\hline
+&\text{u.b.} &\sum_{i\in \mathcal{N}:(i,j)\in \mathcal{N}}x_{ij}=1,&\text{ for }j\in \mathcal{N} \\
+& &\sum_{j\in \mathcal{N}:(i,j)\in \mathcal{N}}x_{ij}=1,&\text{ for }i\in \mathcal{N} \\
+& &t_i+1-n(1-x_{ij}) \leq t_j &\text{ for }i\geq 1,j\geq 2,(i,j)\in \mathcal{A} \\
+& &t_i\leq n & \\
+& &t_i\geq 1 & \\
+& &t_i\in \mathbb{Z}&\text{ for }i\in \mathcal{N} \\
+& &x_{ij}\in \{0,1\}&\text{ for }(i,j)\in \mathcal{A} \\
+\end{array}
+\end{equation}
+Hvor
+\begin{align*}
+\mathcal{N}&=\{a,b,c,d,e,f,g,h,i,j\} \\
+\mathcal{A}&=\{(a,b),(a,e),(a,h),(b,c),(b,e),(c,d),(c,e),(c,f),(d,f),(d,g),\\
+&\:\:\:\:\:\:\:\:\:(e,f),(e,h),(e,i),(f,g),(f,i),(f,j),(g,j),(h,i),(i,j)\} \\
+t_i&=\{1,2,3,4,5,6,7,8,9,10\} \\
+c_{ij}&=
+\begin{tabular}{|c|cccccccccc|}
+\hline 
+  & a & b & c & d & e & f & g & h & i & j \\ 
+\hline 
+a &   & 2 &   &   & 4 &   &   & 2 &   &   \\ 
+b & 2 &   & 2 &   & 1 &   &   &   &   &   \\ 
+c &   & 2 &   & 3 & 3 & 2 &   &   &   &   \\ 
+d &   &   & 3 &   &   & 2 & 2 &   &   &   \\ 
+e & 4 & 1 & 3 &   &   & 1 &   & 3 & 2 &   \\ 
+f &   &   & 2 & 2 & 1 &   & 3 &   & 3 & 1 \\ 
+g &   &   &   & 2 &   & 3 &   &   &   & 1 \\ 
+h & 2 &   &   &   & 3 &   &   &   & 1 &   \\ 
+i &   &   &   &   & 2 & 3 &   & 1 &   & 2 \\ 
+j &   &   &   &   &   & 1 & 1 &   & 2 &   \\ 
+\hline
+\end{tabular} 
+\end{align*}
+og $x_{ij}$ er en variabel der er sat hvis knuden $i$ er lige før knuden $j$
+
+\subsection*{b}
+lol

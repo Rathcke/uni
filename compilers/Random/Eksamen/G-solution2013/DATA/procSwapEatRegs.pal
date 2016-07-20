@@ -1,0 +1,81 @@
+program procSwap;
+
+// Test of call-by-value-result in procedures.  Swaps values.
+// extended to consume many registers before returning (exposing a bug)
+
+procedure main()
+var
+   m : int;
+   n : int;
+begin
+   m := read();
+   n := read();
+   writeMN(m, n);
+
+   swap(m, n);
+   writeMN(m, n);
+end;
+
+procedure writeMN(m : int; n : int)
+begin
+   write(m);
+   write(' ');
+   write(n);
+   write('\n');
+end;
+
+procedure swap(x : int; y : int)
+var
+   t : int;
+begin
+   t := x + eatregs(1,2,3,4,5,6,7,8,9,10);
+   x := y;
+   y := t - eatregs(1,2,3,4,5,6,7,8,9,10);
+   return;
+end;
+
+// a function which uses many registers for intermediate values,
+// merely to compute the sum of all arguments.
+function eatregs(r2 : int;
+                 r3 : int;
+                 r4 : int;
+                 r5 : int;
+                 r6 : int;
+                 r7 : int;
+                 r8 : int;
+                 r9 : int;
+                 r10 : int;
+                 r11 : int
+                 ) : int
+var r16 : int;
+   r17  : int;
+   r18  : int;
+   r19  : int;
+   r20  : int;
+   r21  : int;
+   r22  : int;
+   r23  : int;
+   r24  : int;
+// and some more, these should be allocated to
+// caller-saves regs (or spilled in the best case)
+   r12  :int;
+   r13  : int;
+   r14  : int;
+   r15  : int;
+begin
+   r12 := 32;
+   r13 := r12-32;
+   r14 := r13-r12; r15 := r14 + r12;
+   // any values are fine here. Calls we use give r14 = -r12, r13 = r15 = 0
+   r16 := r2+r11;
+   r17 := r3+r12;
+   r18 := r4+r13;
+   r19 := r5+r14;
+   r20 := r6+r15;
+   r21 := r7+r11;
+   r22 := r8+r12;
+   r23 := r9+r13;
+   r24 := r10+r14;
+   return (r16 + r17 + r18 + r19 + r20 + r21 + r22 + r23 + r24 - r11
+           - r12 - r13 - r14 - r15 - r12 - r13 - r14  );
+end;

@@ -1,0 +1,11 @@
+program arrFail;
+procedure main()
+var a : array of array of int;
+begin
+   a := new(2,2);
+   // use any of these to test type errors of new
+   //a := new(1); a := new(1,2,3); a := new(1=0,2); 
+         
+   // test one statement at a time, from these four:
+   write(a[2,0]); write(a[0-1,0]); write(a[0,2]); write(a[0,0-1]);
+end;

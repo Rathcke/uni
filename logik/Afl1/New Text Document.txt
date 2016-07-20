@@ -1,0 +1,1 @@
+  meaning in all scenarios where $[[\neg\phi_i]]=T$ then $[[\phi]]=T$.

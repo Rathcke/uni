@@ -1,0 +1,374 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 3}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Elementær Talteori}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+
+\section*{4.7.13}
+We have the following linear system
+$$
+\begin{bmatrix}
+2 & 0 & -1 \\
+-2 & -10 & 0 \\
+-1 & -1 & 4
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\
+x_2 \\
+x_3
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+$$
+We carry out two iterations using the Jacobi method with our initial guess $x^{(0)}=(0,0,0)$.\\
+This means to find $x^{(1)}$ we need to solve
+$$
+\begin{bmatrix}
+2x_1^{(1)} & 0 & 0 \\
+0 & -10x_2^{(1)} & 0 \\
+0 & 0 & 4x_3^{(1)}
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+$$
+Where $0$ has replaced the coordinates that are multiplied with coordinates from $x^{(0)}$. We find that $x^{(1)}=(\frac{1}{2},\frac{6}{5},\frac{1}{2})$. With our new approximation of $(x_1,x_2,x_3)$ we solve the following
+$$
+\begin{bmatrix}
+2x_1^{(2)} & 0x_2^{(1)} & -1x_3^{(1)} \\
+-2x_1^{(1)} & -10x_2^{(2)} & 0x_3^{(1)} \\
+-1x_1^{(1)} & -1x_2^{(1)} & 4x_3^{(2)}
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+$$
+Rewritten to
+$$
+\begin{bmatrix}
+2x_1^{(2)} & 0 & -\frac{1}{2} \\
+-1 & -10x_2^{(2)} & 0 \\
+-\frac{1}{2} & -\frac{6}{5} & 4x_3^{(2)}
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+$$
+Using Maple to calculate these simple equations we find $x^{(2)}=(\frac{3}{4},\frac{11}{10},\frac{37}{40})$.\\
+We can see the convergence towards the actual solution $(1,1,1)$
+\\
+Now we do two iteration of the Gauss Seidel method with the same initial guess. This means we need to solve
+$$  
+\begin{bmatrix}
+2x_1^{(2)} & 0 & 0 \\
+-2x_1^{(2)} & -10x_2^{(2)} & 0 \\
+-1x_1^{(2)} & -1x_2^{(2)} & 4x_3^{(2)}
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+$$
+Where $0$ has replaced the coordinates that are multiplied with coordinates from $x^{(0)}$. We find that $x^{(1)}=(\frac{1}{2},\frac{11}{10},\frac{9}{10})$. For the second iteration we need to solve the following
+$$
+\begin{bmatrix}
+2x_1^{(2)} & 0x_2^{(1)} & -1x_3^{(1)} \\
+-2x_1^{(2)} & -10x_2^{(2)} & 0x_3^{(1)} \\
+-1x_1^{(2)} & -1x_2^{(2)} & 4x_3^{(2)}
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+$$
+Rewritten to
+$$
+\begin{bmatrix}
+2x_1^{(2)} & 0 & -\frac{9}{10} \\
+-2x_1^{(2)} & -10x_2^{(2)} & 0 \\
+-x_1^{(2)} & -1x_2^{(2)} & 4x_3^{(2)}
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+$$
+Using Maple, we find that $x^{(2)}=(\frac{19}{20},\frac{101}{100},\frac{99}{100})$.\\
+This is close to the actual solution $(1,1,1)$
+\\
+Finally, we want to do two iterations with the Conjugate gradient method. Our initial guess is the same. We start off by calculating the residual vector $r_0$ associated with $x_0$.
+$$
+r_0
+=
+b-Ax_0
+=
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+-
+\begin{bmatrix}
+2 & 0 & -1 \\
+-2 & -10 & 0 \\
+-1 & -1 & 4
+\end{bmatrix}
+\begin{bmatrix}
+0 \\
+0 \\
+0
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+$$
+This is the first iteration, so we set our search direction $p_0=r_0$. Now we compute the scalar $\alpha_0$
+$$
+\alpha_0
+=
+\frac{r_0^Tr_0}{p_0^TAp_0}
+=
+\frac{
+\begin{bmatrix}
+1 & -12 & 2
+\end{bmatrix}
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}}{
+\begin{bmatrix}
+1 & -12 & 2
+\end{bmatrix}
+\begin{bmatrix}
+2 & 0 & -1 \\
+-2 & -10 & 0 \\
+-1 & -1 & 4
+\end{bmatrix}
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}}
+=
+-\frac{149}{1378}
+$$
+This means we can compute $x_1$ as
+$$
+x_1=x_0+\alpha_0p_0
+=
+\begin{bmatrix}
+0 \\
+0 \\
+0
+\end{bmatrix}
+-
+\frac{149}{1378}
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+=
+\begin{bmatrix}
+-\frac{149}{1378} \\
+\frac{894}{689} \\
+-\frac{149}{689}
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+-0.11 \\
+1.30 \\
+-0.22
+\end{bmatrix}
+$$
+Now we need to do the second iteration. We start by computing our new residual vector $r_1$ by the following formula
+$$
+r_1=r_0-\alpha_0Ap_0=
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
++\frac{149}{1378}
+\begin{bmatrix}
+2 & 0 & -1 \\
+-2 & -10 & 0 \\
+-1 & -1 & 4
+\end{bmatrix}
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\
+\frac{523}{689} \\
+\frac{5587}{1378}
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+1 \\
+0.76 \\
+4.05
+\end{bmatrix}
+$$
+Now we need to compute the next scalar $\beta_0$ so we can later find $p_1$. This is done by the following formula
+$$
+\beta_0=\frac{r_1^Tr_1}{r_0^Tr_0}
+=
+\frac{
+\begin{bmatrix}
+1 & \frac{523}{689} & \frac{5587}{1378}
+\end{bmatrix}
+\begin{bmatrix}
+1 \\
+\frac{523}{689} \\
+\frac{5587}{1378}
+\end{bmatrix}}{
+\begin{bmatrix}
+1 & -12 & 2
+\end{bmatrix}
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}}
+=
+\frac{\frac{34207569}{1898884}}{149}
+\approx
+0.12
+$$
+This means we can now compute $p_1$ as
+$$
+p_1=r_1+\beta_0p_0=
+\begin{bmatrix}
+1 \\
+\frac{523}{689} \\
+\frac{5587}{1378}
+\end{bmatrix}
++
+\frac{\frac{34207569}{1898884}}{149}
+\begin{bmatrix}
+1 \\
+-12 \\
+2
+\end{bmatrix}
+=
+\begin{bmatrix}
+\frac{2128465}{1898884} \\
+-\frac{328396}{474721} \\
+\frac{2039512}{474721}
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+1.12 \\
+-0.69 \\
+4.30
+\end{bmatrix}
+$$
+Now that we found $p_1$ we can compute the new scalar $\alpha_1$ and then finally find $x_2$.
+\begin{align*}
+\alpha_1
+&=
+\frac{r_1^Tr_1}{p_1^TAp_1}
+=
+\frac{
+\begin{bmatrix}
+1 & \frac{523}{689} & \frac{5587}{1378}
+\end{bmatrix}
+\begin{bmatrix}
+1 \\
+\frac{523}{689} \\
+\frac{5587}{1378}
+\end{bmatrix}}{
+\begin{bmatrix}
+\frac{2128465}{1898884} & -\frac{328396}{474721} & \frac{2039512}{474721}
+\end{bmatrix}
+\begin{bmatrix}
+2 & 0 & -1 \\
+-2 & -10 & 0 \\
+-1 & -1 & 4
+\end{bmatrix}  
+\begin{bmatrix}
+\frac{2128465}{1898884} \\
+-\frac{328396}{474721} \\
+\frac{2039512}{474721}
+\end{bmatrix}
+}\\
+&=
+\frac{\frac{34207569}{1898884}}{\frac{173875590081}{2616662152}}
+\approx
+0.27
+\end{align*}
+And finally, we can find $x_2$ in the samme manner as $x_1$
+$$
+x_2=x_1+\alpha_1p_1
+=
+\begin{bmatrix}
+-\frac{149}{1378} \\
+\frac{894}{689} \\
+-\frac{149}{689}
+\end{bmatrix}
++
+\frac{\frac{34207569}{1898884}}{\frac{173875590081}{2616662152}}
+\begin{bmatrix}
+\frac{2128465}{1898884} \\
+-\frac{328396}{474721} \\
+\frac{2039512}{474721}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\frac{117367462}{599574001} \\
+\frac{665523174}{599574001} \\
+\frac{568673243}{599574001}
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+0.20 \\
+1.11 \\
+0.95
+\end{bmatrix}
+$$
+The fractions may be a little heavy to look at, but we need to work with exact arithmetics or the values may vary greatly.\\
+We see that $x_2$ converges closer to $1$ in two of the coordinates but not the first one.
+\end{document}

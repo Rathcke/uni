@@ -1,0 +1,34 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm]{geometry}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 3}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+
+\section*{Opgave 2}
+Idet vi har to cirkler med hver især 6 pladser som kan være på 2 måder, må hver cirkels antal måder børn kan sidde på være
+\begin{align*}
+N(m,n)&=\frac{1}{m}\sum_{d|m}\varphi(d)n^{m/d} \\
+N(6,2)&=\frac{1}{6}(\varphi(1)2^6+\varphi(2)2^3+\varphi(3)2^2+\varphi(6)2^1) \\
+&=\frac{1}{6}(2^6+2^3+2\cdot 2^2+2\cdot 2^1) \\
+&=\frac{1}{6}84 \\
+&=14
+\end{align*}
+Da vi har to af disse cirkler som hver især kan justeres på denne måde har vi altså $14^2=196$ måder karussellen kan blive fyldt på.
+
+\end{document}

@@ -1,0 +1,9 @@
+There is only one file, namely the pca.py. Running it will produce the two plots that can be found in the assignment, as such:
+
+  PYTHON pca.py
+
+The libraries that have been used are:
+
+  numpy
+  numpy.linalg
+  matplotlib.pyplot

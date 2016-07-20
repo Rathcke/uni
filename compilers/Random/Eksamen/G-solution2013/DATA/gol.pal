@@ -1,0 +1,190 @@
+program gol;
+
+/////////////////////////////////////////////////////////////////
+// Initialize board by setting all cell values to ' '
+procedure init(board  : array of array of char;
+               width  : int;
+               height : int)
+var
+   i : int;
+   j : int;
+begin
+   write("Initializing ");
+   write(width);
+   write("x");
+   write(height);
+   write(" board...\n");
+
+   i := 0;
+   while i < width do begin
+      j := 0;
+      while j < height do begin
+         board[i,j] := ' ';
+         j := j + 1;
+      end;
+      i := i + 1;
+   end;
+end;
+
+/////////////////////////////////////////////////////////////////
+// Highly unsafe.
+// Pre-condition: num is in the interval [-1,max]
+// Post-condition: num is in the interval [0,max-1]
+function wrap(num : int;
+              max : int) : int
+begin
+   if num < 0 then return max-1 else
+      if num = max then return 0 else
+         return num;
+end;
+
+/////////////////////////////////////////////////////////////////
+// See if a cell is alive by checking its neighbours
+function alive(board  : array of array of char;
+               x      : int;
+               y      : int;
+               width  : int;
+               height : int) : bool
+var
+   count : int;
+   i     : int;
+   j     : int;
+begin
+   // Count how many neighbouring cells that are alive
+   count := 0;
+
+   // +---+---+---+
+   // | A | B | C |
+   // +---+---+---+
+   // | D |x,y| E |
+   // +---+---+---+
+   // | F | G | H |
+   // +---+---+---+
+
+   // A, B, C
+   if not (board[wrap(x-1, width), wrap(y-1, height)] = ' ') then count := count + 1;
+   if not (board[wrap(x  , width), wrap(y-1, height)] = ' ') then count := count + 1;
+   if not (board[wrap(x+1, width), wrap(y-1, height)] = ' ') then count := count + 1;
+
+   // D, E
+   if not (board[wrap(x-1, width), wrap(y, height)] = ' ') then count := count + 1;
+   if not (board[wrap(x+1, width), wrap(y, height)] = ' ') then count := count + 1;
+
+   // F, G, H
+   if not (board[wrap(x-1, width), wrap(y+1, height)] = ' ') then count := count + 1;
+   if not (board[wrap(x  , width), wrap(y+1, height)] = ' ') then count := count + 1;
+   if not (board[wrap(x+1, width), wrap(y+1, height)] = ' ') then count := count + 1;
+
+   // 3 cells give birth, 2 neighbours keep alive
+   // Debugging turned off
+   if false and 0 < count then begin
+      write(x); write("x"); write(y); write(" has "); write(count); write(" neighbours alive.\n");
+   end;
+   return count = 3 or (count = 2 and not (board[x,y] = ' '));
+end;
+
+/////////////////////////////////////////////////////////////////
+// Turn prev board into next board
+procedure evolve(prev   : array of array of char;
+                 next   : array of array of char;
+                 width  : int;
+                 height : int)
+var
+   i : int;
+   j : int;
+begin
+   i := 0;
+   while i < width do begin
+      j := 0;
+      while j < height do begin
+         /////////////////////
+         if alive(prev, i, j, width, height)
+            then next[i,j] := '#'
+            else next[i,j] := ' ';
+         /////////////////////
+         j := 1+j;
+      end;
+      i := 1+i;
+   end;
+end;
+
+/////////////////////////////////////////////////////////////////
+// writeMany constructs an array and prints it
+procedure writeMany(c : char; n : int)
+var
+   i  : int;
+   cs : array of char;
+begin
+   cs := new(n);
+   i := 0;
+   while i < n do begin
+      cs[i] := c;
+      i := i + 1;
+   end;
+   write(cs);
+end;
+
+/////////////////////////////////////////////////////////////////
+// Show board
+procedure show(board  : array of array of char;
+               width  : int;
+               height : int)
+var
+   i : int;
+   j : int;
+begin
+   write('+'); writeMany('-', height); write("+\n");
+   i := 0;
+   while i < width do begin
+      write('|');
+      j := 0;
+      while j < height do begin
+         write(board[i,j]);
+         j := 1+j;
+      end;
+      write("|\n");
+      i := 1+i;
+   end;
+   write('+'); writeMany('-', height); write("+\n");
+end;
+
+/////////////////////////////////////////////////////////////////
+// Start game
+procedure game(width      : int;
+               height     : int;
+               iterations : int)
+var
+   prev  : array of array of char;
+   next  : array of array of char;
+   count : int;
+begin
+   // Switch forth and back between two boards to save memory
+   prev := new(width, height);
+   next := new(width, height);
+
+   init(prev, width, height);
+   init(next, width, height);
+
+   // Place glider
+   prev[0,0] := ' '; prev[0,1] := '#'; prev[0,2] := ' ';
+   prev[1,0] := ' '; prev[1,1] := ' '; prev[1,2] := '#';
+   prev[2,0] := '#'; prev[2,1] := '#'; prev[2,2] := '#';
+
+   count := 0;
+   while count < iterations do begin
+      write("Iteration "); write(count); write(":\n");
+      evolve(prev, next, width, height);
+      show(prev, width, height);
+      write("Iteration "); write(count+1); write(":\n");
+      evolve(next, prev, width, height);
+      show(next, width, height);
+      count := count + 2;
+   end;
+end;
+
+/////////////////////////////////////////////////////////////////
+// Glide, puny being!
+procedure main()
+begin
+   game(10, 16, 100);
+end;

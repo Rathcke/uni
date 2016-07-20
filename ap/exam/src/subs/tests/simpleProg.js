@@ -1,0 +1,15 @@
+var a = 3+3*2;
+a = a-4%3;
+b = a === 8;
+c = 'c' === 'd';
+var d = true === 2 < 4;
+e = 'ab' < 'ba';
+f = 'cab' < 'ba';
+g = 4 % 2 < 3;
+h = 4 < 3;
+var i = 'i';
+i = i + 2 * 3;
+var j = 2 + 'j';
+k = [3, 2, 2%2];
+var l;
+var m = 'a' + 'b';

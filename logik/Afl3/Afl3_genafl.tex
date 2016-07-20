@@ -1,0 +1,89 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{boxproof}
+\usepackage{a4wide}
+\usepackage{daymonthyear}
+
+\def\meta#1{\mbox{$\langle\hbox{#1}\rangle$}}
+\def\macrowitharg#1#2{{\tt\string#1\bra\meta{#2}\ket}}
+
+{\escapechar-1 \xdef\bra{\string\{}\xdef\ket{\string\}}}
+
+\def\intro#1{{#1}{\cal I}}
+\def\elim#1{{#1}{\cal E}}
+
+\showboxbreadth 999
+\showboxdepth 999
+\tracingoutput 1
+
+
+\let\imp\to
+\def\elim#1{{{#1}{\cal E}}}
+\def\intro#1{{{#1}{\cal I}}}
+\def\lt{<}
+\def\eqdef{=}
+\def\eps{\mathrel{\epsilon}}
+\def\biimplies{\leftrightarrow}
+\def\flt#1{\mathrel{{#1}^\flat}}
+\def\setof#1{{\left\{{#1}\right\}}}
+\let\implies\to
+\def\KK{{\mathsf K}}
+\let\squashmuskip\relax
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 2}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Elementær Talteori}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\section*{Logic in Computer Science - Assignment 3}
+
+\subsection*{Structural Induction}
+\subsubsection*{a}
+We want to show, by structural induction, the following hypothesis.\\
+\textbf{Inductive hypothesis}: We claim that any tree with height $h$ has at most $2^h$ propositional atoms (leaves).\\
+\textbf{Base case}: We see that if $\phi=\bot$ or $\phi=p$ then our height is $0$ and contains $1$ propositional atom. This holds to be less or equal to $2^h$, as $2^0=1$ and $1\leq 2^0$.\\
+\textbf{Inductive step}: We let a $T$ be a tree of height $k+1$.\\
+Since any propositional logic of form $\phi\oplus\psi$ has two children, we have two subtrees of height $k$. By out inductive hypothesis, we know both of these trees have at most $2^k$ leaves, and as such, the amount of leaves in $T$ is equal to the number of leaves in each subtree. This amount is guaranteed to be less than or equal to $2^k+2^k=2^{k+1}$.\\
+For the case where $\phi=\neg\phi$, we have only one subtree of height $k$. The maximum amount of leaves for this subtree is $2^k$.\\
+As this is strictly less than $2^{k+1}$, we can conclude that the sum of leaves of both subtrees is at most $2^{k+1}$, thus it holds for $k+1$ and the hypothesis is proved.
+
+\subsubsection*{b}
+We want to show the following using structural induction.\\
+\textbf{Induction hypothesis}: Any propositional logic of height $h$ contains strictly less than $2^h$ propositional atoms if the logic contains a $\neg$ anywhere. \\
+\textbf{Base case}: Our base is that $\neg p$ or $\neg\bot$ has a height of $1$ and $p$ adds $0$ to the height. It has $1$ propositional atom, which is strictly less than $2^1=2$.\\
+\textbf{Inductive step}: Lets assume we have a subtree $T$ with height $h+1$. We have two subtrees of height $h$ and we assume one of these subtrees have a negation in it.\\
+Let the subtree containing a negation be $T_2$ with height $h$. As the negation has only one child with height $h-1$, we know the subtree $T_2$ has less than or equal to $2^{h-1}$ (using proof from (a)).\\
+For the other subtree, $T_3$ of also at most height $h$, we can also use (a) to show that it has at most $2^{h}$.\\
+Now let $l(T)$ be the number of leaves in $T$, we want to show
+\begin{align*}
+l(T)>l(T_2)+l(T_3)
+\end{align*}
+We know from (a) that $l(T)\leq 2^{h+1}$, $l(T_3)\leq 2^h$ and $l(T_2)\leq 2^{h-1}$, so we can rewrite the above to a worst case
+\begin{align*}
+2^{h+1}>2^{h-1}+2^h
+\end{align*}
+or
+\begin{align*}
+2^h>2^{h-1}
+\end{align*}
+By using $2^{h+1}=2^h+2^h$ and eliminating $2^h$ on both sides. This is seen to be true. Had our $T_3$ had a negation we would have
+\begin{align*}
+2^{h+1}>2^{h-1}+2^{h-1}
+\end{align*}
+Which is obviously true. \\
+Thus, we can prove our induction hypothesis.
+
+\end{document}

@@ -1,0 +1,4 @@
+program shortest;
+procedure main()
+return;
+

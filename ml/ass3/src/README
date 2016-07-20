@@ -1,0 +1,9 @@
+To produce all results listen in the report, run
+
+  python main.py
+
+Libraries used:
+
+  numpy
+  numpy.linalg
+  matplotlib.pyplot

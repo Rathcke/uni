@@ -1,0 +1,194 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm]{geometry}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 6}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\chead{1806922265}
+\title{Dis2 Eksamen 2015 \\ 1806922265}
+\begin{document}
+\maketitle
+\section*{Opgave 1}
+\subsection*{a}
+Grunden til at
+\begin{align}
+\left\lfloor \frac{k}{2}\right\rfloor\left \lceil \frac{k}{2}\right\rceil =\frac{1}{4}(k^2-[k \mbox{ er ulige}])
+\end{align}
+er at hvis vi har et lige $k$, så har vi
+\begin{align*}
+\frac{k}{2}\frac{k}{2}&=\frac{k^2}{4} \\
+&=\frac{1}{4}(k^2)
+\end{align*}
+Men når vi har et ulige $k$, så får vi
+\begin{align*}
+\frac{k-1}{2}\frac{k+1}{2}&=\frac{(k-1)(k+1)}{4} \\
+&=\frac{1}{4}(k^2-1)
+\end{align*}
+Hvor vi har brugt at det er en kvadratsætning. Disse kan altså sættes sammen til det givne udtryk i (1) da $-1$ kun kommer med når $k$ er ulige.
+
+\subsection*{b}
+Vi vil bestemme det lukkede udtryk for
+\begin{align*}
+\sum_{k=1}^n [k \mbox{ er ulige}]
+\end{align*}
+Vi ser at summen stiger med $1$ hver gang $k$ er ulige, altså skal vi bare tælle de ulige tal mellem $1$ og $n$, så
+\begin{align*}
+\sum_{k=1}^n [k \mbox{ er ulige}] &= [1\leq 2k-1\leq n] \\
+&=[\frac{1+1}{2}\leq k\leq \frac{n+1}{2}] \\
+&=[1\leq k\leq \frac{n+1}{2}]
+\end{align*}
+Vi skal passe på $n$, da når $n$ er lige, så får vi en rest på $\frac{1}{2}$ i $\frac{n+1}{2}$ og da vi kune arbejder med heltal $k$, så mister vi altså et $k$. Derfor har vi
+\begin{align*}
+[1\leq k\leq \frac{n+1}{2}] &= \frac{n+1}{2}[k \mbox{ er ulige}]+\frac{n}{2}[k \mbox{ er lige}] \\
+&=\left\lceil \frac{n}{2} \right\rceil
+\end{align*}
+Som er vores lukkede udtryk.
+
+\subsection*{c}
+Hvis vi bruger informationen fra de tidligere opgaver har vi at
+\begin{align*}
+a_n&=\sum_{k=1}^n \frac{1}{4}(k^2-[k \mbox{ er ulige}]) \\
+&=\frac{1}{4}\left(\sum_{k=1}^n k^2 - \sum_{k=1}^n [k \mbox{ er ulige}]\right) \\
+&=\frac{1}{4}\left(\sum_{k=1}^n k^2 -  \left\lceil \frac{n}{2} \right\rceil\right) \\
+\end{align*}
+Summen for kvadrattal kender vi, den er nemlig $\frac{n^3}{3}+\frac{n^2}{2}+\frac{n}{6}$, så vi får
+\begin{align*}
+a_n&=\frac{1}{4}\left (\frac{n^3}{3}+\frac{n^2}{2}+\frac{n}{6} -  \left\lceil \frac{n}{2} \right\rceil\right ) \\
+&=\frac{n^3}{12}+\frac{n^2}{8}+\frac{n}{24} -  \frac{1}{4}\left\lceil \frac{n}{2} \right\rceil \\
+\end{align*}
+Hvilket er vores lukkede udtryk for $a_n$. \\
+Vi kan desuden finde et $p(n)$, så $a_n=\lfloor p(n) \rfloor$, hvis vi kigger på hvor meget det sidste led gør for summen. Ved at fjerne ceilings bliver leddet $\frac{1}{8}$ mindre. Det vil altså sige at det totale led er $\frac{1}{8}$ større. Dette korrigeres der så for ved at tage floors af det totale udtryk, så vi får blot
+\begin{align*}
+p(n)&=\frac{n^3}{12}+\frac{n^2}{8}+\frac{n}{24} -  \frac{n}{8}
+\end{align*}
+Samt et $q(n)$ som opfylder, at $a_n=\lceil q(n) \rceil$. Det kan vi gøre ved at ændre udtrykket for $a_n$ til at indeholde en floor istedet for en ceiling, så vores $q(n)$ bliver
+\begin{align*}
+q(n)&=\frac{n^3}{12}+\frac{n^2}{8}+\frac{n}{24} -  \frac{n+1}{8}
+\end{align*}
+Dette virker da det sidste led bliver $\frac{1}{8}$ større, som gør det totale led bliver $\frac{1}{8}$ mindre, så derfor runder vi op for at korrigere for det.
+
+\section*{Opgave 2}
+\subsection*{a}
+Vi kan udtrykke antallet af perler der skal til at fylde pladen ved
+\begin{align*}
+b_n=1+\sum_{k=1}^n 6n
+\end{align*}
+Der er inkluderet et centrum der ifølge figurene i opgaveteksten indgår.\\
+Denne sum kan løses let da vi kender summen af blot $n$ (trekantstallene) til at være $\frac{n(n+1)}{2}$, så
+\begin{align*}
+b_n &= 1+6\sum_{k=1}^n n \\
+&=1+6\left(\frac{n(n+1)}{2}\right) \\
+&=1+3n^2+3n
+\end{align*}
+Som er vores lukkede udtryk.
+
+\subsection*{b}
+Vi kan udtrykke måden at fylde en enkelt cirkel med to forskellige slags perler ved
+\begin{align}
+N(m,n)=\frac{1}{m}\sum_{d \backslash m}\varphi (d)n^{m/d}
+\end{align}
+hvor $m$ er antal pladser der skal fyldes og $n$ er antallet af forskellige perler. \\
+Idet der er i alt $6$ rotationer, hvor af hver "sjette del" af pladen kan fyldes med $2^{((n^2+n)/2)}$ (potensen er kvadrattallene). Da dette er antallet af unikke måder perlerne kan sættes på de $\frac{n^2+n}{2}$ stifter, kan vi se dette som det nye antal "farver" for hver sjettedel. Vi kan derfor bruge (2) til at udtrykke $c_n$. Vi husker på at vi har en perle i midten som kan antage to farver, altså
+\begin{align*}
+c_n&=2\cdot N(6,2^{((n^2+n)/2)}) \\
+&=2\cdot\frac{1}{6}\sum_{d\backslash 6} \varphi(d)\left( 2^{(n^2+n)/2}\right)^{6/d} \\
+&=\frac{1}{3}\sum_{d\backslash 6} \varphi(d)\left( 2^{(n^2+n)/2}\right)^{6/d} 
+\end{align*}
+Denne kan selvfølgelig skrives ud idet vi kender alle divisorer i $6$, men det gør blot udtrykket meget langt.
+
+\subsection*{c}
+Der er brugt computer til at finde begge værdier. Vi får, at 
+\begin{align*}
+c_2&=\frac{1}{3}\sum_{d\backslash 6} \varphi(d)\left( 2^{(2^2+2)/2}\right)^{6/d} \\
+&=\frac{1}{3}\sum_{d\backslash 6} \varphi(d) 8^{6/d} \\
+&=87600
+\end{align*}
+som vi ønskede. Desuden fås
+\begin{align*}
+c_6&=\frac{1}{3}\sum_{d\backslash 6} \varphi(d)\left( 2^{(2^6+6)/2}\right)^{6/d} \\
+&=\frac{1}{3}\sum_{d\backslash 6} \varphi(d) 2097152^{6/d} \\
+&=14178431955039102645844505448482340864
+\end{align*}
+Hvor $2097152=2^{21}$ og vores endelige tal er $38$-cifret som vi ønskede at få.
+
+\section*{Opgave 3}
+\subsection*{a}
+Hvis vi sætter klodsen der rager en udover lig længde $2$, vil vi have den samme figur (på hovedet), men med en mindre i længde, altså $u_{n-1}$.\\
+Hvis vi sætter klodsen til at være af længden $3$, tvinger det den næste klods til også at være af længden $3$, hvorved vi har samme figur, men med tre mindre i længden, altså $u_{n-3}$. \\
+Vi ser at ved den første totale længde $n$ hvor det er muligt at bygge en mur med disse klodser er ved $n=2$. Altså må vi bruge dette som basistilfælde. Ved at sætte dem sammen får vi altså
+\begin{align*}
+u_n=u_{n-1}+u_{n-3}+[n=2]
+\end{align*}
+som vi ville nå frem til.\\
+Herefter har vi at
+\begin{align*}
+U(z)&=\sum_n u_nz^n \\
+&=\sum_n u_{n-1}z^n+\sum_n u_{n-3}z^n+\sum_n [n=2]z^n \\
+&=\sum_n u_{n}z^{n+1}+\sum_n u_{n}z^{n+3}+z^2 \\
+&=zU(z)+z^3U(z)+z^2
+\end{align*}
+Derved får vi, ved isolering, at
+\begin{align*}
+U(z)&=\frac{z^2}{1-z-z^3}
+\end{align*}
+
+\subsection*{b}
+Vi ser at $a_n$ kan gives ved
+\begin{align*}
+a_n=[n=2]+[n=3]+2u_{n-3}
+\end{align*}
+Hvor de første to led er basistilfældende. Det sidste led er ved at overveje hvis vi lægger en klods med længde $2$ tvinger vi klodsen ovenpå til at være af længden $3$. Derved får vi en figur der er givet ved $u_{n-3}$. Hvis vi lagde en med længde $2$ ville vi tvinge en af længde $3$ ovenpå. Derfor får vi 2 af disse led.\\
+Nu ser vi det sidste led jo kan skrives som
+\begin{align*}
+2\sum_n u_{n-3}z^n&=2\sum_n u_{n}z^{n+3} \\
+&=2z^3\sum_n u_{n}z^n
+\end{align*}
+Nu kan vi genkende summen i udtrykket til at være $U(z)$, som vi kender, så vi skriver $a_n$ som
+\begin{align*}
+a_n&=[n=2]+[n+3]+2z^3U(z) \\
+&=z^2+z^3+2z^3\frac{z^2}{1-z-z^3} \\
+&=z^2+z^3+\frac{2z^5}{1-z-z^3} 
+\end{align*}
+Som vi ville vise.
+
+\section*{Opgave 4}
+\subsection*{a}
+Hvis vi ser på ligningen (*), er det klart at der for $n=1$ kun er en mulighed for hvad $d_0$ kan være, nemlig $0$. Hvis man dernæst beregner $n=2$ kan vi se at vi får to ligninger indeholdende et $d_k$. Vi kender det ene, $d_1$, og derfor er der kun en ligning der skal løses. På denne måde kan vi blive ved, hvor vi hele tiden får en ukendt mere i ligningen og derfor er rækken defineret da vi kun har et valg hver gang.\\
+Dette kan muligvis lettere ses når vi beregner de første fem værdier for $d_n$ ved at løse (*)
+\begin{align*}
+d_1&:\ [2\backslash 1]=\frac{1!}{1!\cdot 0!}d_1\ \Leftrightarrow\ 0=d_1\  \Leftrightarrow\ d_1 = 0 \\
+d_2&:\ [2\backslash 2]=\frac{2!}{1!\cdot 1!}d_1 + \frac{2!}{2!\cdot 0!}d_2 \ \Leftrightarrow\ 1=2\cdot 0+d_2\  \Leftrightarrow\ d_2 = 1 \\\\
+d_3&:\ [2\backslash 3]=\frac{3!}{1!\cdot 2!}d_1 +\frac{3!}{2!\cdot 1!}d_2 + \frac{3!}{3!\cdot 0!}d_3 \ \Leftrightarrow\ 0=3\cdot 0+3\cdot 1+d_3\  \Leftrightarrow\ d_3 = -3 \\
+d_4&:\ [2\backslash 4]=\frac{4!}{1!\cdot 3!}d_1 +\frac{4!}{2!\cdot 2!}d_2 + \frac{4!}{3!\cdot 1!}d_3 +\frac{4!}{4!\cdot 0!}d_4\ \Leftrightarrow\ 1=4\cdot 0+6\cdot 1+4\cdot -3+ d_4\\
+&\ \ \ \ \ \ \ \ \ \ \ \ \ \Leftrightarrow\ d_4 = 7 \\
+d_5&:\ [2\backslash 5]=\frac{5!}{1!\cdot 4!}d_1 +\frac{5!}{2!\cdot 3!}d_2 + \frac{5!}{3!\cdot 2!}d_3 +\frac{5!}{4!\cdot 1!}d_4+\frac{5!}{5!\cdot 0!}d_5\ \\
+&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \Leftrightarrow\ 0=5\cdot 0+10\cdot 1+10\cdot -3+ 5\cdot 7 + d_5\ \Leftrightarrow\ d_5=-15
+\end{align*}
+Altså ved at løse for den eneste ukendte hver gang kan vi finde værdierne af $d_n$.
+
+\subsection*{c}
+Hvis vi kigger på ligningen fra (b) ser vi at sum leddene kun antager værdier når $k$ er lige, altså giver det kun mening at kigge på de tilfælde hvor $k$ er lige. \\
+Vi kan altså omskrive ligningen fra (b) til
+\begin{align*}
+d_n &= (-1)^n\sum_{k=1}^n \binom {n}{2k}
+\end{align*}
+Vi kan beholde $n$ som vores øvre grænse, da hvis $2k$ overstiger $n$ giver binomialkoefficienten bare $0$.\\
+Denne sum kender vi (når $k$ går fra $0$ til $n$), den er netop $2^{n-1}$. Vi husker også på at $k$ starter fra $1$. Altså trækker vi leddet $\binom n 0$ fra, så
+\begin{align*}
+d_n &=(-1)^n\left(2^{n-1}-\binom n 0 \right) \\
+&=(-1)^n(2^{n-1}-1)
+\end{align*}
+Som er vores endelige lukkede udtryk.\\
+
+\end{document}

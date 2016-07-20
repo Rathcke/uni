@@ -1,0 +1,39 @@
+Require Import ProofWeb.
+
+Variable P : D * D -> Prop.
+Variable f0 f1 : D -> D.
+Variable e : D.
+
+Theorem PCP_ex_simp_b : 
+(P(f1 e,f1(f0(f1 e))) /\
+ P(f0(f1 e), f0(f0 e)) /\
+ P(f1(f1(f0 e)),f1(f1 e))) 
+->
+((all v, all w, (P(v,w) -> P(f1 v,f1(f0(f1 w))))) /\
+ (all v, all w, (P(v,w) -> P(f0(f1 v), f0(f0 w)))) /\
+ (all v, all w, (P(v,w) -> P(f1(f1(f0 v)),f1(f1 w)))))
+->
+exi z, P(z,z).
+
+Proof.
+
+imp_i H1.
+imp_i H2.
+insert C1 ((all v, all w, (P(v,w) -> P(f0(f1 v), f0(f0 w)))) /\ (all v, all w, (P(v,w) -> P(f1(f1(f0 v)),f1(f1 w))))).
+f_con_e2 H2.
+exi_i (f1(f1(f0(f0(f1(f1(f1(f0(f1 e))))))))).
+imp_e (P(f0(f1(f1(f1(f0(f1 e))))), (f0(f0(f1(f1(f1(f0(f1 e))))))))).
+all_e (all w, (P(f0(f1(f1(f1(f0(f1 e))))), w) -> P(f1(f1(f0(f0(f1(f1(f1(f0(f1 e)))))))), f1(f1 w)))).
+all_e (all v, all w, (P(v,w) -> P(f1(f1(f0 v)),f1(f1 w)))).
+f_con_e2 C1.
+imp_e (P((f1(f1(f0(f1 e)))), (f1(f1(f1(f0(f1 e))))))).
+all_e (all w, (P((f1(f1(f0(f1 e)))), w) -> P(f0(f1(f1(f1(f0(f1 e))))), f0(f0 w)))).
+all_e (all v, all w, (P(v,w) -> P(f0(f1 v), f0(f0 w)))).
+f_con_e1 C1.
+imp_e (P((f1 e), (f1(f0(f1 e))))).
+all_e (all w, (P((f1 e), w) -> P (f1(f1(f0((f1 e)))), f1(f1 w)))).
+all_e (all v, all w, (P(v,w) -> P(f1(f1(f0 v)),f1(f1 w)))).
+f_con_e2 C1.
+f_con_e1 H1.
+
+Qed.

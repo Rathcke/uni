@@ -1,0 +1,36 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage[margin=2.5cm]{geometry}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\begin{document}
+
+\subsection*{Intro}
+Til dette indfører vi en ny differens operator, $\delta_hf(x_0)$, som istedet for at være afhængig af $f(x)$-værdier tæt på $f(x_0)$ kan denne istedet afhænge af en finit mængde punkter ($x_0+a_kh$) som bruges differens operatoren
+$$\delta_hf(x_0)=\sum_{j=0}^nc_jf(x_0+a_jh)$$
+
+\subsection*{Taylor series method}
+Approximationen kan gives ved følgende 
+$$DF(x_0)=\delta_hf(x_0)+O(h^q)$$
+Større $q$ er bedre approximation. Mindre $n$ er billigere computation. Når vi skal finde vores vægte $c_j$ som gør vores $q$ højest mulig, laver vi først taylor expansion for $f(z_j)$, hvor $z_j$ er punktet på formen $x_0+a_jh,x_0-a_jh$ eller en mix, så
+$$\delta_{+,-,+}f(x_0)=\sum_{j=0}^nc_jf(z_j)=\sum_{j=0}^nc_j[\sum_{k=0}^\infty \frac{1}{k!}f^{(k)}(x_0)(z_j-x_0)^k]$$
+Hvor $z_j-x_0$ kan udtrykkes ved $h^k$.\\
+Herefter vælges $c_j$ værdier så de gør ordenen af $q$ størst.
+
+\subsection*{Lore}
+$n$ er pre selected og alt efter $n$ om det er $\delta{+,-,0}$ kaldes det $n$-punkts forward,backward eller central differens operator.\\
+Punkterne er også pre selected.
+
+\end{document}

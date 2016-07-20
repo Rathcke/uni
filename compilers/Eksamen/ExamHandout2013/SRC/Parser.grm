@@ -1,0 +1,128 @@
+%token <(int*int)> IF THEN ELSE INT BOOL CHAR WHILE DO RETURN ASSIGN PROG VAR
+%token <(int*int)> ARR OF BEG END FUN PROC EOF PLUS MINUS TIMES DIV EQ LTH
+%token <(int*int)> LPAR RPAR LBRACKET RBRACKET LCURLY RCURLY COMMA SEMICOL COLON
+%token <(int*int)> TRUE FALSE NOT AND OR OP
+
+%token <string*(int*int)> ID STRINGLIT
+%token <int*(int*int)> NUM
+%token <char*(int*int)> CHARLIT
+
+
+%nonassoc ifprec
+%nonassoc ELSE
+%left OR
+%left AND
+%nonassoc NOT
+%left EQ LTH
+%left PLUS MINUS
+%left TIMES DIV
+
+
+%start Prog
+%type <AbSyn.Prog>        Prog
+%type <AbSyn.FunDec list> FunDecs
+%type <AbSyn.FunDec>      Fun
+%type <AbSyn.Type>        Type
+%type <AbSyn.Dec list>    PDecl
+%type <AbSyn.Dec list>    TypeIds
+%type <AbSyn.Exp>         Exp
+%type <AbSyn.Exp  list>   Exps
+%type <AbSyn.Exp  list>   CallParams
+/* %type <AbSyn.Dec>         DBlk */
+%type <AbSyn.Dec>         Dec
+%type <AbSyn.Dec  list>   Decs
+%type <AbSyn.Stmt>        Stmt
+%type <AbSyn.Stmt list>   SRest
+%type <AbSyn.Stmt list>   SBlk
+%type <AbSyn.StmtBlock>   Blk
+
+%%
+
+Prog :	  PROG ID SEMICOL FunDecs EOF { $4 }
+
+FunDecs : FunDecs Fun { $2 :: $1 }
+        | Fun         { $1 :: [] }
+
+Fun     : FUN  ID LPAR PDecl RPAR COLON Type Blk SEMICOL  { AbSyn.Func($7, #1 $2, $4, $8, #2 $2) }
+        | PROC ID LPAR PDecl RPAR            Blk SEMICOL  { AbSyn.Proc(    #1 $2, $4, $6, #2 $2) }
+
+PDecl   : TypeIds { $1 }
+        |         { [] }
+
+Type :	  INT		   { AbSyn.Int  $1 }
+        | BOOL         { AbSyn.Bool $1 }
+        | CHAR         { AbSyn.Char $1 }
+        | ARR OF Type  { AbSyn.Array ($3, $1) }
+
+TypeIds : ID COLON Type SEMICOL TypeIds {  (AbSyn.Dec(#1 $1, $3, #2 $1)) :: $5 }
+        | ID COLON Type                 {  (AbSyn.Dec(#1 $1, $3, #2 $1)) :: [] }
+
+Dec     : ID COLON Type          { AbSyn.Dec(#1 $1, $3, #2 $1) }
+
+/* This variant follows the published grammar, produces a conflict */
+/*
+ *   Decs    : Decs Dec SEMICOL { $1 @ [$2] }
+ *           | Dec SEMICOL      { $1::[] }
+ *   Blk     : DBlk SBlk        { AbSyn.Block($1, $2) }
+ *   DBlk    : VAR Decs         { $2 }
+ *           |                  { [] }
+ */
+
+/* this variant fixes the conflict */
+Decs : Decs Dec SEMICOL { $1 @ [$2] }
+     | Dec SEMICOL      { [$1] }
+Blk  : VAR Decs SBlk    { AbSyn.Block($2, $3) }
+     |          SBlk    { AbSyn.Block([], $1) }
+;
+
+
+SBlk : BEG Stmt SEMICOL SRest END { $2 :: $4 }
+     | Stmt                       {   [$1]   }
+
+SRest   : Stmt SEMICOL SRest       { $1 :: $3 }
+        |                          { [] }
+
+Stmt    : RETURN Exp                           { AbSyn.Return  (SOME $2, $1) }
+        | RETURN                               { AbSyn.Return  (NONE,    $1) }
+        | ID LPAR CallParams RPAR              { AbSyn.ProcCall(#1 $1, $3, #2 $1) }
+        | ID ASSIGN Exp                        { AbSyn.Assign  (AbSyn.Var(#1 $1), $3, $2) }
+        | ID LBRACKET Exps RBRACKET ASSIGN Exp { AbSyn.Assign  (AbSyn.Index(#1 $1, $3), $6, $5) }
+        | IF Exp THEN  Blk ELSE  Blk           { AbSyn.IfThEl  ($2, $4, $6, $1) }
+        | IF Exp THEN  Blk %prec ifprec        { AbSyn.IfThEl  ($2, $4, AbSyn.Block([], []), $1) }
+        | WHILE Exp DO Blk                     { AbSyn.While   ($2, $4, $1) }
+;
+
+Exp :	  NUM                 { AbSyn.Literal( AbSyn.BVal(AbSyn.Num(#1 $1)), #2 $1) }
+        | TRUE                { AbSyn.Literal( AbSyn.BVal(AbSyn.Log(true )), $1   ) }
+        | FALSE               { AbSyn.Literal( AbSyn.BVal(AbSyn.Log(false)), $1   ) }
+        | CHARLIT             { AbSyn.Literal( AbSyn.BVal(AbSyn.Chr(#1 $1)), #2 $1) }
+        | STRINGLIT           { AbSyn.StrLit (#1 $1, #2 $1) }
+        | LCURLY Exps RCURLY  { AbSyn.ArrLit ( $2, $1 ) }
+
+        | ID                        { AbSyn.LValue(AbSyn.Var   (#1 $1),     #2 $1) }
+        | ID LBRACKET Exps RBRACKET { AbSyn.LValue(AbSyn.Index (#1 $1, $3), #2 $1) }
+
+        | Exp PLUS  Exp  { AbSyn.Plus ($1, $3, $2) }
+        | Exp MINUS Exp  { AbSyn.Minus($1, $3, $2) }
+        | Exp TIMES Exp  { AbSyn.Times($1, $3, $2) }
+        | Exp DIV   Exp  { AbSyn.Div  ($1, $3, $2) }
+        | Exp EQ    Exp  { AbSyn.Equal($1, $3, $2) }
+        | Exp LTH   Exp  { AbSyn.Less ($1, $3, $2) }
+        | Exp AND   Exp  { AbSyn.And  ($1, $3, $2) }
+        | Exp OR    Exp  { AbSyn.Or   ($1, $3, $2) }
+        | NOT Exp        { AbSyn.Not  ($2, $1) }
+
+        | LPAR Exp RPAR  { $2 }
+
+        | ID    LPAR Exps RPAR     { AbSyn.FunApp (#1 $1, $3, #2 $1) }
+        | ID    LPAR      RPAR     { AbSyn.FunApp (#1 $1, [], #2 $1) }
+;
+
+Exps : Exp COMMA Exps   { $1 :: $3 }
+    |  Exp              { $1 :: [] }
+;
+
+CallParams : Exps { $1 }
+           |      { [] }
+;
+

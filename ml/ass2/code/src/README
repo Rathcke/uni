@@ -1,0 +1,9 @@
+To produce all results listed in the report, run
+
+	python main.py
+
+Libraries that has been used:
+	numpy
+	numpy.linalg
+	pylab
+	matplotlib.pyplot

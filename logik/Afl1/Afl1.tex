@@ -1,0 +1,314 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{boxproof}
+\usepackage{a4wide}
+\usepackage{daymonthyear}
+
+\def\meta#1{\mbox{$\langle\hbox{#1}\rangle$}}
+\def\macrowitharg#1#2{{\tt\string#1\bra\meta{#2}\ket}}
+
+{\escapechar-1 \xdef\bra{\string\{}\xdef\ket{\string\}}}
+
+\def\intro#1{{#1}{\cal I}}
+\def\elim#1{{#1}{\cal E}}
+
+\showboxbreadth 999
+\showboxdepth 999
+\tracingoutput 1
+
+
+\let\imp\to
+\def\elim#1{{{#1}{\cal E}}}
+\def\intro#1{{{#1}{\cal I}}}
+\def\lt{<}
+\def\eqdef{=}
+\def\eps{\mathrel{\epsilon}}
+\def\biimplies{\leftrightarrow}
+\def\flt#1{\mathrel{{#1}^\flat}}
+\def\setof#1{{\left\{{#1}\right\}}}
+\let\implies\to
+\def\KK{{\mathsf K}}
+\let\squashmuskip\relax
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 6}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Elementær Talteori}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\section*{Logic in Computer Science - Assignment 1}
+\subsection*{Exercise 1.1}
+\subsubsection*{1e}
+Let\\
+"Cancer will be cured" be $p$.\\
+"A cause is determined" be $q$.\\
+"A new drug for cancer is found" be $r$.\\
+\\
+It can be expressed by the following
+$$\neg (q \wedge r) \rightarrow \neg p $$
+
+\subsubsection*{1h}
+Let\\
+"It will rain" be $p$.\\
+"It will shine" be $q$.\\
+\\
+It can be expressed by the following
+$$(\neg p \wedge q) \vee (p \wedge \neg q)$$
+
+\subsection*{Exercise 1.2}
+\subsubsection*{1b}
+We have $p \wedge q \vdash q \wedge p$
+\begin{proofbox}
+   \: p\land q 	 \=\mbox{premise}\\
+   \: p           \= \land E_1, 1\\
+   \: q           \= \land E_2, 1\\
+   \: q\land p     \= \land I_1, 3,2\\   
+\end{proofbox}
+
+\subsubsection*{1g}
+We have $p \vdash q \rightarrow (p \land q)$
+\begin{proofbox}
+   \lbl{1}\: p 	 \=\mbox{premise}\\
+   \[
+      \: q		  \=\mbox{assumption}\\
+      \: p \land q \= \land I,1,2 \\
+   \]
+   \: q\to (p\land q) \= \rightarrow I,2-3 \\
+\end{proofbox}
+
+\subsubsection*{1j}
+We have $q\rightarrow r \vdash (p\rightarrow q) \rightarrow (p\rightarrow r)$
+\begin{proofbox}
+   \lbl{1}\: q\rightarrow r 	 \=\mbox{premise}\\
+   \[
+      \: p\rightarrow q		  \=\mbox{assumption}\\
+        \[ 
+          \: p \=\mbox{assumption}\\
+          \: q \= \rightarrow E(3,2) \\
+          \: r \= \rightarrow E(4,1)
+        \]
+      \: p\rightarrow r  \= \rightarrow I,3-5             
+   \]
+   \: (p\rightarrow q) \rightarrow (p\rightarrow r) \= \rightarrow I,2-6 \\
+\end{proofbox}
+
+\subsubsection*{1l}
+We have $p\rightarrow q, r\rightarrow s \vdash p\lor r \rightarrow q\lor s$
+\begin{proofbox}
+   \lbl{1}\: p\rightarrow q 	 \=\mbox{premise}\\
+   \lbl{1}\: r\rightarrow s 	 \=\mbox{premise}\\
+   \[
+      \: p\lor r		  \=\mbox{assumption}\\
+        \[ 
+          \: p \=\mbox{assumption}\\
+          \: q \= \rightarrow E(4,1) \\
+          \: q \lor s \= \lor I_1(5) \\
+        \]
+        \[ 
+          \: r \=\mbox{assumption}\\
+          \: s \= \rightarrow E(7,2) \\
+          \: q \lor s \= \lor I_2(8) \\
+        \]
+      \: q\lor s  \= \lor E(3,4-6,7-9)
+   \]
+   \: p\lor r \rightarrow q\lor s \= \rightarrow I,3-10 \\
+\end{proofbox}
+
+\subsubsection*{3c}
+We have $p\lor q, \neg q\vdash p$
+\begin{proofbox}
+   \: p\lor q 	 \=\mbox{premise}\\
+   \: \neg q 	 \=\mbox{premise}\\
+        \[ 
+          \: p \=\mbox{assumption}\\
+        \]
+        \[ 
+          \: q \=\mbox{assumption}\\
+          \: \bot \= \neg E(2,4) \\
+          \: p \= \bot E(5)
+        \]
+      \: p  \= \rightarrow I(1,3-3,4-6)
+\end{proofbox}
+
+\subsubsection*{5a}
+We have $((p\rightarrow q)\rightarrow q)\rightarrow ((q\rightarrow p)\rightarrow p)$ \\
+\begin{proofbox}
+       \[ 
+         \: (p\imp q)\imp q \=\mbox{assumption} 
+         \[
+           \: q\imp p\=\mbox{assumption}
+           \[
+             \: \neg p \=\mbox{assumption}
+             \[
+               \: p \=\mbox{assumption} \\
+               \: \bot \= \neg E(4,3) \\
+               \: q \= \bot E(5)
+             \]      
+             \: p\imp q \= \imp I(4-6) \\
+             \: q \= \imp E(7,1) \\
+             \: p \= \imp E(8,2) \\
+             \: \bot \= \neg E(9,3)
+           \]
+           \: \neg \neg p \= \neg I(3-10) \\
+           \: p \= \neg\neg E(11)
+         \]
+         \: (q\imp p)\imp p \= \imp I(2-12)
+       \]
+       \: ((p\imp q)\imp q) \imp ((q\imp p)\imp p) \= \imp I(1,13)
+\end{proofbox}
+
+\subsection*{Exercise 1.4}
+\subsubsection*{6a}
+The truth table looks as follows\\
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline 
+p & q & p $\ast$ q \\ 
+\hline 
+T & T & F \\ 
+\hline 
+T & F & T  \\ 
+\hline 
+F & T & T  \\ 
+\hline 
+F & F & F  \\ 
+\hline 
+\end{tabular} 
+\end{center}
+
+\subsubsection*{6b}
+The truth table looks as follows\\
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline 
+p & q & (p $\ast$ p) $\ast$ (q $\ast$ q) \\ 
+\hline 
+T & T & F \\ 
+\hline 
+T & F & F  \\ 
+\hline 
+F & T & F  \\ 
+\hline 
+F & F & F  \\ 
+\hline 
+\end{tabular} 
+\end{center}
+
+\subsubsection*{6c}
+Yes, it coincides with the table for absurdity, since it will always be false no matter the truth values of $p$ and $q$.
+
+\subsubsection*{6d}
+Yes, the operator in circuit design is known as xor (exclusive or).
+
+\subsubsection*{12c}
+When the truth values are as follows; $p=T,q=F$ and $r=T$ where the formulas to the left of $\vdash$ is\\
+\begin{align*}
+T\rightarrow(F\rightarrow T)\\
+T\rightarrow T \\
+T
+\end{align*}
+And the the formula to the right of $\vdash$ evaluates to 
+\begin{align*}
+T\rightarrow(T\rightarrow F)\\
+T\rightarrow F \\
+F
+\end{align*}
+Giving two different valuations.
+
+\subsubsection*{13b}
+For this task, we will be assuming apples are always green.\\
+Giving the atoms the declarative sentences $p=$"It is green" and $q=$"It is an apple" evaluates the premise to
+\begin{align*}
+\neg T \rightarrow \neg F \\
+F \rightarrow T \\
+T
+\end{align*}
+Which is "if it is not green it is not an apple". Which is true as an apple can only be green.\\
+But the conclusion becomes
+\begin{align*}
+\neg F\rightarrow \neg T \\
+T \rightarrow F \\
+F
+\end{align*}
+Which is "if it is not an apple, it is not green" which is false as several things can be green.\\
+So the premise is true, but the conclusion is false.
+
+\subsection*{Soundness proofs}
+The cases below is based on the proof from the assignment text.
+\subsubsection*{Case MT}
+It has the subproofs $\Phi\vdash\phi\imp\psi$ and $\Phi\vdash\neg\psi$. By induction hypothesis $\Phi\models\phi\imp\psi$ and $\Phi\models\neg\psi$. We will then show that $\Phi\models\neg\phi$ meaning that in all scenarios where $[[\phi\imp\psi]]=[[\neg \psi]]=T$ then $[[\neg\phi]]=T$. If we look at the truthtable
+\begin{center}
+\begin{tabular}{|c|c||c|c||c|}
+\hline 
+$\phi$ & $\psi$ & $\phi\imp\psi$ & $\neg\psi$ & $\neg\phi$ \\ 
+\hline 
+T & T & T & F & F \\ 
+\hline 
+T & F & F & T & F\\ 
+\hline
+F & T & T & F & F\\ 
+\hline
+F & F & T & T & T\\ 
+\hline
+\end{tabular} 
+\end{center}
+it is seen to hold.
+
+\subsubsection*{Case $\neg\neg i$}
+It has the subproof $\Phi\vdash\phi$. By induction hypothesis $\Phi\models\phi$. We will then show that $\Phi\models\neg\neg\phi$ meaning in all scenarios where $[[\phi]]=T$ then $[[\neg\neg \phi]]=T$. If we look at the truthtable\\
+\begin{center}
+\begin{tabular}{|c||c|}
+\hline 
+$\phi$ & $\neg\neg\phi$ \\ 
+\hline 
+T & T \\ 
+\hline 
+F & F \\ 
+\hline 
+\end{tabular} 
+\end{center}
+it is seen to hold.
+
+\subsubsection*{Case PBC}
+It has the subproof $\Phi,\neg\phi\vdash\bot$. By induction hypothesis $\Phi,\neg\phi\models\bot$. We will then show $\Phi\models\phi$. Looking at the truthtable we see
+\begin{center}
+\begin{tabular}{|c|c||c|}
+\hline 
+$\neg\phi$ & $\bot$ & $\phi$ \\ 
+\hline 
+T & F & F \\ 
+\hline 
+F & F & T \\ 
+\hline 
+\end{tabular} 
+\end{center}
+We see there is a problem when $[[\neg\phi]]=F$. But $\Phi,\phi\models\bot$ says that when $\Phi$ are all true then $[[\phi]]=T$. So these lines where $[[\neg\phi]]=F$ and $[[\bot]]=F$ are not lines where $\Phi$ are all true, meaning that $\Phi\models\phi$.
+
+\subsubsection*{Case LEM}
+It has no subproof. This means that we need to just show $\models\phi\lor\neg\phi$,  meaning it is true in all scenarios. Looking at the truthtable we see
+\begin{center}
+\begin{tabular}{|c||c|}
+\hline 
+$\phi$ & $\phi\lor\neg\phi$ \\ 
+\hline 
+T & T  \\ 
+\hline 
+F & T \\ 
+\hline 
+\end{tabular} 
+\end{center}
+it is seen to hold true as it is always true.
+
+\end{document}

@@ -1,0 +1,45 @@
+program factor;
+
+function mod(n : int; m : int) : int
+var
+    res : int;
+begin
+    res := n;
+    while m < res or m = res do
+      begin
+          res := res - m;
+      end;
+    return res;
+end;
+
+procedure main()
+var n : int;
+    i : int;
+    j : int;
+    k : int;
+    factors : array of int;
+begin
+    n := read();
+    factors := new(n);
+    i := 0;
+    k := 2;
+    while 1 < n and (k < n or k = n) do
+    begin
+        if 0 = mod(n, k)
+        then
+            begin
+                n := n / k;
+                factors[i] := k;
+                k := 2;
+                i := i + 1;
+            end
+        else k := k + 1;
+    end;
+    j := 0;
+    while j < i do
+    begin
+        write(factors[j]);
+        write("\n");
+        j := j + 1;
+    end;
+end;

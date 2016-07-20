@@ -1,0 +1,128 @@
+program Array3D;
+
+function myg(q : int; t : int; p : int) : int
+var x : int; 
+    y : int;
+    z : int;
+begin
+    x := q + t;
+    y := x + p;
+    z := y + y - y;
+    
+    return z;
+end;
+
+function myf(i : int; j : int; k : int; n : int; a : array of array of array of int) : int
+var q : int; 
+    t : int;
+    p : int;
+    s : int;
+    v : int;
+    acc : int;
+begin
+    s := 0;
+    while s < n do
+    begin 
+        v := 0;
+        while v < n do
+        begin    
+            q := i + j;
+            t := i - j;
+            p := k + j - i;
+            acc := myg(q, t, p);
+            v := v + 1;
+        end;
+        s := s + 1;
+    end;
+    if 0 < i then a[i-1, j, k] := 0;
+    return acc;
+end;
+
+procedure printArr(a : array of array of array of int)
+var d1 : int;
+    d2 : int;
+    d3 : int;
+    i  : int;
+    j  : int;
+    k  : int;
+begin
+    d1 := len(0,a);
+    d2 := len(1,a);
+    d3 := len(2,a);
+
+    write("\n\nArray is: { \n");
+
+    i  := 0;
+    while i < d1 do
+    begin
+        write(" { ");
+
+        j := 0;
+        while j < d2 do
+        begin
+            write(" { ");
+
+            k := 0;
+            while k < d3 do
+            begin
+                write(a[i, j, k]);
+                write(", ");
+                k := k + 1;
+            end;
+            
+            write("}, ");
+            j := j + 1;
+        end;
+
+        write(" }, ");
+        i := i + 1;
+    end;
+
+    write("\n}\n\n");
+end;
+
+procedure main()
+var n : int;
+    i  : int;
+    a  : array of array of array of int;
+    b  : array of array of array of int;
+begin
+    n := 2;
+    b := new(n, n+n, n+n+n);
+
+    a := b;
+
+    i := 0;
+    while i < n do 
+    var j : int;
+    begin
+        j := 0;
+        while j < (n+n) do
+        var k : int;
+        begin
+            k := 0;
+            while( k < (n+n+n) ) do
+                begin
+                    if 0 < j then
+                        begin
+                        a[i,j,k] := a[i,j-1,k];
+                        end
+                    else
+                        begin
+                        a[i,j,k] := myf(i, j, k, n, b); //i + j + k
+                        end;
+                    write(a[i,j,k]);
+                    write(" ");
+                    k := k + 1;
+                end;
+            j := j + 1;
+         end;
+         i := i + 1;
+    end;
+
+    printArr(b);
+
+    write("\nLengths: ");
+
+    write(len(0,a)); write(len(1,a)); write(len(2,a));
+end;

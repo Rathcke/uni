@@ -1,0 +1,73 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage[margin=2.5cm]{geometry}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\begin{document}
+
+\subsection*{Intro}
+Polynomium interpolation er når vi har noget data\\
+\begin{center}
+\begin{tabular}{|c||c|c|c|c|}
+\hline 
+$x$ & $x_1$ & $x_2$ & ... & $x_n$ \\ 
+\hline 
+$y$ & $y_1$ & $y_2$ & ... & $y_n$ \\ 
+\hline 
+\end{tabular}
+\end{center}
+Og vi vil finde et polynomium af laveste grad, så
+$$p(x_i)=y_i$$
+
+\subsection*{Newtons form}
+Newtons form er når et polynomium $p_k$ kan skrives som
+$$p_k(x)=\sum_{i=0}^k c_i \prod_{j=0}^{i-1} (x-x_j)$$
+Hvor at ethvert $p_k$ indgår i $p_{k+1}$.
+
+\subsection*{Divided differences}
+Hvis vi ønsker at beregne koefficienterne i et polynomium på newtons form skriver kan vi skrive et ligningssystem op som er en lower trekants matrice.
+$$
+\begin{bmatrix}
+1 & 0 \\
+1 & (x_1-x_0)
+\end{bmatrix}
+\begin{bmatrix}
+c_0 \\
+c_1
+\end{bmatrix}
+=
+\begin{bmatrix}
+f(x_0) \\
+f(x_1)
+\end{bmatrix}
+$$
+Hvor vi let kan se at $c_0=f(x_0)=f[x_0]$ (kommenter notation). Udtrykkene $f[x_0,..,f_n]$ kaldes de \textit{dividerede differencer} og disse kan findes iterativt ved hjælp af et table og definitionen
+$$
+f[x_0,..,x_n]=\frac{f[x_1,..,x_n]-f[x_0,..,f_{n-1}]}{x_n-x_0}
+$$
+Ved brug af et table (s. 330) kan man rekursivt finde de dividerede differencer. På grund af strukturen ved et polynomium på newtons form er det let at lægge et til term til uden det lægger for meget til costen idet vi kan bruge det samme stykke arbejde fra før.
+
+\subsection*{Lore}
+For at kunne evaluere $p_k(x)$ kan man bruge Horners algoritme (lineær tid).\\
+\\
+Error in newton interpolation:
+$$
+f(t)-p(t)=f[x_0,..,x_n,t]\prod_{j=0}^n (x-x_j)
+$$
+
+
+
+
+\end{document}

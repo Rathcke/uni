@@ -1,0 +1,494 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 3}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Elementær Talteori}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+
+\section*{4.3.1}
+\subsection*{a}
+We have our linear system
+$$
+\begin{bmatrix}
+-1 & 1 & -4 \\
+2 & 2 & 0 \\
+3 & 3 & 2
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\
+x_2 \\
+x_3
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 \\
+1 \\
+\frac{1}{2}
+\end{bmatrix}
+$$
+First we solve it using Gaussian elimination. We make the following matrix
+$$
+\begin{bmatrix}
+-1 & 1 & -4 & 0\\
+2 & 2 & 0 & 1\\
+3 & 3 & 2 & \frac{1}{2}
+\end{bmatrix}
+$$
+We then apply the row operations to the matrix and keep track of our multipliers to create a lower triangular matrix later.
+\begin{align*}
+&\begin{bmatrix}
+-1 & 1 & -4 & 0\\
+2 & 2 & 0 & 1\\ 
+3 & 3 & 2 & \frac{1}{2}
+\end{bmatrix}
+&R_2-(-2)R_1 \\
+&\begin{bmatrix}
+-1 & 1 & -4 & 0\\
+0 & 4 & -8 & 1\\
+0 & 6 & -10 & \frac{1}{2}
+\end{bmatrix}
+&R_3-(-3)R_1\\
+&\begin{bmatrix}
+-1 & 1 & -4 & 0\\
+0 & 4 & -8 & 1\\
+0 & 0 & 2 & -1
+\end{bmatrix}
+&R_3-\frac{3}{2}R_2\\
+\end{align*}
+We find the solution by back substitution to be
+\begin{align*}
+x_3&=-\frac{1}{2}\\
+x_2&=-\frac{3}{4}\\
+x_1&=\phantom{-}\frac{5}{4}
+\end{align*}
+The multipliers can be used to define a lower triangular matrix
+$$
+L=
+\begin{bmatrix}
+1 & 0 & 0 \\
+-2 & 1 & 0 \\
+-3 & \frac{3}{2} & 1
+\end{bmatrix}
+$$
+And we can define an upper triangular matrix by the results from the Gaussian elimination
+$$
+U=
+\begin{bmatrix}
+-1 & 1 & -4 \\
+0 & 4 & -8 \\
+0 & 0 & 2
+\end{bmatrix}
+$$
+And thus the factorization $A=LU$ is
+$$
+\begin{bmatrix}
+-1 & 1 & -4 \\
+2 & 2 & 0 \\
+3 & 3 & 2
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 \\
+-2 & 1 & 0 \\
+-3 & \frac{3}{2} & 1
+\end{bmatrix}
+\begin{bmatrix}
+-1 & 1 & -4 \\
+0 & 4 & -8 \\
+0 & 0 & 2
+\end{bmatrix}
+$$
+Now we solve it again, using Gaussian Elimination with scaled row pivoting.
+$$
+\begin{bmatrix}
+-1 & 1 & -4 & 0\\
+2 & 2 & 0 & 1\\
+3 & 3 & 2 & \frac{1}{2}
+\end{bmatrix}
+$$
+Initially, we have that $S=(4,2,3)$ and $P=(1,2,3)$. If we look at the ratios $\{1/4,2/2,3/3$. Row $2$ and $3$ have the same ratio, so we pick row $2$ to be the first pivot row, so $p=(2,1,3)$. Now we use multiples of row $2$ to subtract from the other $2$ rows to get zeroes in the first column.
+\begin{align*}
+&\begin{bmatrix}
+2 & 2 & 0 & 1\\
+-1 & 1 & -4 & 0\\
+3 & 3 & 2 & \frac{1}{2}
+\end{bmatrix}\\
+&\begin{bmatrix}
+2 & 2 & 0 & 1\\
+0 & 2 & -4 & \frac{1}{2}\\
+3 & 3 & 2 & \frac{1}{2}
+\end{bmatrix}
+&R2-(-\frac{1}{2})R1 \\
+&\begin{bmatrix}
+2 & 2 & 0 & 1\\
+0 & 2 & -4 & -\frac{1}{2}\\
+0 & 0 & 2 & -1
+\end{bmatrix}
+&R3-\frac{3}{2}R1
+\end{align*}
+And we do not need to pick another pivot row as we are done. By back substitution we get
+\begin{align*}
+x_3&=-\frac{1}{2}\\
+x_2&=-\frac{3}{4}\\
+x_1&=\phantom{-}\frac{5}{4}
+\end{align*}
+The factorization $PA=LU$ will be
+\begin{align*}
+PA
+&=
+\begin{bmatrix}
+1 & 0 & 0\\
+-\frac{1}{2} & 1 & 0\\
+\frac{3}{2} & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+2 & 2 & 0  \\
+0 & 2 & -4\\
+0 & 0 & 2
+\end{bmatrix}\\
+&=
+\begin{bmatrix}
+2 & 2 & 0  \\
+-1 & 1 & -4\\
+3 & 3 & 2
+\end{bmatrix}
+\end{align*}
+Where
+$$
+P
+=
+\begin{bmatrix}
+0 & 1 & 0  \\
+1 & 0 & 0\\
+0 & 0 & 1
+\end{bmatrix}
+A
+=
+\begin{bmatrix}
+-1 & 1 & -4\\
+2 & 2 & 0 \\
+3 & 3 & 2 
+\end{bmatrix}
+$$
+As row $1$ and $2$ were switched.\\
+\\
+In the following exercise (b-e), we have assumed that only the elimination step is written as a procedure in Maple. For the procedure that allows pivoting (two different procedures has been made), the user must calculate the pivot rows and pass this on as an argument to the function. The procedure has been tweaked to also produce the permutation matrix $P$.\\
+
+
+\subsection*{b}
+In the appendix in \ref{4.3.1} there is Maple code implementing Gaussian Elimination with and without pivoting. From section 4.3.1b, we see that using Gaussian elimination on $b$ gives
+$$
+\begin{bmatrix}
+1 & 5 & 0\\
+2m & -11 & 0 \\
+0 & -\frac{2}{11}m & 1 
+\end{bmatrix}
+$$
+where $m$'s represent the multipliers used. This allow us to create a lower triangle matrix $L$ and an upper $U$
+$$
+L
+=
+\begin{bmatrix}
+1 & 0 & 0\\
+2 & 1 & 0 \\
+0 & -\frac{2}{11} & 1 
+\end{bmatrix}
+U
+=
+\begin{bmatrix}
+1 & 6 & 0\\
+0 & -11 & 0 \\
+0 & 0 & 1 
+\end{bmatrix}
+$$
+This gives us the factorization $A=LU$
+$$
+\begin{bmatrix}
+1 & 6 & 0\\
+2 & 1 & 0 \\
+0 & 2 & 1 
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0\\
+2 & 1 & 0 \\
+0 & -\frac{2}{11} & 1 
+\end{bmatrix}
+\begin{bmatrix}
+1 & 6 & 0\\
+0 & -11 & 0 \\
+0 & 0 & 1 
+\end{bmatrix}
+$$
+Furthermore, the Maple commands \texttt{ReducedRowEchelonForm} provides us with values for $x_1,x_2,x_3$ as seen in the appendix, where
+\begin{align*}
+x_1&=\frac{3}{11} \\
+x_2&=\frac{5}{11} \\
+x_3&=\frac{1}{11}
+\end{align*}
+Now, since we have seen from the the Gaussian elimination without pivoting that there is no need to for finding pivot rows as it does not fail, so we simply pass the argument $\{1,2,3\}$ with it as argument.\\
+Since it is the same matrix produced, $x_1,x_2,x_3$ will be the same, but also our lower and upper triangular matrix will be the same. So our factorization $PA=LU$ is
+$$
+\begin{bmatrix}
+1 & 0 & 0\\
+0 & 1 & 0 \\
+0 & 0 & 1 
+\end{bmatrix}
+\begin{bmatrix}
+1 & 6 & 0\\
+2 & 1 & 0 \\
+0 & 2 & 1 
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0\\
+2 & 1 & 0 \\
+0 & -\frac{2}{11} & 1 
+\end{bmatrix}
+\begin{bmatrix}
+1 & 6 & 0\\
+0 & -11 & 0 \\
+0 & 0 & 1 
+\end{bmatrix}
+$$
+If we had changed the order of the rows, we would have different matrices $L$ and $U$ and thus $P$ would have been needed to permute the matrix $A$ to match the permutation of $L$ and $U$.
+
+\subsection*{c}
+Using the same procedure as in (b), we see that using Gaussian elimination gives us
+$$
+\begin{bmatrix}
+-1 & 1 & 0 & -3\\
+-m & 1 & 3 & -2 \\
+0 & m & -4 & 1 \\
+-3m & 3m & 2m & -3
+\end{bmatrix}
+$$
+We can then create the matrices $L$ and $U$
+$$
+L
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+-1 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 \\
+-3 & 3 & 2 & 1
+\end{bmatrix}
+U
+=
+\begin{bmatrix}
+-1 & 1 & 0 & -3\\
+0 & 1 & 3 & -2 \\
+0 & 0 & -4 & 1 \\
+0 & 0 & 0 & -3
+\end{bmatrix}
+$$
+Which gives us the factorization $A=LU$
+$$
+\begin{bmatrix}
+-1 & 1 & 0 & -3\\
+1 & 0 & 3 & 1 \\
+0 & 1 & -1 & -1 \\
+3 & 0 & 2 & 2
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+-1 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 \\
+-3 & 3 & 2 & 1
+\end{bmatrix}
+\begin{bmatrix}
+-1 & 1 & 0 & -3\\
+0 & 1 & 3 & -2 \\
+0 & 0 & -4 & 1 \\
+0 & 0 & 0 & -3
+\end{bmatrix}
+$$
+The values $x_1,x_2,x_3,x_4$ are computed to be
+\begin{align*}
+x_1&=1 \\
+x_2&=2 \\
+x_3&=0 \\
+x_4&=-1
+\end{align*}
+By the same reason as described in (b), we have the factorization $PA=LU$
+$$
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+-1 & 1 & 0 & -3\\
+1 & 0 & 3 & 1 \\
+0 & 1 & -1 & -1 \\
+3 & 0 & 2 & 2
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+-1 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 \\
+-3 & 3 & 2 & 1
+\end{bmatrix}
+\begin{bmatrix}
+-1 & 1 & 0 & -3\\
+0 & 1 & 3 & -2 \\
+0 & 0 & -4 & 1 \\
+0 & 0 & 0 & -3
+\end{bmatrix}
+$$
+
+\subsection*{d}
+From the appendix, we see that Gaussian elimination yields us
+$$
+\begin{bmatrix}
+6 & -2 & 2 & 4\\
+2m & -4 & 0 & 2 \\
+\frac{1}{2}m & 3m & 2 & -5 \\
+-m & -\frac{1}{2}m & 2m & -3
+\end{bmatrix}
+$$
+The factorization $A=LU$ becomes
+$$
+\begin{bmatrix}
+6 & -2 & 2 & 4\\
+12 & -8 & 4 & 10 \\
+3 & -13 & 3 & 3 \\
+-6 & 4 & 2 & -18
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+2 & 1 & 0 & 0 \\
+\frac{1}{2} & 3 & 1 & 0 \\
+-1 & -\frac{1}{2} & 2 & 1
+\end{bmatrix}
+\begin{bmatrix}
+6 & -2 & 2 & 4\\
+0 & -4 & 0 & 2 \\
+0 & 0 & 2 & -5 \\
+0 & 0 & 0 & -3
+\end{bmatrix}
+$$
+And the values $x_1,x_2,x_3,x_4$ are computed to be
+\begin{align*}
+x_1&=1 \\
+x_2&=3 \\
+x_3&=-2 \\
+x_4&=1
+\end{align*}
+Again, as it does not fail, we can give the following factorization $PA=LU$
+$$
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+6 & -2 & 2 & 4\\
+12 & -8 & 4 & 10 \\
+3 & -13 & 3 & 3 \\
+-6 & 4 & 2 & -18
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+2 & 1 & 0 & 0 \\
+\frac{1}{2} & 3 & 1 & 0 \\
+-1 & -\frac{1}{2} & 2 & 1
+\end{bmatrix}
+\begin{bmatrix}
+6 & -2 & 2 & 4\\
+0 & -4 & 0 & 2 \\
+0 & 0 & 2 & -5 \\
+0 & 0 & 0 & -3
+\end{bmatrix}
+$$
+
+\subsection*{e}
+Gaussian elimination gives us
+$$
+\begin{bmatrix}
+1 & 0 & 2 & 1\\
+4m & -9 & -6 & -3 \\
+8m & -\frac{16}{9}m & -\frac{62}{3} & -\frac{25}{3} \\
+2m & -\frac{1}{3}m & \frac{6}{31}m & -\frac{12}{31}
+\end{bmatrix}
+$$
+We find the factorization $A=LU$ to
+$$
+\begin{bmatrix}
+1 & 0 & 2 & 1\\
+4 & -9 & 2 & 1 \\
+8 & 16 & 6 & 5 \\
+2 & 3 & 2 & 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+4 & 1 & 0 & 0 \\
+8 & -\frac{16}{9} & 1 & 0 \\
+2 & -\frac{1}{3} & \frac{6}{31} & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 & 2 & 1\\
+0 & -9 & -6 & -3 \\
+0 & 0 & -\frac{62}{3} & -\frac{25}{3} \\
+0 & 0 & 0 & -\frac{12}{31}
+\end{bmatrix}
+$$
+The values $x_1,x_2,x_3,x_4$ are computed to be
+\begin{align*}
+x_1&=1 \\
+x_2&=-1 \\
+x_3&=0 \\
+x_4&=1
+\end{align*}
+And finally, the factorization $PA=LU$ will look like
+$$
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 & 2 & 1\\
+4 & -9 & 2 & 1 \\
+8 & 16 & 6 & 5 \\
+2 & 3 & 2 & 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+4 & 1 & 0 & 0 \\
+8 & -\frac{16}{9} & 1 & 0 \\
+2 & -\frac{1}{3} & \frac{6}{31} & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 & 2 & 1\\
+0 & -9 & -6 & -3 \\
+0 & 0 & -\frac{62}{3} & -\frac{25}{3} \\
+0 & 0 & 0 & -\frac{12}{31}
+\end{bmatrix}
+$$
+
+\end{document}

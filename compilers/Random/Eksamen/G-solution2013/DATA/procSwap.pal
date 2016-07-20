@@ -1,0 +1,34 @@
+program procSwap;
+
+// Test of call-by-value-result in procedures.  Swaps values.
+
+procedure main()
+var
+   m : int;
+   n : int;
+begin
+   m := read();
+   n := read();
+   writeMN(m, n);
+
+   swap(m, n);
+   writeMN(m, n);
+end;
+
+procedure writeMN(m : int; n : int)
+begin
+   write(m);
+   write(' ');
+   write(n);
+   write('\n');
+end;
+
+procedure swap(x : int; y : int)
+var
+   t : int;
+begin
+   t := x;
+   x := y;
+   y := t;
+   return;
+end;

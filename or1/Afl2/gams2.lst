@@ -1,0 +1,63 @@
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                      03/11/15 18:45:56 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   2   
+   3  $include br17.inc
+****                  $282
+   4   
+   5  set ij(ii,jj) exclude first row and column; ij(ii,jj) = ord(ii)>1 and ord(jj)>1;
+****          $120,120
+   6   
+   7  variable u(ii) subtour elimination strategy 3
+   8   
+   9  equation se(ii,jj) subtour elimination constraints;
+  10   
+  11  se(ij(i,j)).. u(i) - u(j) + card(i)*x(i,j) =l= card(i) - 1;
+****        $120,120,171,171  $171        $140
+  12   
+  13  model tsp / objective, rowsum, colsum, se /;
+****                      $140    $140    $140
+  14   
+  15  * Try a small problem first - first six cities
+  16  i(ii) = ord(ii) <= 6;
+  17   
+  18  option optcr=0.05;
+  19  solve tsp min z using mip; display x.l;
+****                $140       $257
+  20   
+  21  * Try a bit larger problem - 10 cities
+  22  i(ii) = ord(ii) <= 10;
+  23   
+  24  option limcol=0,limrow=0;
+  25  solve tsp min z using mip;
+****                           $257
+GAMS 24.4.1  r50296 Released Dec 20, 2014 LEX-LEG x86 64bit/Linux                                                                                                                                                                      03/11/15 18:45:56 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Error Messages
+
+
+120  Unknown identifier entered as set
+140  Unknown symbol
+171  Domain violation for set
+257  Solve statement not checked because of previous errors
+282  Unable to open include file
+
+**** 15 ERROR(S)   0 WARNING(S)
+
+
+COMPILATION TIME     =        0.001 SECONDS      3 MB  24.4.1 r50296 LEX-LEG
+
+
+USER: Course License Spring 2015                     A150112:0736AO-GEN
+      Copenhagen University, Department of Mathematical Sciences DC9510
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      /home/vix/Dropbox/Vix/Uni/qOR1/Afl2/gams2.gms
+Output     /home/vix/Dropbox/Vix/Uni/qOR1/Afl2/gams2.lst
+
+**** USER ERROR(S) ENCOUNTERED

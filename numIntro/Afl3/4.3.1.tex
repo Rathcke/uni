@@ -1,0 +1,604 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 3}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Elementær Talteori}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+
+\section*{4.3.1}
+\subsection*{a}
+We have our linear system
+$$
+\begin{bmatrix}
+-1 & 1 & -4 \\
+2 & 2 & 0 \\
+3 & 3 & 2
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\
+x_2 \\
+x_3
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 \\
+1 \\
+\frac{1}{2}
+\end{bmatrix}
+$$
+First we solve it using Gaussian elimination. We make the following matrix
+$$
+\begin{bmatrix}
+-1 & 1 & -4 & 0\\
+2 & 2 & 0 & 1\\
+3 & 3 & 2 & \frac{1}{2}
+\end{bmatrix}
+$$
+We then apply the row operations to the matrix and keep track of our multipliers to create a lower triangular matrix later.
+\begin{align*}
+&\begin{bmatrix}
+-1 & 1 & -4 & 0\\
+2 & 2 & 0 & 1\\ 
+3 & 3 & 2 & \frac{1}{2}
+\end{bmatrix}
+&R_2-(-2)R_1 \\
+&\begin{bmatrix}
+-1 & 1 & -4 & 0\\
+0 & 4 & -8 & 1\\
+0 & 6 & -10 & \frac{1}{2}
+\end{bmatrix}
+&R_3-(-3)R_1\\
+&\begin{bmatrix}
+-1 & 1 & -4 & 0\\
+0 & 4 & -8 & 1\\
+0 & 0 & 2 & -1
+\end{bmatrix}
+&R_3-\frac{3}{2}R_2\\
+\end{align*}
+The multipliers can be used to define a lower triangular matrix
+$$
+L=
+\begin{bmatrix}
+1 & 0 & 0 \\
+-2 & 1 & 0 \\
+-3 & \frac{3}{2} & 1
+\end{bmatrix}
+$$
+And we can define an upper triangular matrix by the results from the Gaussian elimination
+$$
+U=
+\begin{bmatrix}
+-1 & 1 & -4 \\
+0 & 4 & -8 \\
+0 & 0 & 2
+\end{bmatrix}
+$$
+And thus the factorization $A=LU$ is
+$$
+\begin{bmatrix}
+-1 & 1 & -4 \\
+2 & 2 & 0 \\
+3 & 3 & 2
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 \\
+-2 & 1 & 0 \\
+-3 & \frac{3}{2} & 1
+\end{bmatrix}
+\begin{bmatrix}
+-1 & 1 & -4 \\
+0 & 4 & -8 \\
+0 & 0 & 2
+\end{bmatrix}
+$$
+We find the solution by back substitution $Ux=\hat{b}$ to be
+\begin{align*}
+x_3&=-\frac{1}{2}&&\mbox{solving}:2x=-1\\
+x_2&=-\frac{3}{4}&&\mbox{solving}:-8\cdot -\frac{1}{2}+4\cdot x=1\\
+x_1&=\phantom{-}\frac{5}{4}&&\mbox{solving}:-4\cdot -\frac{1}{2}-\frac{3}{4}-x=0
+\end{align*}
+Now we solve it again, using Gaussian Elimination with scaled row pivoting.
+$$
+\begin{bmatrix}
+-1 & 1 & -4 & 0\\
+2 & 2 & 0 & 1\\
+3 & 3 & 2 & \frac{1}{2}
+\end{bmatrix}
+$$
+Initially, we have that $S=(4,2,3)$ and $P=(1,2,3)$. If we look at the ratios $\{1/4,2/2,3/3$. Row $2$ and $3$ have the same ratio, so we pick row $2$ to be the first pivot row, so $p=(2,1,3)$. Now we use multiples of row $2$ to subtract from the other $2$ rows to get zeroes in the first column.
+\begin{align*}
+&\begin{bmatrix}
+2 & 2 & 0 & 1\\
+-1 & 1 & -4 & 0\\
+3 & 3 & 2 & \frac{1}{2}
+\end{bmatrix}\\
+&\begin{bmatrix}
+2 & 2 & 0 & 1\\
+0 & 2 & -4 & \frac{1}{2}\\
+3 & 3 & 2 & \frac{1}{2}
+\end{bmatrix}
+&R2-(-\frac{1}{2})R1 \\
+&\begin{bmatrix}
+2 & 2 & 0 & 1\\
+0 & 2 & -4 & -\frac{1}{2}\\
+0 & 0 & 2 & -1
+\end{bmatrix}
+&R3-\frac{3}{2}R1
+\end{align*}
+And we do not need to pick another pivot row as we are done.\\
+The factorization $PA=LU$ will be
+\begin{align*}
+PA
+&=
+\begin{bmatrix}
+1 & 0 & 0\\
+-\frac{1}{2} & 1 & 0\\
+\frac{3}{2} & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+2 & 2 & 0  \\
+0 & 2 & -4\\
+0 & 0 & 2
+\end{bmatrix}\\
+&=
+\begin{bmatrix}
+2 & 2 & 0  \\
+-1 & 1 & -4\\
+3 & 3 & 2
+\end{bmatrix}
+\end{align*}
+Where
+$$
+P
+=
+\begin{bmatrix}
+0 & 1 & 0  \\
+1 & 0 & 0\\
+0 & 0 & 1
+\end{bmatrix}
+A
+=
+\begin{bmatrix}
+-1 & 1 & -4\\
+2 & 2 & 0 \\
+3 & 3 & 2 
+\end{bmatrix}
+$$
+As row $1$ and $2$ were switched.\\
+By back substitution we get (solving $Ux=\hat{b}$)
+\begin{align*}
+x_3&=-\frac{1}{2}&&\mbox{solving}:2x=-1\\
+x_2&=-\frac{3}{4}&&\mbox{solving}:-4\cdot -\frac{1}{2}+2\cdot x=-\frac{1}{2}\\
+x_1&=\phantom{-}\frac{5}{4}&&\mbox{solving}:2\cdot -\frac{3}{4}+2\cdot x=1
+\end{align*}
+In the following exercise (b-e), we have written two different procedures. One that is with pivoting and one without. The procedure has been tweaked to also produce the permutation matrix $P$ if pivoting is desired. We use a Maple function to calculate the values of $x_1,x_2,..,x_n$, however it is not displayed twice as it is the same result.\\
+
+\subsection*{b}
+In the appendix in \ref{app:4.3.1} there is Maple code implementing Gaussian Elimination with and without pivoting. From section 4.3.1b, we see that using Gaussian elimination on $b$ gives
+$$
+\begin{bmatrix}
+1 & 5 & 0 & 0\\
+2m & -11 & 0 & 1 \\
+0 & -\frac{2}{11}m & 1 & \frac{15}{22}
+\end{bmatrix}
+$$
+where $m$'s represent the multipliers used. This allow us to create a lower triangle matrix $L$ and an upper $U$
+$$
+L
+=
+\begin{bmatrix}
+1 & 0 & 0\\
+2 & 1 & 0 \\
+0 & -\frac{2}{11} & 1 
+\end{bmatrix}
+U
+=
+\begin{bmatrix}
+1 & 6 & 0\\
+0 & -11 & 0 \\
+0 & 0 & 1 
+\end{bmatrix}
+$$
+This gives us the factorization $A=LU$
+$$
+\begin{bmatrix}
+1 & 6 & 0\\
+2 & 1 & 0 \\
+0 & 2 & 1 
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0\\
+2 & 1 & 0 \\
+0 & -\frac{2}{11} & 1 
+\end{bmatrix}
+\begin{bmatrix}
+1 & 6 & 0\\
+0 & -11 & 0 \\
+0 & 0 & 1 
+\end{bmatrix}
+$$
+Now we can use $U$ with $\hat{b}$ to solve the system $Ux=\hat{b}$ and find $x_1,x_2,x_3$ with \texttt{backSub} that we made in (cp4.2.2).
+\begin{align*}
+x_1&=\frac{3}{11} \\
+x_2&=\frac{5}{11} \\
+x_3&=\frac{1}{11}
+\end{align*}
+Using the implemented Gaussian elimination with scaled pivoting from Maple we see that we produce a matrix
+$$
+\begin{bmatrix}
+\frac{1}{2}m & \frac{11}{4} & -\frac{11}{4} & -\frac{1}{4} \\
+2 & 1 & 0 & 1\\ 
+0 & 2 & 1 & 1
+\end{bmatrix}
+$$
+This means we have $L$ and $U$ to be
+$$
+L
+=
+\begin{bmatrix}
+1 & 0 & 0\\
+0 & 1 & 0 \\
+\frac{1}{2} & \frac{11}{4} & 1 
+\end{bmatrix}
+U
+=
+\begin{bmatrix}
+2 & 1 & 0\\
+0 & 2 & 1 \\
+0 & 0 & -\frac{11}{4} 
+\end{bmatrix}
+$$
+And from maple we also have our produced permutation matrix P, so we get the following factorization $PA=LU$
+$$
+\begin{bmatrix}
+0 & 1 & 0\\
+0 & 0 & 1 \\
+1 & 0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+1 & 6 & 0\\
+2 & 1 & 0 \\
+0 & 2 & 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0\\
+0 & 1 & 0 \\
+\frac{1}{2} & \frac{11}{4} & 1 
+\end{bmatrix}
+\begin{bmatrix}
+2 & 1 & 0\\
+0 & 2 & 1 \\
+0 & 0 & -\frac{11}{4} 
+\end{bmatrix}
+$$
+Furthermore, we see from Maple, that solving the system $Ux=\hat{b}$ gives us the same $x_1,x_2$ and $x_3$ as before.
+
+\subsection*{c}
+Using the same procedure as in (b), we see that using Gaussian elimination gives us
+$$
+\begin{bmatrix}
+-1 & 1 & 0 & -3 & 4\\
+-m & 1 & 3 & -2 & 4\\
+0 & m & -4 & 1 & -1\\
+-3m & 3m & 2m & -3 & 3
+\end{bmatrix}
+$$
+We can then create the matrices $L$ and $U$
+$$
+L
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+-1 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 \\
+-3 & 3 & 2 & 1
+\end{bmatrix}
+U
+=
+\begin{bmatrix}
+-1 & 1 & 0 & -3\\
+0 & 1 & 3 & -2 \\
+0 & 0 & -4 & 1 \\
+0 & 0 & 0 & -3
+\end{bmatrix}
+$$
+Which gives us the factorization $A=LU$
+$$
+\begin{bmatrix}
+-1 & 1 & 0 & -3\\
+1 & 0 & 3 & 1 \\
+0 & 1 & -1 & -1 \\
+3 & 0 & 2 & 2
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+-1 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 \\
+-3 & 3 & 2 & 1
+\end{bmatrix}
+\begin{bmatrix}
+-1 & 1 & 0 & -3\\
+0 & 1 & 3 & -2 \\
+0 & 0 & -4 & 1 \\
+0 & 0 & 0 & -3
+\end{bmatrix}
+$$
+The values $x_1,x_2,x_3,x_4$ are computed in the same way as (b) to be (solving $Ux=\hat{b}$)
+\begin{align*}
+x_1&=1 \\
+x_2&=2 \\
+x_3&=0 \\
+x_4&=-1
+\end{align*}
+Using the implemented Gaussian elimination with scaled pivoting from Maple we see that we produce a matrix
+$$
+\begin{bmatrix}
+-\frac{1}{3}m & m & \frac{4}{3} & -\frac{4}{3} & \frac{4}{3}\\
+\frac{1}{3}m & 0 & 2m & 3 & -3\\
+0 & 1 & -1 & -1 & 3\\
+3 & 0 & 1 & 2 & 1
+\end{bmatrix}
+$$
+Now we got the matrices $L$ and $U$
+$$
+L
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 \\
+-\frac{1}{3} & 1 & 1 & 0 \\
+\frac{1}{3} & 0 & 2 & 1
+\end{bmatrix}
+U
+=
+\begin{bmatrix}
+3 & 0 & 1 & 2\\
+0 & 1 & -1 & -1 \\
+0 & 0 & \frac{4}{3} & -\frac{4}{3} \\
+0 & 0 & 0 & 3
+\end{bmatrix}
+$$
+And since we have our permutation matrix $P$, we can put the factorization $PA=LU$ as
+$$
+\begin{bmatrix}
+0 & 0 & 0 & 1\\
+0 & 0 & 1 & 0 \\
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+-1 & 1 & 0 & -3\\
+1 & 0 & 3 & 1 \\
+0 & 1 & -1 & -1 \\
+3 & 0 & 1 & 2
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 \\
+-\frac{1}{3} & 1 & 1 & 0 \\
+\frac{1}{3} & 0 & 2 & 1
+\end{bmatrix}
+\begin{bmatrix}
+3 & 0 & 1 & 2\\
+0 & 1 & -1 & -1 \\
+0 & 0 & \frac{4}{3} & -\frac{4}{3} \\
+0 & 0 & 0 & 3
+\end{bmatrix}
+$$
+Furthermore, we see from Maple, that solving the system $Ux=\hat{b}$ gives us the same $x_1,x_2$ and $x_3$ as before.
+
+\subsection*{d}
+From the appendix, we see that Gaussian elimination yields us
+$$
+\begin{bmatrix}
+6 & -2 & 2 & 4 & 0\\
+2m & -4 & 0 & 2 & -10\\
+\frac{1}{2}m & 3m & 2 & -5 & -9 \\
+-m & -\frac{1}{2}m & 2m & -3 & -3
+\end{bmatrix}
+$$
+The factorization $A=LU$ becomes
+$$
+\begin{bmatrix}
+6 & -2 & 2 & 4\\
+12 & -8 & 4 & 10 \\
+3 & -13 & 3 & 3 \\
+-6 & 4 & 2 & -18
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+2 & 1 & 0 & 0 \\
+\frac{1}{2} & 3 & 1 & 0 \\
+-1 & -\frac{1}{2} & 2 & 1
+\end{bmatrix}
+\begin{bmatrix}
+6 & -2 & 2 & 4\\
+0 & -4 & 0 & 2 \\
+0 & 0 & 2 & -5 \\
+0 & 0 & 0 & -3
+\end{bmatrix}
+$$
+And the values $x_1,x_2,x_3,x_4$ are computed to be (solving $Ux=\hat{b}$)
+\begin{align*}
+x_1&=1 \\
+x_2&=3 \\
+x_3&=-2 \\
+x_4&=1
+\end{align*}
+Using the implemented Gaussian elimination with scaled pivoting from Maple we see that we produce a matrix
+$$
+\begin{bmatrix}
+6 & -2 & 2 & 4 & 0 \\
+2m & -2m & -\frac{4}{13}m & -\frac{6}{13} & -\frac{6}{13}\\
+\frac{1}{2}m & -6m & 26 & -83 & -135 \\
+-m & 2 & 4 & -14 & -16
+\end{bmatrix}
+$$
+We can the define our matrices $L$ and $U$
+$$
+L
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+-1 & 1 & 0 & 0 \\
+\frac{1}{2} & -6 & 1 & 0 \\
+2 & -2 & \frac{4}{13} & 1
+\end{bmatrix}
+U
+=
+\begin{bmatrix}
+6 & -2 & 2 & 4\\
+0 & 2 & 4 & -14 \\
+0 & 0 & 26 & -83 \\
+0 & 0 & 0 & -\frac{6}{13}
+\end{bmatrix}
+$$
+And given $P$, we have the factorization $PA=LU$
+$$
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+0 & 0 & 0 & 1 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+6 & -2 & 2 & 4\\
+12 & -8 & 4 & 10 \\
+3 & -13 & 3 & 3 \\
+-6 & 4 & 2 & -18
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+-1 & 1 & 0 & 0 \\
+\frac{1}{2} & -6 & 1 & 0 \\
+2 & -2 & \frac{4}{13} & 1
+\end{bmatrix}
+\begin{bmatrix}
+6 & -2 & 2 & 4\\
+0 & 2 & 4 & -14 \\
+0 & 0 & 26 & -83 \\
+0 & 0 & 0 & -\frac{6}{13}
+\end{bmatrix}
+$$
+Furthermore, we see from Maple, that solving the system $Ux=\hat{b}$ gives us the same $x_1,x_2$ and $x_3$ as before.
+
+\subsection*{e}
+Gaussian elimination gives us
+$$
+\begin{bmatrix}
+1 & 0 & 2 & 1 & 2\\
+4m & -9 & -6 & -3 & 6 \\
+8m & -\frac{16}{9}m & -\frac{62}{3} & -\frac{25}{3} & -\frac{25}{3}\\
+2m & -\frac{1}{3}m & \frac{6}{31}m & -\frac{12}{31} & -\frac{12}{31}
+\end{bmatrix}
+$$
+We find the factorization $A=LU$ to
+$$
+\begin{bmatrix}
+1 & 0 & 2 & 1\\
+4 & -9 & 2 & 1 \\
+8 & 16 & 6 & 5 \\
+2 & 3 & 2 & 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+4 & 1 & 0 & 0 \\
+8 & -\frac{16}{9} & 1 & 0 \\
+2 & -\frac{1}{3} & \frac{6}{31} & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 & 2 & 1\\
+0 & -9 & -6 & -3 \\
+0 & 0 & -\frac{62}{3} & -\frac{25}{3} \\
+0 & 0 & 0 & -\frac{12}{31}
+\end{bmatrix}
+$$
+The values $x_1,x_2,x_3,x_4$ are computed to be (solving $Ux=\hat{b}$)
+\begin{align*}
+x_1&=1 \\
+x_2&=-1 \\
+x_3&=0 \\
+x_4&=1
+\end{align*}
+Using the implemented Gaussian elimination with scaled pivoting from Maple we see that we produce a matrix
+$$
+\begin{bmatrix}
+\frac{1}{2}m & -\frac{3}{2} & 1 & \frac{1}{2} & 2\\
+2m & 10m & -12 & -6 & -6\\
+4m & -\frac{8}{3}m & -\frac{1}{18}m & 2 & 2\\
+2 & 3 & 2 & 1 & 0
+\end{bmatrix}
+$$
+We can then define our matrices $L$ and $U$
+$$
+L
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+\frac{1}{2} & 1 & 0 & 0 \\
+2 & 10 & 1 & 0 \\
+4 & -\frac{8}{3} & -\frac{1}{18} & 1
+\end{bmatrix}
+U
+=
+\begin{bmatrix}
+2 & 3 & 2 & 1\\
+0 & -\frac{3}{2} & 1 & \frac{1}{2} \\
+0 & 0 & -12 & -6 \\
+0 & 0 & 0 & 2
+\end{bmatrix}
+$$
+With our permutation matrix $P$ we can do the factorization $PA=LU$
+$$
+\begin{bmatrix}
+0 & 0 & 0 & 1\\
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 & 2 & 1\\
+4 & -9 & 2 & 1 \\
+8 & 16 & 6 & 5 \\
+2 & 3 & 2 & 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+\frac{1}{2} & 1 & 0 & 0 \\
+2 & 10 & 1 & 0 \\
+4 & -\frac{8}{3} & -\frac{1}{18} & 1
+\end{bmatrix}
+\begin{bmatrix}
+2 & 3 & 2 & 1\\
+0 & -\frac{3}{2} & 1 & \frac{1}{2} \\
+0 & 0 & -12 & -6 \\
+0 & 0 & 0 & 2
+\end{bmatrix}
+$$
+Furthermore, we see from Maple, that solving the system $Ux=\hat{b}$ gives us the same $x_1,x_2$ and $x_3$ as before.
+
+\end{document}

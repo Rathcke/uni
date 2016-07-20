@@ -1,0 +1,17 @@
+Systemdesign summary
+
+As of right now, the system is a number of classes and methods that was forseen would be needed in the final design. Since the way we will receive the data from the queries to the database is still unknown, data specific classes and methods are yet to be made and implemented.
+\\\\
+Some of the most important remaining design and implementation task are as follows:
+
+GUI
+The Android application user interface and the various action listeners that is needed to get this to work satisfactory on all android platforms of version 2.3 or higher.
+
+A payment soloution
+When a customer want to buy a book the system for handling this is needed, the Android SDK provides a tool for this but it has yet to be implemented and fully understood.
+
+The WebAPI
+This will be implemented by eBogreolen.dk's developer Anders Hyldig and will facilitate the interaction with the database. We expect that this will return all information about a book in the store by providing the ISBN number, furthermore we expect that from a search string it will return a list of books that is the result of the search query.
+
+Database interaction
+The queries that the user makes regarding bought books and browsing for new books needs to be taken care of, the implementation of this depends on the WebAPI

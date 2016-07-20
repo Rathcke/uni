@@ -1,0 +1,28 @@
+program Readtest;
+
+procedure main()
+var a : bool;
+    b : int;
+    c : char;
+begin
+    write("Welcome to the Echo program, now lets play a game.\n");
+    write("I will ask you for an input of a specific type\n");
+    write("and echo your answer if it is correct.\n");
+    write("Due to the type checking, if you fail I fail!!!\n\n");
+    write("Now, give me a boolean value, represented by a number\n");
+    write("input: ");
+    a := read();
+    write("echo ");
+    write(a);
+    write("\n\nNow, give me an integer value\n");
+    write("input: ");
+    b := read();
+    write("echo ");
+    write(b);
+    write("\n\nNow, give me a char\n");
+    write("input: ");
+    c := read();
+    write("echo ");
+    write(c);
+    write("\n\nCongrats, you won the game\n");
+end;

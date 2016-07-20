@@ -1,0 +1,48 @@
+Black-box testing
+Since the last sprint, we have been performing black-box testing as soon as the individual sites were up and running, to examine the functionality of the applications current solution. Since the pages, as of now, do not consist of the most advanced code, the minor bugs found, has been solveable. This does not include the graphic layout.
+
+$ git log --pretty=oneline
+0a92c56627e8547191f98ae61c434542ceb4f94a update
+cd59b794a7614691b691fcf1fddb5034d6eeaf7e update
+81f96c3c2b2cf33ceaabfdf0b63c3ddb8d547d6b Test
+d5421935758de876b9b613cacec4167c3f2208e6 Test
+fa79e32927f67ccc7483277525a7f0b4a855405d minor changes
+fae66c3414c4de7a8f8f17b1118e982920fe5a94 minor changes
+5779ac9da57787a03d2baa48a8188b66204b3e23 Fixed various items
+99a72ad7cedfda5019cba6f3801334ee5481204e SpecificBook update
+12de19605b065b312fb9937fab08b6d8bc4374a0 Bookinfo setup
+4e7388ef4cecb299efb3d91ffbf4bf95f4d3ab0f Connected SearchActivity and Results
+5a00d025e589d6f6e9fa79ecbf11de3ed88cf5ba SearchActivity changed
+e5f1f6f6a8f3a8165ab612f0cc64fdc74c3a942c minor design tweak
+415efdf381a0588cde453baf74cc5ab30c4c655a Added result activity - working
+d65d0d1d501d93c00f3e0bc3fce76bdebdfd67f2 Added result activity - working
+6bd44dbbae9fe9b26f815565acf2b13a66730bff Added listener to an ExpandListChild, a
+fefa828bf15b9834e0998599c5416452ab70bfea bin/EBogreolen
+9b2a7766b65fac09eddf2f4307265afa1734558f Layout changed in search_activity
+f94a3c72fa3e965884fa84fd1fe995bb67e266e7 minor changes
+7d66bd221d9605a95252307425428e191c5aa967 minor changes
+7d76ce7922967e420a688e1605d6e948305e97a5 results slide update
+f61f9af4aa0710510934c087e9f970ad2b10797c ingenting
+60b87c7f992e1c99b919d117d5778466af3f14d5 Minor features changed
+d59dce2ad2165e732f8167cde990ab03f9bdc8c5 Locked screen orientation of SearchActi
+b80bd05310576fc275b51b98ada6a5c93c1db50b Added portrait mode to YourBook
+cd08044f313ef9846fb9a189e7e031b59e84a64f Added portrait mode to YourBooks
+1a47e565ef07a0c8771d6ef07fe98fbe1b648cd7 Button functionality
+33270a15351cb5d74a06694068066b436a5bd36f Merged together with the SearchActivity
+a38eadd6db8d30e7af74551e70fe71247be70018 Merged together with the SearchActivity
+0dd7a7751efa1eab53e6ec04d769cad52439e289 added Results activity
+cb721602919bbc65f034ff386ed1fb89ff8b6f99 Updated YourBooks to add books programa
+840c6cbdac85855d816f3f55c7c036488462f671 added application
+05dcec5b8ada987372b125ca26a0989dcf74de75 added application
+3f7efb800accf646de7f0eb041e987341e7b8191 Test
+064f99889deda672a1362a13fc4e1960bb002785 Cleaned the project
+9dd6bad8eec27a1012dcf399187a98ad42de842d Fix of your books activity
+96927130e41cf1f71b08aea0578cd424b3c0c9a7 Setup of android app environment, and a
+258566b216827dd09a6186042069f4ecb563faf5 Merge branch 'master' of https://github
+5176586754383ad696ecc8da6e3b1a089b611ad1 First commit
+86bf9e9a7090a87a986ecf6bf7ec34ed094a56f7 Initial commit
+
+
+Since the last commit, we have succesfully merged together the GUIs described in Figure \ref{Book information}, \ref{Categories} and \ref{Results} and in the previous papers "Version control" section.
+The classes from the first commits are still merged together with the rest, although unused, we still do not know if they will come in handy. With the new content added, we are now able to navigate between pages, due to the increased functionality. Since the current version still is in the prototype state, it only contains dummy data for test purposes A clone of the repository yields the code for an application that can be run on any Android device of version 2.3 or higher, though a path for a local ADK must be provided, and some other system specific settings. Furthermore it will hold the most updated working application.
+

@@ -1,0 +1,41 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=3.5cm]{geometry}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 3}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+
+\section*{Miller-Rabin}
+\subsection*{Algoritmen}
+Miller-Rabin testen afgør om et givet tal, $n$, er et sammensat tal eller om det er "nok et primtal". Dette skyldes at det er en probabilistisk algoritme, altså at den afhænger af tilfældighed. \\
+Et kald til Miller-Rabin algoritmen kræver udover tallet $n$ også en parameter $k$ som er antallet af gange algoritmen bliver gentaget. For hver ekstra gang algoritmen bliver kørt hvor der bliver returneret at $n$ nok er primtal, falder sandsynligheden for at $n$ ren faktiskt er et sammensat tal. Altså ses $k$ som en parameter for korrekthed. \\
+Algoritmen kan deles i fire trin for $n\geq 5$.
+\begin{enumerate}
+\item Find de unikke tal $r$ og $s$, så $n-1=2^r\cdot m$ og $m$ er ulige.
+\item Vælg et tilfældigt heltal $a$, hvor $1<a<n$.
+\item Sæt $b=a^m$ (mod $n$). Hvis $b\equiv \pm 1$ (mod $n$), så er $n$ nok et primtal.
+\item Hvis $b^{2^s}\equiv -1$ (mod $n$) for et $s$ hvor $1\leq s\leq r-1$, så er $n$ nok et primtal. Hvis ikke, så er $n$ et sammensat tal.
+\end{enumerate}
+En implementering af dette kan ses
+
+\subsection*{Køretid}
+
+
+
+
+\end{document}

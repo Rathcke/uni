@@ -1,0 +1,287 @@
+\title          {\TeX\ Cheatsheet for proof boxes}
+\author         {Reduced from Paul Taylor's paper}
+
+\documentclass{article}
+\usepackage{boxproof}
+\usepackage{a4wide}
+\usepackage{daymonthyear}
+
+\def\meta#1{\mbox{$\langle\hbox{#1}\rangle$}}
+\def\macrowitharg#1#2{{\tt\string#1\bra\meta{#2}\ket}}
+
+{\escapechar-1 \xdef\bra{\string\{}\xdef\ket{\string\}}}
+
+\def\intro#1{{#1}{\cal I}}
+\def\elim#1{{#1}{\cal E}}
+
+\showboxbreadth 999
+\showboxdepth 999
+\tracingoutput 1
+
+
+\let\imp\to
+\def\elim#1{{{#1}{\cal E}}}
+\def\intro#1{{{#1}{\cal I}}}
+\def\lt{<}
+\def\eqdef{=}
+\def\eps{\mathrel{\epsilon}}
+\def\biimplies{\leftrightarrow}
+\def\flt#1{\mathrel{{#1}^\flat}}
+\def\setof#1{{\left\{{#1}\right\}}}
+\let\implies\to
+\def\KK{{\mathsf K}}
+\let\squashmuskip\relax
+%=======================================================================
+\begin{document}
+\maketitle
+
+\section{Miscellaneous logical notations}
+
+
+ This is how the basic signs are written:
+  \begin{quote}
+     \verb/\elim\forall/ $\elim\forall$ \qquad
+     \verb/\intro\land/ $\intro\land$ \qquad
+  \end{quote}
+ Default  \TeX\  logical connectives and quantifiers:
+  \begin{center}
+    \verb/\lor/ $\lor$\quad
+    \verb/\land/ $\land$\quad
+    \verb/\lnot/ $\lnot$\quad
+    \verb/\forall/ $\forall$\quad
+    \verb/\exists/ $\exists$
+  \end{center}
+Two ways of writing implication:
+  \begin{center}
+    \verb/A\implies B/ $A\implies B$\quad{\em versus\/}\quad
+    \verb/A\implic B/ $A\implic B$
+  \end{center}
+
+%=======================================================================
+\section{Cheat sheet}
+\subsection{Here you should write the ex. number you are solving}
+\begin{proofbox}
+   \: P\land Q 	 \=\mbox{premise}\\
+   \: P         \= \elim\land\\
+\end{proofbox}
+
+\subsection{}
+\begin{proofbox}
+   \lbl{1}\: P 	 \=\mbox{premise}\\
+   \[
+      \: Q		  \=\mbox{assumption}\\
+      \: P \= (\ref{1}) \\
+   \]
+   \: Q\to P \= \intro\to \\
+\end{proofbox}
+\subsection{}
+\begin{proofbox}
+   \lbl{2}\: P	  \=\mbox{premise}\\
+   \[
+      \lbl{3}\: Q 	\=\mbox{assumption}\\
+      \: P\land Q\= \intro\land(\ref{2},\ref{3}) \\
+   \]
+   \: Q\to(P\land Q) \= \intro\to \\
+\end{proofbox}
+
+\subsection{}
+\begin{proofbox}
+   \lbl{6}\: P\to(Q\to R)	 \=\mbox{premise}\\
+   \[
+      \lbl{4}\: P\to Q	\=\mbox{assumption} \\
+      \[
+         \lbl{5}\: P 	\=\mbox{assumption}\\
+         \lbl{8}\: Q \= \elim\to(\ref{4},\ref{5})\\
+         \lbl{7}\: Q\to R \= \elim\to(\ref{6},\ref{5})\\
+         \: R \= \elim\to(\ref{7},\ref{8})\\
+      \]
+      \: P\to R \= \intro\to \\
+   \]
+   \: (P\to Q)\to(P\to R) \= \intro\to \\
+\end{proofbox}
+
+\subsection{}
+\begin{proofbox}
+   \lbl{10}\: P\to(Q\to R)	 \=\mbox{premise}\\
+   \[
+      \lbl{9}\: P\land Q	\=\mbox{assumption}\\
+      \lbl{11}\: P \= \elim\land1(\ref{9})\\
+      \lbl{12}\: Q\to R \= \elim\to(\ref{10},\ref{11})\\
+      \lbl{13}\: Q \=\elim\land2(\ref{9})\\
+      \: R \=\elim\to(\ref{12},\ref{13})\\
+   \]
+      \: P\land Q\to R \= \intro\to \\
+\end{proofbox}
+
+\subsection{}
+\begin{proofbox}
+   \lbl{16}\: P\land Q\to R	 \=\mbox{premise} \\
+   \[
+      \lbl{14}\: P   \=\mbox{assumption} \\
+      \[
+         \lbl{15}\: Q    \=\mbox{assumption}\\
+         \lbl{17}\: P\land Q \= \intro\land(\ref{14},\ref{15})\\
+         \: R \= \elim\to(\ref{16},\ref{17})
+      \]
+      \: Q\to R \= \intro\to \\
+   \]
+   \: P\to(Q\to R) \= \intro\to \\
+\end{proofbox}
+
+\subsection{}
+\begin{proofbox}
+   \lbl{18}\: P\to Q	 \=\mbox{premise}\\
+   \lbl{20}\: \lnot Q\\
+   \[
+      \lbl{19}\: P    \=\mbox{assumption}\\
+      \lbl{21}\: Q \= \elim\to(\ref{18},\ref{19})\\
+      \: \bot \= \elim\lnot(\ref{20},\ref{21})\\
+   \]
+   \: \lnot P \= \intro\lnot \\
+\end{proofbox}
+
+\subsection{}
+\begin{proofbox}
+   \lbl{22}\: \lnot P	 \=\mbox{premise}\\
+   \[
+      \lbl{23}\: P   \=\mbox{assumption}\\
+      \[
+         \: \lnot Q   \=\mbox{assumption}\\
+         \: \lnot P \land P \= \intro\land(\ref{22},\ref{23})\\
+         \: \bot \= \elim\lnot(\ref{22},\ref{23})\\
+      \]
+      \: \lnot\lnot Q \= \intro\lnot\\
+      \: Q \= \lnot\lnot\\
+   \]
+   \: P\to Q \= \intro\to \\
+\end{proofbox}
+
+\subsection{}
+\begin{proofbox}
+   \lbl{24}\: P\to Q 	 \=\mbox{premise}\\
+   \[
+      \lbl{26}\: \lnot Q    \=\mbox{assumption}\\
+      \[
+         \lbl{25}\: P   \=\mbox{assumption} \\
+         \lbl{27}\: Q \= \elim\to(\ref{24},\ref{25})\\
+         \: \bot \= \elim\lnot(\ref{26},\ref{27})\\
+      \]
+      \: \lnot P \= \intro\lnot\\
+   \]
+   \: \lnot Q\to \lnot P \= \intro\to \\
+\end{proofbox}
+
+\subsection{}
+\begin{proofbox}
+   \lbl{28}\: P\to Q 	 \=\mbox{premise}\\
+   \[
+      \: \lnot\lnot P   \=\mbox{assumption}\\
+      \lbl{29}\: P \= \lnot\lnot\\
+      \[
+         \lbl{31}\: \lnot Q    \=\mbox{assumption}\\
+         \lbl{30}\: Q \= \elim\to(\ref{28},\ref{29})\\
+         \: Q\land\lnot Q \= \intro\land(\ref{30},\ref{31})\\
+         \: \bot \= \elim\lnot\\
+      \]
+      \: \lnot\lnot Q \= \intro\lnot\\
+   \]
+   \: \lnot\lnot P\to\lnot\lnot Q \= \intro\to \\
+\end{proofbox}
+
+\subsection{}
+\begin{proofbox}
+   \: P\lor\lnot P 	  \=\mbox{premise}\\
+   \(
+      \: P   \=\mbox{assumption} \\
+      \: Q\to P \=\hbox{by (e)}\\
+      \: (P\to Q)\lor(Q\to P) \= \intro\lor \\
+   \+
+      \: \lnot P   \=\mbox{assumption}\\
+      \: P\to Q \=\hbox{by (k)}\\
+      \: (P\to Q)\lor(P\to Q) \= \intro\lor \\
+   \)
+   \: (P\to Q)\lor(P\to Q) \= \elim\lor \\
+\end{proofbox}
+
+
+\subsection{}
+\begin{proofbox}
+   \lbl{35}\: P\lor Q 	  \=\mbox{premise}\\
+   \[
+      \lbl{30}\: (\lnot P)\land(\lnot Q)    \=\mbox{assumption}\\
+      \(
+         \lbl{31} \: P    \=\mbox{assumption}\\
+         \lbl{32} \: \lnot P \=\elim\land1(\ref{30})\\
+         \: \bot \= \elim\lnot(\ref{32},\ref{31})\\
+      \+
+         \lbl{33} \: Q    \=\mbox{assumption}\\
+         \lbl{34} \: \lnot Q \= \elim\land2(\ref{30})\\
+         \: \bot \= \elim\lnot(\ref{33},\ref{34})\\
+      \)
+      \: \bot \= \elim\lor(\ref{35})\\
+   \]
+   \: \lnot((\lnot P)\land(\lnot Q)) \= \intro\lnot \\
+\end{proofbox}
+
+\subsection{We will not require anything that is this complicated}
+$$\proofboxformulawidth=18em\relax
+\begin{proofbox}
+\[\forall x:\lbl{ind box hyp}\:\forall x'.x'\prec x\imp\phi(x')
+   \=\mbox{induction hypothesis}\\
+\:\vdots\\
+\lbl{ind box pred}\:u\prec x\=\mbox{various terms $u$}\\
+\:\phi(u)\=\elim\forall(\ref{ind box hyp},\ref{ind box pred})\\
+\:\vdots\\
+\:\phi(x)\=\mbox{the property}\\
+\]\:\forall x.(\forall x'.x'\prec x\imp\phi(x'))\imp\phi(x)\=\intro\forall\\
+\:\forall x.\phi(x)\=\mbox{$\prec$-induction for $\phi$}\\
+\end{proofbox}$$
+$$\begin{proofbox}
+\lbl{ind eg 0}\:\phi(0)\=z\\
+\lbl{ind eg s}\:\forall n.\phi(n)\imp\phi(n+1)\=s\\
+\lbl{ind eg 1-}\:\phi(0)\imp\phi(1)\=\elim\forall(\ref{ind eg s})\\
+\lbl{ind eg 1}\:\phi(1)\=\elim\imp(\ref{ind eg 1-},\ref{ind eg 0})\\
+\lbl{ind eg 2-}\:\phi(1)\imp\phi(2)\=\elim\forall(\ref{ind eg s})\\
+\lbl{ind eg 2}\:\phi(2)\=\elim\imp(\ref{ind eg 2-},\ref{ind eg 1})\\
+\lbl{ind eg 3-}\:\phi(2)\imp\phi(3)\=\elim\forall(\ref{ind eg s})\\
+\lbl{ind eg 3}\:\phi(3)\=\elim\imp(\ref{ind eg 3-},\ref{ind eg 2})\\
+\end{proofbox}$$
+$$\begin{proofbox}
+\lbl{mrwf1}\:\forall x.(\forall x'.x'\lt x\imp\phi(x'))\imp\phi(x)
+\=\mbox{hypothesis}\\
+\lbl{mrwf4}\:\psi(y)\eqdef\forall x.(fx=y)\imp\phi(x)\=\mbox{definition}\\
+\[\forall y:\lbl{mrwf2}\:\forall y'.y'\prec y\imp\psi(y')     \=\mbox{assumption}\\
+   \[\forall x:\lbl{mrwf3}\:fx=y    \=\mbox{assumption}\\
+      \[\forall x':\:x'\lt x    \=\mbox{assumption}\\
+          \:fx'\prec y\=\hbox{monotonicity}\\
+          \:\psi(fx')\=\elim\forall(\ref{mrwf2})\\
+          \:\phi(x')\=\elim\forall(\hbox{def }\ref{mrwf4},\ref{mrwf3})\\
+      \]
+      \:\forall x'.x'\lt x\imp\phi(x')\=\intro\forall\\
+      \:\phi(x)\=\elim\forall(\ref{mrwf1})\\
+   \]
+   \:\forall x.(fx=y)\imp\phi(x)\=\intro\forall\\
+  \:\psi(y)\=\hbox{def}(\ref{mrwf4})\\
+\]
+\:\forall y.(\forall y'.y'\prec y\imp\psi(y'))\imp\psi(y)\=\intro\forall\\
+\:\forall y.\psi(y)\=(Y,{\prec})\hbox{-induction}\\
+\end{proofbox}$$
+$$\begin{proofbox}
+\lbl{qwf1}\:\forall y.[\forall y'.y'\eps y\imp\phi(y')]\imp\phi(y)\\
+\[\lbl{qwf2}\forall x:\:\forall x'.x'\prec x\imp\phi(fx')    \=\mbox{assumption}\\
+\[\forall y':\:y'\eps fx    \=\mbox{assumption}\\
+\lbl{qwf3}\:\exists x'.x'\prec x\land y'=fx'
+\=\hbox{surj on pred}\\
+\[\exists x':\:x'\prec x    \=\mbox{assumption}\\
+\:y'=fx'\\
+\:\phi(fx')\=\elim\forall(\ref{qwf2})\\
+\:\phi(y')\=\hbox{substitution}\\
+\]\:\phi(y')\=\elim\exists(\ref{qwf3})\\
+\]\:\forall y'.y'\eps fx\imp\phi(y')\=\intro\forall\\
+\:\phi(fx)\=\elim\forall(\ref{qwf1},y:=fx)\\
+\]\:\forall x.[\forall x'.x'\prec x\imp\phi(fx')]\imp\phi(fx)\=\intro\forall\\
+\end{proofbox}$$
+
+\end{document}
+
+

@@ -1,0 +1,123 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Victor Petrén Bach Hansen (grn762)}
+\title{Advanced Programming \\ Assignment 0}
+\lhead{Advanced Programming}
+\rhead{Assignment 0}
+
+\begin{document}
+\maketitle
+
+\subsection*{Implemented Functions}
+The functions implemented in the assignment is briefly explained though we omitted some trivial functions and type declarations. \\
+\\
+\texttt{connect}: Connect takes the first point from the first curve and uses this as the new first point for the new connected curve. The remaining points are then appended on each other in the correct order, namely the order [curve1 tail, curve2 head, curve2 tail], creating a the new connected curve. \\
+\\
+\texttt{rotate}:
+For the function rotate, the rotation matrix for the cartesian plane were used. The rotation matrix $R$ is
+\begin{align*}
+R&=
+\begin{bmatrix}
+cos\theta & -sin\theta \\
+sin\theta & cos\theta
+\end{bmatrix}
+\end{align*}
+For a point $(x,y)$ and an angle $\theta$, the new coordinates $(x', y')$ become
+\begin{align*}
+x'&=xcos\theta-ysin\theta \\
+y'&=xsin\theta+ycos\theta
+\end{align*}
+Since \texttt{sin} and \texttt{cos} takes the angle $v$ in radians, it is converted from degrees to radians as: $\frac{v\cdot \pi}{180}$. \\
+\\
+\texttt{translate}:
+When translating the curve, the distance between the given point and the first point of the curve was first calculated (the difference in $x$ and $y$). When these values were found, they were added to all the point in the curve. \\
+\\
+\texttt{reflect}:
+When reflecting a point over a custom horizontal/vertical axis that has the function $y=d$ or $x=d$, the new points can be calcualted as $(2\cdot d-x, y)$ when the line is vertical and $(x, 2\cdot d-y)$ when it is horizontal. \\
+\\
+\texttt{bbox}: The function finds the lower left corner and the upper right corner of the bounding box for a curve $c$. This is achieved by finding minimum and maximum values of $x$ and $y$ in the curve as $(min(x), min(y))$ and $(max(x), max(y))$ corresponds to the corners. In the code, we used the high order function \texttt{foldl} on the list and the functions \texttt{min} and \texttt{max} to find values for $x$ and $y$. \\
+\\
+\texttt{width}: The width can easily be computed as it corresponds to the difference between $min(x)$ and $max(x)$ found with the \texttt{bbox} function. It is simply $max(x)-min(x)$. \\
+\\
+\texttt{height}: Likewise, the height corresponds to the difference between $min(y)$ and $max(y)$ which is also found with \texttt{bbox} function. \\
+\\
+\texttt{toSVG}:
+As the the header of the svg file is fixed, whereas the number of lines would have to be generated
+from the number of points in the curve, this part of the svg-file is filled in with the height and
+width of the file (rounded up using ceiling).
+The line elements of the curve was then recursively generated from the list of points in the curve, appending these on one another using the seperate function \texttt{svgLines}. \\
+\\
+\texttt{toFile}:
+The function \texttt{writeFile} is used to create a new file with a given name, containing the generated
+svg content (using the function \texttt{toSVG}) from the given curve.
+
+\subsection*{Code Assessment}
+The code works entirely as intended. We used the test framework given in the assignment as an indication for quality. It passed all tests without any error and no comments. Using \texttt{hlint} on \texttt{Curves.hs} produced no suggestions either. \\
+Generally, the approach when writing the code, was to make it as clear as possible, instead of writing convoluted one-liners that solved the problem.
+
+\end{document}

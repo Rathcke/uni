@@ -1,0 +1,37 @@
+digraph { 
+
+
+rankdir="LR";
+
+node[shape = plaintext];
+	start [label = "start"];
+
+node[shape = circle];
+	s0 [label = "s0"];
+	s4 [label = "s4"];
+	s6 [label = "s6"];
+	s8 [label = "s8"];
+
+node[shape = doublecircle];
+	s1 [label = "s1"];
+	s2 [label = "s2"];
+	s3 [label = "s3"];
+	s5 [label = "s5"];
+	s7 [label = "s7"];
+
+start -> s0
+s0 -> s1 [label="a"];
+s0 -> s2 [label="b"];
+s0 -> s3 [label="c"];
+s1 -> s4 [label="a"];
+s1 -> s5 [label="b"];
+s4 -> s4 [label="a"];
+s4 -> s2 [label="b"];
+s5 -> s6 [label="a"];
+s5 -> s7 [label="b"];
+s5 -> s3 [label="c"];
+s6 -> s8 [label="b"]
+s7 -> s7 [label="b"];
+s8 -> s6 [label="a"];
+s8 -> s3 [label="c"];
+}

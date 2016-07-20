@@ -1,0 +1,350 @@
+\documentclass{acm_proc_article-sp}
+\usepackage[utf8]{inputenc}
+\begin{document}
+
+\title{First Assignment - Datanet}
+
+\numberofauthors{1}
+\author{
+\alignauthor
+Nikolaj Dybdahl Rathcke\\
+       \affaddr{University of Copenhagen, DIKU}\\
+       \affaddr{Universitetsparken 1}\\
+       \affaddr{Copenhagen, Denmark}\\
+       \email{rfq695@alumni.ku.dk}
+}
+
+\maketitle
+\begin{abstract}
+\textbf{Background:} The paper is aimed at investigating the properties of latency and bandwidth by examining results which are gathered using specific tools and mirrors. The mirrors are scattered around the globe to provide a feeling for the whole network.\\
+It also shortly examines the HTTP protocol by recording the traffic when visiting a site and then revisiting it.\\
+\textbf{Results:} The latency and bandwidth varies a lot, depending on the location of the mirror. In particular, there are bad connections from Denmark to Taiwan, better connections to Sweden. Another notice is that there is a slight better connection from Denmark to US than to Kazakhstan.\\
+Looking at the traffic when visiting a site, the requests are greatly reduced, importantly the HTTP request are much fewer.\\
+\textbf{Conclusion:} The results show us that geographical location has a great impact on latency, but also partly on bandwidth. However, it shows us that good connections are to be found closeby and in countries with good infrastructure.\\
+The experiment with the HTTP protocol, shows that cache plays a big part in datatransfer, since the DNS makes use of this to reduce the amount of HTTP requests, avoiding them when they are not nessecary.
+
+\end{abstract}
+
+\section{Introduction}
+This article experiments with the properties of latency, bandwidth and HTTP protocols.\\
+The article investigates what happens to bandwidth and latency when choosing different locations, mirrors, around the globe. This is completed in search of a relation between the two and hopefully it will give an insight in the global network.\\
+HTTP protoc
+
+\subsection{Hypothesis}
+Read how the test  environment for latency and bandwidth is performed in \ref{6} and for HTTP protocols in \ref{7}.\\
+I expect that latency is heavily effected by the geographical distance and in most cases it will be lower the closer the end host is, simply because the package does not has to travel as far and the probability of queues in the routers are much likely the same everywhere.\\
+The same applies for bandwidth, however not as much, as I think the amount of links, which are not nessecarily related to the distance, also matters. However, I think the location should still have a relevance.\\
+The experiment with the HTTP protocol should result in a lot less requests on the second visit, because the information obtained on the first visit should be stored in the cache.
+ 
+
+\section{Latency and Bandwidth}
+\subsection{Test Setup and Tools}\label{6}
+The experiment was completed at DIKU, and from there collecting information about the route to destination hosts. The following mirrors were used.
+\begin{itemize}
+\item US mirror: ftp.us.debian.org \\(rocky-mountain.csail.mit.edu (128.30.2.36)).
+\item ES mirror: ftp.es.debian.org \\(82-194-78-250.mad1.hostalia.net (82.194.78.250)).
+\item SE mirror: ftp.se.debian.org \\(ftp.acc.umu.se (130.239.18.165)).
+\item TW mirror: ftp.tw.debian.org \\(linux3.cc.ntu.edu.tw (140.112.8.139)).
+\item KZ mirror: mmirror.network.kz\\ (193.29.53.217).
+\end{itemize}
+Information collection was done using the following tools.\\
+\\
+\textit{Ping}: Tool used to detect how long it takes to reach the destination computer. Measured in miliseconds, it measures the time for a message to be sent to the destination plus the time for an acknowledgement of that message, known as round-trip time.\\
+\\
+\textit{Traceroute}: Tool used to show a route from the originating computer to the destination computer, displaying all "stops" on the way. Actually measuring the round-trip time to each stop on the way to the destination.\\
+\\
+\textit{Wget}: Tool used to download content from web servers, supporting downloading via HTTP, HTTPS and FTP. It also displays information about bandwidth and time taken to download the content. 
+
+\subsection{Measurements of Bandwidth and Latency}
+The output from using the tools on the mirrors can be found in appendix \ref{1}. Mean latency (obtained from pinging) and mean bandwidth (obtained from wget) is listed beneath. The packet loss was 0\% in all cases.\\
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline 
+Mirror & Latency (ms) & Bandiwidth (Mb/s)\\ 
+\hline 
+US & 92.38 & 2.30 \\ 
+\hline 
+ES & 55.46 & 2.02 \\ 
+\hline 
+SE & 21.9 & 2.86 \\ 
+\hline 
+TW & 315.8 & 1.53 \\ 
+\hline 
+KZ & 103.6 & 2.29 \\ 
+\hline 
+\end{tabular}
+\end{center}
+Which is discussed in \ref{2}.
+
+\subsection{Discussion of Topology}
+This discussion is based on the traceroute data to the US mirror (\ref{3}) and the TW mirror (\ref{4}).\\
+\\
+Investigating the traceroute to the US mirror, we see that the only interesting step is 7 to 8. The stars indicate an error with the round-trip time to this host. This is probably because there was no response within the timeframe given. However, by examining the round-trip time to the other hosts, we can conclude these are just minor additions to the latency since they are "small" links.\\
+Using an IP locator, it is seen that the location in step 7 is in Denmark, and the location in step 8 is in New York, USA. This is because it takes a trans-atlantic link and this causes the addition in latency on around 70 ms, which is the only link that has a remarkable impact on the latency.\\
+\\
+Looking at the route to the TW mirror, we see the notable steps are 7 to 8 and and 9 to 10. By again using an IP locator, the location in step 8 is in Sweden. Step 9 is also located in Sweden, but surprisingly the location in step 10 is in Taiwan. This is surprising because I would suspect it would either use the trans-atlantic link and then using a route over the pacific or alternatively taking a route through asia and finally jumping to Taiwan. But as it looks, there is a direct link from Sweden to Taiwan.\\
+This is also the main sinner for the total latency, adding around 200 miliseconds. Together with the link from Denmark to Sweden, which seemingly is a transition to a global ISP, this makes up for more or less the whole latency, as the others do not have a particular large impact.
+
+\subsection{Discussion on Latency and Bandwidth}\label{2}
+Bandwidth and latency is dependent on eachother when talking about the speed of data transfer. Higher bandwidth means more data is transferred at a time, but a lower latency means it is transferred faster. This means that sometimes the data transfer can be quicker for a country A with higher bandwidth but also bigger latency than country B. And vice versa, the transfer can be quicker for country B with a lower latency but a lower bandwidth than country A. However, it is easy to see that bandwidth is almost always to be preferred in data transfer with no time frame, unless it is extremly few packages that needs to be sent, since one package does not need to wait for another is recieved to be sent.\\
+For our experiment, we would pick the countries in the following order for download of a lot of data.
+\begin{itemize}
+\item Sweden
+\item United States
+\item Kazakhstan
+\item Spain
+\item Taiwan
+\end{itemize}
+Notice, that this has no direct relation with geographic location, as ES is far down on the list surpassed by US and KZ. The bandwidth depends on the links that the traceroute is made up of.\\ If the limiting factor of how much is sent at a time is the link that can take least bandwidth on the entire route, that means more links gives a higher probability of a "bad" link.\\
+Another scenario is that it sends as much as it can through the first link, and then it is queued if it hits a "bad" link.\\
+\\
+However, sometimes we may wish to obtain low amounts of data, but quickly. In this case, we do not want to worry about the bandwidth (to a certain degree), and instead want a low latency. For our mirrors, we would choose the countries in the following order for latency
+\begin{itemize}
+\item Sweden
+\item Spain
+\item United States
+\item Kazakhstan
+\item Taiwan
+\end{itemize}
+This has a more direct relation to geographical position, only with the exception of US and KZ. This can obviously be caused by the total length of the links, since actual length does not count in this matter but the length of the route does. It is also limited by other factors from the individual links.\\
+It is generally about finding a balance between bandwidth and latency, so it fullfills the expectations of how quickly you can get information depending on how much information is needed.
+
+\section{HTTP Protocol}
+\subsection{Test Setup and Tools}\label{7}
+For this test, the program wireshark is used to collect traffic. Wireshark collects data while a website is visited after clearing browser cache and then collects data again when revisiting the same website. These two traces are then compared.
+
+\subsection{Findings}
+Comparing the two traces, we see that that the HTTP requests significantly drops. This is because a the DNS server recieves the query and then checks if it can answer the query with available resources lying around. If it can match something to the query based on the resources it has access too, it responds with this. For example, we can see a picture is HTTP requested on the first visit, but since the DNS server can match this with information in the cache, it does not need to request it again.\\
+Since less has to be sent, this means that the TCP protocol is not used "as much", since there is less traffic. Generally there are less requests, when the cache is used.\\
+The DNS queries are the same, since these are used to check if resources for the query are already available and these checks always happen.
+
+
+\section{Conclusions}
+To compare the hypothesis to the actual results, we see that, as expected, geographic location matters when talking about latency even though there are actually more routers to pass for the closer locations (for example Spain's traceroute is larger than the US traceroute).\\
+Bandwidth, however, does not directly display that a geographic position matters. We see that the bandwidth actually relies a lot on what country it is. From the results, countries that are considered higher developed tends to have better bandwidth. This is probably due to better infrastructure.\\
+The experiment with HTTP protocols went as expected. There are much fewer requests when revisiting the site because cache is taken in use, thus avoid adding extra traffic.
+
+
+\newpage
+$ $
+\newpage
+\appendix
+\section{Results}\label{1}
+\subsection{US mirror}\label{3}
+ftp.us.debian.org (rocky-mountain.csail.mit.edu (128.30.2.36)):
+\begin{verbatim}
+PING 128.30.2.36 (128.30.2.36) 56(84) bytes of data.
+64 bytes from 128.30.2.36: icmp_req=1 ttl=47 time=92.2 ms
+64 bytes from 128.30.2.36: icmp_req=2 ttl=47 time=91.9 ms
+64 bytes from 128.30.2.36: icmp_req=3 ttl=47 time=91.7 ms
+64 bytes from 128.30.2.36: icmp_req=4 ttl=47 time=93.8 ms
+64 bytes from 128.30.2.36: icmp_req=5 ttl=47 time=92.3 ms
+
+traceroute to 128.30.2.36 (128.30.2.36), 30 hops max, 60 byte packets
+ 1  192.168.18.1 (192.168.18.1)  0.936 ms  3.513 ms  3.567 ms
+ 2  gw.distlab.diku.dk (192.38.109.129)  3.665 ms  3.731 ms  3.826 ms
+ 3  130.226.237.106 (130.226.237.106)  3.972 ms  5.057 ms  5.442 ms
+ 4  172.20.2.92 (172.20.2.92)  8.023 ms  8.212 ms  8.702 ms
+ 5  172.20.2.1 (172.20.2.1)  9.521 ms  9.996 ms  10.406 ms
+ 6  10g-kua.or0.core.fsknet.dk (130.226.249.40)  5.677 ms  3.641 ms  2.217 ms
+ 7  dk-ore.nordu.net (109.105.102.41)  14.836 ms  14.920 ms  15.039 ms
+ 8  us-man.nordu.net (109.105.97.45)  88.331 ms  88.864 ms  88.991 ms
+ 9  xe-2-3-0.118.rtr.newy32aoa.net.internet2.edu (109.105.98.10)  89.650 ms  89.750 ms  89.936 ms
+10  nox300gw1-vl-110-nox-i2.nox.org (192.5.89.221)  102.238 ms  104.373 ms  109.839 ms
+11  192.5.89.22 (192.5.89.22)  110.254 ms  104.462 ms  104.577 ms
+12  nox1sumgw1-peer-nox-mit-207-210-143-110.nox.org (207.210.143.110)  102.228 ms  99.163 ms  98.851 ms
+13  * * *
+14  backbone-rtr-1-dmz-rtr-1.mit.edu (18.192.1.2)  92.350 ms  100.963 ms  92.522 ms
+15  * * *
+16  mitnet.trantor.csail.mit.edu (18.4.7.65)  101.053 ms  101.194 ms  93.757 ms
+17  trantor.helicon.csail.mit.edu (128.30.0.246)  95.019 ms  95.710 ms  95.856 ms
+18  rocky-mountain.csail.mit.edu (128.30.2.36)  94.234 ms  94.497 ms  94.694 ms
+
+wget ftp.us.debian.org/debian/ls-lR.gz
+Resolving ftp.us.debian.org (ftp.us.debian.org)... 64.50.236.52, 128.61.240.89, 128.30.2.36, ...
+Connecting to ftp.us.debian.org (ftp.us.debian.org)|64.50.236.52|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 9148564 (8.7M) [application/x-gzip]
+Saving to: `ls-lR.gz'
+
+100%[======================================>] 9,148,564   2.65M/s   in 3.8s    
+
+(2.30 MB/s) - `ls-lR.gz' saved [9148564/9148564]
+\end{verbatim}
+\subsection{ES mirror}
+ftp.es.debian.org (82-194-78-250.mad1.hostalia.net (82.194.78.250)):
+\begin{verbatim}
+PING ftp.es.debian.org (82.194.78.250) 56(84) bytes of data.
+64 bytes from 82-194-78-250.mad1.hostalia.net (82.194.78.250): icmp_req=1 ttl=45 time=53.4 ms
+64 bytes from 82-194-78-250.mad1.hostalia.net (82.194.78.250): icmp_req=2 ttl=45 time=50.0 ms
+64 bytes from 82-194-78-250.mad1.hostalia.net (82.194.78.250): icmp_req=3 ttl=45 time=50.1 ms
+64 bytes from 82-194-78-250.mad1.hostalia.net (82.194.78.250): icmp_req=4 ttl=45 time=60.8 ms
+64 bytes from 82-194-78-250.mad1.hostalia.net (82.194.78.250): icmp_req=5 ttl=45 time=63.0 ms
+
+traceroute to 82.194.78.250 (82.194.78.250), 30 hops max, 60 byte packets
+ 1  192.168.18.1 (192.168.18.1)  0.813 ms  1.168 ms  1.339 ms
+ 2  gw.distlab.diku.dk (192.38.109.129)  1.872 ms  2.482 ms  2.711 ms
+ 3  130.226.237.106 (130.226.237.106)  3.242 ms  4.397 ms  4.696 ms
+ 4  172.20.2.92 (172.20.2.92)  4.865 ms  6.471 ms  6.258 ms
+ 5  172.20.2.1 (172.20.2.1)  5.091 ms  5.815 ms  6.608 ms
+ 6  10g-kua.or0.core.fsknet.dk (130.226.249.40)  5.517 ms  14.290 ms  2.071 ms
+ 7  dk-ore.nordu.net (109.105.102.41)  2.240 ms  2.838 ms  3.127 ms
+\end{verbatim}
+\newpage
+$ $
+\newpage
+\begin{verbatim}
+ 8  kbn-b4-link.telia.net (62.115.11.77)  3.351 ms  3.466 ms  3.616 ms
+ 9  kbn-bb1-link.telia.net (213.155.130.96)  4.686 ms kbn-bb2-link.telia.net (80.91.253.244)  4.318 ms kbn-bb1-link.telia.net (213.155.130.96)  5.046 ms
+10  hbg-bb2-link.telia.net (213.155.130.102)  8.630 ms hbg-bb1-link.telia.net (213.155.135.126)  32.397 ms  32.630 ms
+11  ffm-bb2-link.telia.net (213.155.134.117)  19.388 ms ffm-bb2-link.telia.net (213.155.135.20)  19.526 ms ffm-bb2-link.telia.net (80.91.245.121)  19.785 ms
+12  ffm-b2-link.telia.net (62.115.138.89)  18.797 ms ffm-b2-link.telia.net (62.115.138.81)  16.098 ms ffm-b2-link.telia.net (62.115.138.75)  16.583 ms
+13  telefonica-ic-127710-ffm-b2.c.telia.net (213.248.89.90)  16.377 ms  16.979 ms telefonica-ic-139412-ffm-b2.c.telia.net (80.239.130.6)  17.329 ms
+14  Te0-4-0-10-grtlontlw1.red.telefonica-wholesale.net (5.53.5.2)  33.671 ms Xe9-3-0-0-grtlontc1.red.telefonica-wholesale.net (84.16.15.254)  93.698 ms Xe-0-4-0-0-grtlontlw1.red.telefonica-wholesale.net (94.142.121.74)  34.579 ms
+15  Xe10-0-4-0-grtmadde2.red.telefonica-wholesale.net (213.140.37.9)  93.797 ms Xe4-1-2-0-grtmadde2.red.telefonica-wholesale.net (84.16.14.249)  92.257 ms Xe2-0-0-0-grtmadde2.red.telefonica-wholesale.net (213.140.37.85)  96.713 ms
+16  213.140.50.55 (213.140.50.55)  92.953 ms Xe0-1-0-0-grtmadde2.red.telefonica-wholesale.net (213.140.36.245)  92.389 ms 213.140.50.55 (213.140.50.55)  93.867 ms
+17  81.Red-81-46-1.staticIP.rima-tde.net (81.46.1.81)  93.122 ms  93.307 ms  55.233 ms
+18  89.Red-80-58-106.staticIP.rima-tde.net (80.58.106.89)  59.108 ms  58.950 ms  58.798 ms
+19  217-116-31-62.redes.acens.net (217.116.31.62)  55.728 ms  55.774 ms  57.327 ms
+20  82-194-78-250.mad1.hostalia.net (82.194.78.250)  51.333 ms  52.359 ms  45.223 ms
+
+wget ftp.es.debian.org/debian/ls-lR.gz
+Resolving ftp.es.debian.org (ftp.es.debian.org)... 82.194.78.250
+Connecting to ftp.es.debian.org (ftp.es.debian.org)|82.194.78.250|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 9148564 (8.7M) [application/octet-stream]
+Saving to: `ls-lR.gz.1'
+
+100%[======================================>] 9,148,564   2.37M/s   in 4.3s    
+
+(2.02 MB/s) - `ls-lR.gz.1' saved [9148564/9148564]
+\end{verbatim}
+\subsection{SE mirror}
+ftp.se.debian.org (ftp.acc.umu.se (130.239.18.165)):
+\begin{verbatim}
+PING ftp.acc.umu.se (130.239.18.165) 56(84) bytes of data.
+64 bytes from hammurabi.acc.umu.se (130.239.18.165): icmp_req=1 ttl=51 time=20.5 ms
+64 bytes from hammurabi.acc.umu.se (130.239.18.165): icmp_req=2 ttl=51 time=26.1 ms
+64 bytes from hammurabi.acc.umu.se (130.239.18.165): icmp_req=3 ttl=51 time=21.3 ms
+64 bytes from hammurabi.acc.umu.se (130.239.18.165): icmp_req=4 ttl=51 time=20.6 ms
+64 bytes from hammurabi.acc.umu.se (130.239.18.165): icmp_req=5 ttl=51 time=21.0 ms
+
+traceroute to 130.239.18.165 (130.239.18.165), 30 hops max, 60 byte packets
+ 1  192.168.18.1 (192.168.18.1)  0.997 ms  1.146 ms  1.518 ms
+ 2  gw.distlab.diku.dk (192.38.109.129)  2.110 ms  2.358 ms  2.819 ms
+ 3  130.226.237.106 (130.226.237.106)  3.174 ms  3.768 ms  3.983 ms
+ 4  172.20.2.92 (172.20.2.92)  4.141 ms  6.357 ms  7.170 ms
+ 5  172.20.2.1 (172.20.2.1)  6.487 ms  6.616 ms  6.823 ms
+ 6  10g-kua.or0.core.fsknet.dk (130.226.249.40)  6.015 ms *  1.967 ms
+ 7  dk-ore.nordu.net (109.105.102.41)  3.975 ms  4.208 ms  4.336 ms
+ 8  se-fre.nordu.net (109.105.97.5)  11.970 ms  12.087 ms  12.247 ms
+ 9  t1fre.sunet.se (109.105.102.10)  12.515 ms  14.313 ms *
+10  umu-br1-xe-1-2-0.sunet.se (130.242.85.182)  106.007 ms  106.491 ms  106.620 ms
+11  umu-g.sunet.se (193.11.0.226)  106.036 ms  106.145 ms  104.464 ms
+12  130.239.0.209 (130.239.0.209)  105.201 ms  20.610 ms  133.351 ms
+13  svh-te.gw.umu.se (130.239.0.133)  133.393 ms  133.513 ms  133.967 ms
+14  hammurabi.acc.umu.se (130.239.18.165)  134.031 ms  134.328 ms  134.782 ms
+
+wget http://130.239.18.165/debian/ls-lR.gz
+Connecting to 130.239.18.165:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 9148564 (8.7M) [application/x-gzip]
+Saving to: `ls-lR.gz.2'
+
+100%[======================================>] 9,148,564   2.86M/s   in 3.1s    
+
+(2.86 MB/s) - `ls-lR.gz.2' saved [9148564/9148564]
+\end{verbatim}
+\newpage
+$ $
+\newpage
+\subsection{TW mirror}\label{4}
+ftp.tw.debian.org (linux3.cc.ntu.edu.tw (140.112.8.139)):
+\begin{verbatim}
+PING debian.linux.org.tw (140.112.8.139) 56(84) bytes of data.
+64 bytes from linux3.cc.ntu.edu.tw (140.112.8.139): icmp_req=1 ttl=41 time=317 ms
+64 bytes from linux3.cc.ntu.edu.tw (140.112.8.139): icmp_req=2 ttl=41 time=317 ms
+64 bytes from linux3.cc.ntu.edu.tw (140.112.8.139): icmp_req=3 ttl=41 time=315 ms
+64 bytes from linux3.cc.ntu.edu.tw (140.112.8.139): icmp_req=4 ttl=41 time=315 ms
+64 bytes from linux3.cc.ntu.edu.tw (140.112.8.139): icmp_req=5 ttl=41 time=315 ms
+
+traceroute to 140.112.8.139 (140.112.8.139), 30 hops max, 60 byte packets
+ 1  192.168.18.1 (192.168.18.1)  0.840 ms  1.131 ms  1.553 ms
+ 2  gw.distlab.diku.dk (192.38.109.129)  2.051 ms  2.125 ms  2.920 ms
+ 3  130.226.237.106 (130.226.237.106)  3.360 ms  3.801 ms  4.058 ms
+ 4  172.20.2.92 (172.20.2.92)  4.270 ms  4.578 ms  5.013 ms
+ 5  172.20.2.1 (172.20.2.1)  4.753 ms  5.188 ms  5.347 ms
+ 6  10g-kua.or0.core.fsknet.dk (130.226.249.40)  5.440 ms  1.799 ms  1.916 ms
+ 7  dk-ore.nordu.net (109.105.102.41)  2.601 ms  2.870 ms  3.192 ms
+ 8  us-man.nordu.net (109.105.97.69)  94.433 ms us-man.nordu.net (109.105.97.45)  87.223 ms   
+    87.409 ms
+ 9  ndn-gw.twaren.tw (109.105.98.42)  95.535 ms  95.736 ms  103.121 ms
+10  ny-asr-tp-gsr.twaren.net (211.79.48.217)  309.962 ms  310.151 ms  310.457 ms
+11  211.79.60.195 (211.79.60.195)  420.350 ms  420.562 ms  420.795 ms
+12  ntu-76-ntu.twaren.net (211.79.49.26)  301.143 ms  351.477 ms  352.896 ms
+13  140.112.0.201 (140.112.0.201)  353.006 ms  322.044 ms  321.434 ms
+14  140.112.0.185 (140.112.0.185)  307.981 ms  300.490 ms  310.228 ms
+15  140.112.0.209 (140.112.0.209)  308.015 ms  308.197 ms  304.449 ms
+16  linux3.cc.ntu.edu.tw (140.112.8.139)  320.963 ms  321.044 ms  315.116 ms
+
+wget ftp.tw.debian.org/ubuntu/ls-lR.gz
+Resolving ftp.tw.debian.org (ftp.tw.debian.org)... 140.112.8.139
+Connecting to ftp.tw.debian.org (ftp.tw.debian.org)|140.112.8.139|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 13009314 (12M) [application/x-gzip]
+Saving to: `ls-lR.gz.3'
+
+100%[======================================>] 13,009,314  2.15M/s   in 8.1s    
+
+(1.53 MB/s) - `ls-lR.gz.3' saved [13009314/13009314]
+\end{verbatim}
+\subsection{KZ mirror} 
+mirror.network.kz (193.29.53.217):
+\begin{verbatim}
+PING mirror.network.kz (193.29.53.217) 56(84) bytes of data.
+64 bytes from mirror.network.kz (193.29.53.217): icmp_req=1 ttl=48 time=105 ms
+64 bytes from mirror.network.kz (193.29.53.217): icmp_req=2 ttl=48 time=103 ms
+64 bytes from mirror.network.kz (193.29.53.217): icmp_req=3 ttl=48 time=104 ms
+64 bytes from mirror.network.kz (193.29.53.217): icmp_req=4 ttl=48 time=103 ms
+64 bytes from mirror.network.kz (193.29.53.217): icmp_req=5 ttl=48 time=103 ms
+
+traceroute to mirror.network.kz (193.29.53.217), 30 hops max, 60 byte packets
+ 1  192.168.18.1 (192.168.18.1)  0.891 ms  1.073 ms  1.457 ms
+ 2  gw.distlab.diku.dk (192.38.109.129)  1.775 ms  2.128 ms  2.365 ms
+ 3  130.226.237.106 (130.226.237.106)  2.904 ms  3.771 ms  4.021 ms
+ 4  172.20.2.92 (172.20.2.92)  4.476 ms  6.311 ms  6.468 ms
+ 5  172.20.2.1 (172.20.2.1)  7.886 ms  8.087 ms  8.320 ms
+ 6  10g-kua.or0.core.fsknet.dk (130.226.249.40)  4.962 ms  1.781 ms  53.194 ms
+ 7  dk-ore.nordu.net (109.105.102.41)  2.224 ms  3.001 ms  3.024 ms
+ 8  se-fre.nordu.net (109.105.97.5)  11.781 ms  11.951 ms  12.440 ms
+ 9  netnod-ix-ge-b-sth-1500.anders.ru (194.68.128.165)  13.335 ms  13.546 ms  14.037 ms
+10  m9-gw5-xe-0-2-1-0.msk.anders.ru (81.91.177.77)  42.599 ms  45.602 ms  45.686 ms
+11  m9-gw7-ae6-12.msk.anders.ru (81.91.177.234)  40.186 ms  40.628 ms  41.019 ms
+\end{verbatim}
+\newpage
+$ $
+\newpage
+\begin{verbatim}
+12  87.251.133.97 (87.251.133.97)  59.756 ms  59.142 ms  59.431 ms
+13  87.251.133.98 (87.251.133.98)  55.699 ms  55.746 ms  55.593 ms
+14  gw-scts-cl.altura.ru (95.141.196.250)  55.182 ms  55.199 ms  54.982 ms
+15  141.101.186.42 (141.101.186.42)  104.779 ms  104.829 ms  104.499 ms
+16  * * *
+17  comp131-43.2day.kz (85.29.131.43)  101.574 ms  101.834 ms  101.856 ms
+18  79.142.48.66 (79.142.48.66)  101.492 ms  102.370 ms  101.968 ms
+19  176.119.226.42 (176.119.226.42)  106.550 ms  106.628 ms  106.697 ms
+20  mirror.network.kz (193.29.53.217)  106.235 ms  106.952 ms  107.107 ms
+
+wget http://mirror.network.kz/debian/ls-lR.gz
+Resolving mirror.network.kz (mirror.network.kz)... 193.29.53.217
+Connecting to mirror.network.kz (mirror.network.kz)|193.29.53.217|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 9143817 (8.7M) [application/octet-stream]
+Saving to: `ls-lR.gz.4'
+
+100%[======================================>] 9,143,817   2.72M/s   in 3.8s    
+
+(2.29 MB/s) - `ls-lR.gz.4' saved [9143817/9143817]
+\end{verbatim}
+
+\end{document}

@@ -1,0 +1,285 @@
+\documentclass[12pt]{article}
+\usepackage[dot, autosize, outputdir="dotgraphs/"]{dot2texi}
+\usepackage{tikz}
+\usetikzlibrary{shapes}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 8}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Oversætter}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\section*{Oversætter - Week 2}
+
+\subsection*{1 - Writing Context-Free Grammars}
+Write unambiguous grammars for the following languages over the alphabet $\Sigma = \{a, b, c\}$
+
+\subsubsection*{a}
+Words that match regular expression $a^*b^*$ which contain more a's than b's
+\begin{align*}
+S&\rightarrow A \\
+A&\rightarrow aA \\
+A&\rightarrow aB \\
+B&\rightarrow aBb \\
+B&\rightarrow \varepsilon
+\end{align*}
+
+\subsubsection*{b}
+Palindromes
+\begin{align*}
+S&\rightarrow T \\
+T&\rightarrow aTa \\
+T&\rightarrow bTb \\
+T&\rightarrow cTc \\
+T&\rightarrow a|b|c \\
+T&\rightarrow \varepsilon
+\end{align*}
+
+\subsubsection*{c}
+Write mosmlyacc grammar files for your grammars to check them. A grammar which does not cause conflicts is certain to be unambiguous.\\
+However, for (b), it will not be possible to get a grammar without conflicts. Why?\\
+\\
+Grammer files are uploaded separately as "1a.grm" and "1b.grm". \\
+Since there is a look-ahead on 1, if you have a palindrome that has an odd length, it's not possible to know what production you need to make, e.g it's not possible to know if it's $T\rightarrow aTa$ or $T\rightarrow a$.
+
+\newpage
+
+\subsection*{2 - LL(1)-Parser Construction}
+Construct an LL(1) parser, taking the following grammar as a starting point:
+\begin{align*}
+Z &\rightarrow b\:|\:X Y Z \\
+Y &\rightarrow \varepsilon\:|\: c \\
+X &\rightarrow Y\:|\: a
+\end{align*}
+with the terminal symbols a, b, and c.
+\subsubsection*{a}
+Determine which nonterminals are nullable and calculate first sets of all right-hand sides of the productions.\\
+\\
+$Y$ is nullable since 
+$$NULLABLE(Y)=NULLABLE(\varepsilon) \vee NULLABLE(c) =true$$
+$X$ is nullable because 
+$$NULLABLE(X)=NULLABLE(Y) \vee NULLABLE(a) =true$$
+$Z$ is not nullable since
+\begin{align*}
+NULLABLE(Z)&=NULLABLE(a) \vee NULLABLE(XYZ) \\
+&=NULLABLE(a)\:\vee \\
+&\:\:\:\:\:(NULLABLE(X) \wedge NULLABLE(Y) \wedge NULLABLE(Z))\\
+&=false \vee (true \wedge true \wedge NULLABLE(Z)) \\
+&=NULLABLE(Z)
+\end{align*}
+which is an infinite loop, so $Z$ is not nullable.\\
+\newpage
+Or it can be calculated by fixed-point iteration\\
+\\
+\begin{tabular}{c|c|c|c|c}
+\hline 
+Right-hand side & Initialisation & Iteration 1 & Iteration 2 & Iteration 3 \\ 
+\hline 
+b & false & false & false & false \\ 
+XYZ & false & false & false & false \\ 
+$\varepsilon$ & false & true & true & true \\ 
+c & false & false & false & false \\  
+Y & false & false & true & true \\ 
+a & false & false & false & false \\ 
+\hline 
+Nonterminals &  &  &  &  \\ 
+\hline
+Z & false & false & false & false \\ 
+Y & false & true & true & true \\  
+X & false & false & true & true \\ 
+\hline 
+\end{tabular}\\
+\\
+We want to find first sets of the right hand sides of the production. We get that
+\begin{align*}
+FIRST(b)&=\{b\} \\
+FIRST(XYZ)&=\{a,b,c\} \\
+FIRST(\varepsilon)&=\emptyset \\
+FIRST(c)&= \{c\} \\
+FIRST(Y)&=\{c\} \\
+FIRST(a)&=\{a\}
+\end{align*}
+These can be calculated by fixed point iteration as well\\
+\\
+\begin{tabular}{c|c|c|c|c}
+\hline 
+Right-hand side & Initialisation & Iteration 1 & Iteration 2 & Iteration 3 \\ 
+\hline 
+b & $\emptyset$ & \{b\} & \{b\} & \{b\} \\ 
+XYZ & $\emptyset$ & $\emptyset$ & \{a,b,c\} & \{a,b,c\} \\ 
+$\varepsilon$ & $\emptyset$ & $\emptyset$ & $\emptyset$ & $\emptyset$ \\ 
+c & $\emptyset$ & \{c\} & \{c\} & \{c\} \\  
+Y & $\emptyset$ & $\emptyset$ & \{c\} & \{c\} \\ 
+a & $\emptyset$ & \{a\} & \{a\} & \{a\} \\ 
+\hline
+\end{tabular}
+
+\subsubsection*{b}
+Calculate follow sets for all nonterminals (adding an extra start production to recognise the end of the input, denoted by "\textdollar") \\
+\\
+We use the algorithm from page 59 in the book and use it on the grammar with $Z'\rightarrow Z\$ $ added to it. We then get these constraints
+\begin{align*}
+\{\$\} &\subseteq FOLLOW(Z) \\
+\{a,b,c\} &\subseteq FOLLOW(X) \\
+FOLLOW(Z) &\subseteq FOLLOW(X) \\
+\{a,b,c\} &\subseteq FOLLOW(Y) \\
+FOLLOW(X) &\subseteq FOLLOW(Y)
+\end{align*}
+Now solving the constraints give us
+\begin{align*}
+FOLLOW(X)&=\{a,b,c,\$\} \\
+FOLLOW(Y)&=\{a,b,c,\$\} \\
+FOLLOW(Z)&=\{\$\}
+\end{align*}
+
+\subsubsection*{c}
+Determine the look-ahead sets of all productions and put together a parse table for a predictive parser.\\
+\\
+Since $X\rightarrow Y$ and $Y\rightarrow \varepsilon$ are nullable, we get the following look-ahead sets for the productions
+\begin{align}
+LA(Z'\rightarrow Z\$ ) &= \{a,b,c,\$\}  \\
+LA(Z\rightarrow b)&=\{b\} \\
+LA(Z\rightarrow XYZ)&=\{a,b,c\} \\
+LA(Y\rightarrow \varepsilon)&=\{a,b,c,\$\} \\
+LA(Y\rightarrow c) &= \{c\} \\
+LA(X\rightarrow Y) &= \{a,b,c,\$\} \\
+LA(X\rightarrow a) &= \{a\}
+\end{align}
+\newpage
+$ $\\
+We create the parse table
+\begin{center}
+\begin{tabular}{c|c|c|c|c} 
+Stack & a & b & c & \$ \\ 
+\hline 
+Z' & Z\$, 1 & Z\$, 1 & Z\$, 1 & Z\$, 1\\ 
+\hline 
+X & Y, 6 $\vee$ a, 7  & Y, 6 & Y, 6 & Y, 6 \\ 
+\hline 
+Y & $\varepsilon$, 4 & $\varepsilon$, 4  & $\varepsilon$, 4 $\vee$ c, 5  & $\varepsilon$, 4 \\ 
+\hline 
+Z & XYZ, 3 & XYZ, 3 $\vee$ b, 2 & XYZ, 3 & error \\ 
+\hline 
+a & pop & error & error & error \\ 
+\hline 
+b & error & pop & error & error \\ 
+\hline 
+c & error & error & pop & error \\ 
+\hline 
+\$ & error & accept & error & accept \\ 
+\hline 
+\end{tabular}
+\end{center}
+$ $\\
+There are 3 conflicts.
+\newpage
+
+\subsection*{3 - SLR Parser Construction}
+Make up a very small grammar which contains left-recursion, to demonstrate that left-recursion is not a problem for LR-Parsing.
+
+\subsubsection*{a}
+Show that your grammar does not generate conflicts (by providing a parse table).\\
+\\
+I have created a grammar below which is using left recursion
+\begin{align*}
+S&\rightarrow A\$ &(0) \\
+A&\rightarrow Aa &(1) \\
+A&\rightarrow b &(2)
+\end{align*}
+From the output of "3a.grm" we can create the parse table.
+\begin{center}
+\begin{tabular}{c|c|c|c|c|c}
+ & a & b & \$ & A & S\\ 
+\hline 
+0 & s1 & s1 & s2 & g2 & g2  \\
+\hline 
+1 &  & s3 &  & g4 &  \\ 
+\hline 
+2 &  &  & a & & \\ 
+\hline 
+3 &  & r2 &  &  &  \\ 
+\hline 
+4 & s5 &  & r3 &  \\ 
+\hline 
+5 & r1 &  &  &  &  \\ 
+\hline 
+\end{tabular} 
+\end{center}
+And we can tell there are no conflicts.
+
+\subsubsection*{b}
+Compare your grammar to an equivalent one that uses right-recursion. How does the parse stack grow when parsing input?\\
+\\
+The equivalent right recursive grammar is
+\begin{align*}
+S&\rightarrow A\$ &(0) \\
+A&\rightarrow bB &(1)\\
+B&\rightarrow aB &(2)\\
+B&\rightarrow \varepsilon&(3)
+\end{align*}
+\newpage
+$ $\\
+Parse stack for the left recursive grammar
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Stack & Input & Action \\ 
+\hline 
+$\varepsilon$ & baa\$ & shift \\ 
+\hline 
+b & aa\$ & reduce 2 \\ 
+\hline 
+A & aa\$ & shift \\ 
+\hline 
+Aa & a\$ & reduce 1 \\ 
+\hline 
+A & a\$ & shift \\ 
+\hline
+Aa & \$ & reduce 1 \\
+\hline
+A & \$ & reduce 0 \\
+\hline
+S & \$ & accept \\
+\hline
+\end{tabular}\\
+\end{center}
+And the parse stack for the right recursive grammar
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline 
+Stack & Input & Action \\ 
+\hline 
+$\varepsilon$ & baa\$ & shift \\ 
+\hline 
+b & aa\$ & shift \\ 
+\hline 
+ba & a\$ & shift \\ 
+\hline 
+baa & \$ & reduce 3 \\ 
+\hline 
+baaB & \$ & reduce 2 \\ 
+\hline
+baB & \$ & reduce 2 \\
+\hline
+bB & \$ & reduce 1 \\
+\hline
+A & \$ & reduce 0 \\
+\hline
+S & \$ & accept \\
+\hline
+\end{tabular}\\
+\end{center}
+So right-recursive reduces when it has read the whole input while it for left-recursive reduces along the way. Thus, the stack is smaller for left recursive.
+
+\end{document}

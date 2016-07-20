@@ -1,0 +1,24 @@
+program nfib;
+
+// benchmark for compiler implementation
+// return value is number of recursive function calls
+// made to compute fibonacci function in a stupid way
+
+function nfib (n :  int) : int
+    if n < 2 then return 1
+    else return (1 + nfib(n-1) + nfib(n-2));
+
+procedure main()
+var
+   n  : int;
+      
+begin
+   n := readInt();
+
+   writeInt(n);
+   writeChar('\n');
+   
+   writeInt(nfib(n));
+   writeChar('\n');
+   
+end; // main

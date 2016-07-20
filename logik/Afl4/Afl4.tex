@@ -1,0 +1,177 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage[fleqn]{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{boxproof}
+\usepackage{a4wide}
+\usepackage{daymonthyear}
+
+\def\meta#1{\mbox{$\langle\hbox{#1}\rangle$}}
+\def\macrowitharg#1#2{{\tt\string#1\bra\meta{#2}\ket}}
+
+{\escapechar-1 \xdef\bra{\string\{}\xdef\ket{\string\}}}
+
+\def\intro#1{{#1}{\cal I}}
+\def\elim#1{{#1}{\cal E}}
+
+\showboxbreadth 999
+\showboxdepth 999
+\tracingoutput 1
+
+
+\let\imp\to
+\def\elim#1{{{#1}{\cal E}}}
+\def\intro#1{{{#1}{\cal I}}}
+\def\lt{<}
+\def\eqdef{=}
+\def\eps{\mathrel{\epsilon}}
+\def\biimplies{\leftrightarrow}
+\def\flt#1{\mathrel{{#1}^\flat}}
+\def\setof#1{{\left\{{#1}\right\}}}
+\let\implies\to
+\def\KK{{\mathsf K}}
+\let\squashmuskip\relax
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 6}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\section*{Logic in Computer Science - Assignment 4}
+\subsection*{Exercise 3.2.2}
+\subsubsection*{a}
+We have a formula $\phi=G\:a$.
+\subsubsection*{i}
+We find the following path that satisfies $\phi$
+$$q_3\to q_4\to q_3\to q_4\to ...$$
+\subsubsection*{ii}
+It does \textit{\textbf{not}} hold for all paths as
+$$q_3\to q_2\to q_2\to ...$$
+does not contain $a$ in every node.
+
+\subsubsection*{b}
+We have a formula $\phi=a\:U\:b$.
+\subsubsection*{i}
+The following path satisfies $\phi$
+$$q_3\to q_2\to q_2\to ...$$
+\subsubsection*{ii}
+It does \textit{\textbf{not}} as we can pick a path 
+$$q_3\to q_1\to q_2\to q_2\to ...$$
+where $a$ does not hold in $q_1$ and $b$ does not hold either.
+
+\subsubsection*{c}
+We have a formula $\phi=a\:U\:X\:(a\land\neg b)$.
+\subsubsection*{i}
+The following path satisfies $\phi$
+$$q_3\to q_4\to q_3\to q_4\to ...$$
+\subsubsection*{ii}
+It does \textit{\textbf{not}} hold as we can go to either $q_1$ or $q_2$ and the path will never contain $X(a\land \neg b)$. 
+
+\subsubsection*{d}
+We have a formula $\phi=X\:\neg b \land G(\neg a\lor\neg b)$.
+\subsubsection*{i}
+The following path satisfies $\phi$
+$$q_3\to q_1\to q_2\to q_2\to ...$$
+\subsubsection*{ii}
+It does \textit{\textbf{not}} hold as we can pick the path
+$$q_3\to q_2\to q_2\to ...$$
+which will never contain $X\:\neg b$.
+
+\subsubsection*{e}
+We have a formula $\phi=X(a\land b)\land F(\neg a\land\neg b)$.
+\subsubsection*{i}
+The following path satisfies $\phi$
+$$q_3\to q_4\to q_3\to q_1\to q_2\to q_2\to ...$$
+\subsubsection*{ii}
+It does \textit{\textbf{not}} hold as we can pick a path
+$$q_3\to q_2\to q_2\to ...$$
+And it will neither contain $X(a\land b)$ or $F(\neg a\land\neg b)$ and both are required.
+\newpage
+\subsection*{Exercise 2.3.7}
+To prove the equivalence $\phi\:W\:\psi\land F\:\psi\equiv\phi\:U\:\psi$ we suppose there exists a path that satisfies $\phi\:W\:\psi\land F\:\psi$. Then, from clause 5, we know that 
+\begin{align}
+&\pi\models F\:\psi \\
+&\pi\models\phi\:W\:\psi
+\end{align}
+Using (1) with clause 10, we have that \textit{for some $i\geq 1$ that $\pi^i\models\psi$}.\\
+Since the above applies, this means using (2) with clause 12 we have that \textit{for some $i\geq 1$ we have $\pi^i\models\psi$ and for $j=1,..,i-1$ we have $\pi^j\models\phi$}.\\
+Combining what we have found above, we can use clause 11 to show $\pi\models\phi\:U\:\psi$ as the two conditions needed is what we have found above.
+\newpage
+\subsection*{PCP Exercise}
+\subsubsection*{Exercise 1}
+ProofWeb has been used for this task. The code can be seen below and it is also uploaded separately in a \texttt{.txt} file for raw text.
+\begin{Verbatim}[fontsize=\small]
+Require Import ProofWeb.
+
+Variable P : D * D -> Prop.
+Variable f0 f1 : D -> D.
+Variable e : D.
+
+Theorem PCP_ex_simp_b : 
+(P(f1 e,f1(f0(f1 e))) /\
+ P(f0(f1 e), f0(f0 e)) /\
+ P(f1(f1(f0 e)),f1(f1 e)))
+->
+((all v, all w, (P(v,w) -> P(f1 v,f1(f0(f1 w))))) /\
+ (all v, all w, (P(v,w) -> P(f0(f1 v), f0(f0 w)))) /\
+ (all v, all w, (P(v,w) -> P(f1(f1(f0 v)),f1(f1 w)))))
+->
+exi z, P(z,z).
+
+Proof.
+imp_i H1.
+imp_i H2.
+insert C1 ((all v, all w, (P(v,w) -> P(f0(f1 v), f0(f0 w)))) /\ 
+            (all v, all w, (P(v,w) -> P(f1(f1(f0 v)),f1(f1 w))))).
+f_con_e2 H2.
+exi_i (f1(f1(f0(f0(f1(f1(f1(f0(f1 e))))))))).
+imp_e (P(f0(f1(f1(f1(f0(f1 e))))), (f0(f0(f1(f1(f1(f0(f1 e))))))))).
+all_e (all w, (P(f0(f1(f1(f1(f0(f1 e))))), w) -> 
+                P(f1(f1(f0(f0(f1(f1(f1(f0(f1 e)))))))), f1(f1 w)))).
+all_e (all v, all w, (P(v,w) -> P(f1(f1(f0 v)),f1(f1 w)))).
+f_con_e2 C1.
+imp_e (P((f1(f1(f0(f1 e)))), (f1(f1(f1(f0(f1 e))))))).
+all_e (all w, (P((f1(f1(f0(f1 e)))), w) -> P(f0(f1(f1(f1(f0(f1 e))))), f0(f0 w)))).
+all_e (all v, all w, (P(v,w) -> P(f0(f1 v), f0(f0 w)))).
+f_con_e1 C1.
+imp_e (P((f1 e), (f1(f0(f1 e))))).
+all_e (all w, (P((f1 e), w) -> P (f1(f1(f0((f1 e)))), f1(f1 w)))).
+all_e (all v, all w, (P(v,w) -> P(f1(f1(f0 v)),f1(f1 w)))).
+f_con_e2 C1.
+f_con_e1 H1.
+
+Qed.
+\end{Verbatim}
+
+\subsubsection*{Exercise 2}
+We want to find the predicate logic for the PCP instance
+$$((001,0),(01,011),(01,101),(10,001))$$
+This means we write,from [H\&R, page 134], $\psi=\phi_1\land\phi_2\to \phi_3$ where we find $\phi_1$ to
+\begin{align*}
+\phi_1 &\stackrel{def}{=}\bigwedge_{i=1}^{k} P(f_{s_i}(e),f_{t_i}(e)) \\
+&=(P(f_{001}(e),f_0(e))\land P(f_{01}(e),f_{011}(e))\land P(f_{01}(e),f_{101}(e))\land P(f_{10}(e),f_{001}(e)))
+\end{align*}
+And $\phi_2$ is found to be
+\begin{align*}
+\phi_2 \stackrel{def}{=} \:&\forall v\forall w(P(v,w)\to \bigwedge_{i=1}^{k} P(f_{s_i}(v),f_{t_i}(w))) \\
+=\:&\forall v\forall w(P(v,w)\to (P(f_{001}(v),f_0(w))\land P(f_{01}(v),f_{011}(w))\land P(f_{01}(v),f_{101}(w))\\
+&\phantom{=} \land P(f_{10}(v),f_{001}(w)))
+\end{align*}
+And lastly $\phi_3$ is defined to be
+\begin{align*}
+\phi_3 &\stackrel{def}{=} \exists zP(z,z)
+\end{align*}
+Which defines our predicate logic formula $\psi$.
+
+
+\end{document}

@@ -1,0 +1,21 @@
+
+Problem statement:
+"sizes"
+500-1500 characters
+
+
+Scope:
+trivial restrictions?
+"to be implemented"
+
+Motivation:
+"So that any sequence is withtin the threshold of one centroid"
+
+
+Planning:
+Specific deadlines for gantt diagram
+Midway report
+Enough time for report (2 weeks+)
+
+
+Literature

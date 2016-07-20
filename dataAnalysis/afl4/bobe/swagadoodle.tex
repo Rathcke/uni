@@ -1,0 +1,280 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+\title{Fourth Home Assignment \\ Data Analysis}
+\lhead{Nikolaj Dybdahl Rathcke (rfq695)}
+\chead{Data Analysis}
+\rhead{Assignment 4}
+
+\begin{document}
+\maketitle
+\section*{Question 1}
+From probability theory we have the following definitions and properties:
+\begin{align*}
+(a) &\ p_X(x)=\sum_{y\in \mathcal{Y}}p_{XY}(x,y) \\
+(b) &\ \mbox{If $X$ and $Y$ are independent, then $P_{XY}(x,y)=p_X(x)p_Y(y)$} \\
+(c) &\ \mathbb{E}[X]=\sum_{x\in \mathcal{X}}xp_X(x)
+\end{align*}
+$X$ and $Y$ are discrete random variables that take values from in $\mathcal{X}$ and $\mathcal{Y}$. $p_X$ is the distribution of $X$, $p_Y$ the distribution of $Y$ and $p_{XY}$ the distribution of $X$ and $Y$.
+
+\subsection*{1)}
+We prove the following identity:
+\begin{align*}
+\mathbb{E}[X+Y]=\mathbb{E}[X]+\mathbb{E}[Y]
+\end{align*}
+By (c), the expected value of $X$ is given by:
+$$\mathbb{E}[X]=\sum_{x\in \mathcal{X}}xp_X(x)$$
+Therefore the expected value of $X+Y$ would be
+\begin{align*}
+\mathbb{E}[X+Y] &=\sum_{x\in \mathcal{X}}\sum_{y\in \mathcal{Y}} (x+y)p_{XY}(x,y) \\
+                &= \sum_{x\in \mathcal{X}}x\sum_{y\in \mathcal{Y}} p_{XY}(x,y)+ \sum_{y\in \mathcal{Y}}y\sum_{\in \mathcal{X}} p_{XY}(x,y) \\
+                &= \sum_{x\in \mathcal{X}}xp(x)+\sum_{y\in \mathcal{Y}}yp(y) \\ 
+                &= \mathbb{E}[X]+\mathbb{E}[Y]
+\end{align*}
+In the last step we use the definition for the expected value of a random variable. We have now shown that $\mathbb{E}[X+Y]=\mathbb{E}[X]+\mathbb{E}[Y]$.
+\subsection*{2)}
+To prove the following identity, we use that the random variables $X$ and $Y$ are independent.
+\begin{align*}
+\mathbb{E}[XY]=\mathbb{E}[X]\mathbb{E}[Y]
+\end{align*}
+We can write $\mathbb{E}[XY]$ as
+\begin{align*}
+\mathbb{E}[XY]           &= \sum_{x\in \mathcal{X}}\sum_{y\in \mathcal{Y}} xy p_{XY}(x,y)\\
+\end{align*}
+This is where we use that $X$ and $Y$ are independent - using property (b):
+\begin{align*}
+\sum_{x\in \mathcal{X}}\sum_{y\in \mathcal{Y}} xyp_{X}(x)p_{Y}(y) 
+\end{align*}
+This can be reduced to prove our identity
+\begin{align*} 
+\sum_{x\in \mathcal{X}}\sum_{y\in \mathcal{Y}} xyp_{X}(x)p_{Y}(y) &= \sum_{x\in \mathcal{X}}xp_{X}(x)\sum_{y\in \mathcal{Y}} yp_{Y}(y) \\
+&= \mathbb{E}[X]\mathbb{E}[Y]
+\end{align*}
+This proves the identity $\mathbb{E}[XY]=\mathbb{E}[X]\mathbb{E}[Y]$.
+
+\subsection*{3)} 
+A bag has $2$ red apples and $2$ green apples. There is taken $2$ apples from the bag without putting them back into the bag. Let $X$ be the first apple and let $Y$ be the second apple. The joint distribution table of $X$ and $Y$ is seen below:
+\begin{center}
+\begin{tabular}{|c||c|c|} 
+\hline 
+X / Y & Red & Green \\ 
+\hline 
+\hline
+Red & $\frac{1}{6}$  & $\frac{2}{6}$ \\ 
+\hline 
+Green & $\frac{2}{6}$ & $\frac{1}{6}$\\ 
+\hline
+\end{tabular} 
+\end{center}
+The probability of apple $X$ being red is:
+\begin{align*}
+\mathbb{E}[X=\mbox{Red}] = \frac{1}{2}
+\end{align*}
+Which is the same probability for apple $Y$ being red. We have that
+\begin{align*}
+\mathbb{E}[X=\mbox{Red} \land Y=\mbox{Red}]=\frac{1}{6}
+\end{align*}
+Since $\frac{1}{2}\frac{1}{2} = \frac{1}{4}\neq\frac{1}{6}$ then 
+\begin{align*}
+\mathbb{E}[XY]\neq \mathbb{E}[X]\mathbb{E}[Y]
+\end{align*}
+in this example.
+ 
+\subsection*{4)}
+The identity to be proved:
+\begin{align*}
+\mathbb{E}[\mathbb{E}[X]]=\mathbb{E}[X]
+\end{align*}
+We know that $\mathbb{E}[X]=k$ and that $\mathbb{E}[k]=k$. That means taking the expected value of an expected value will just return the constant you already found. This can be done more than $2$ times and it will always be the constant $k$ that is your result.
+
+\newpage
+\section*{Question 2}
+\subsection*{1)}
+$N$ balls are drawn from a bin with $2N$ balls uniformly and without replacement. The fraction of red balls is $\varepsilon$ and $0<\varepsilon\leq \frac{1}{2}$. The other fraction are green balls ($1-\varepsilon$). We are asked to show that
+\begin{align*}
+\mathbb{P}\{\mbox{$N$ green balls are pulled in a row}\}\leq e^{-N\varepsilon}
+\end{align*}
+The probability of getting $N$ green balls in a row can be defined as
+\begin{align*}
+\prod_{i=0}^{N-1} \frac{2N(1-\varepsilon)-i}{2N-i}
+\end{align*}
+We subtract $i$ since it is without replacement, so the number of balls in the bin decreases. \\
+This can be rewritten:
+\begin{align*}
+\prod_{i=0}^{N-1} \frac{2N(1-\varepsilon)-i}{2N-i} &= \prod_{i=0}^{N-1} \frac{2N-2N\varepsilon-i}{2N-i} \\
+&= \prod_{i=0}^{N-1} 1-\frac{2N\varepsilon}{2N-i}
+\end{align*}
+From the assignment text, we have:
+\begin{align*}
+1+x\leq e^x
+\end{align*}
+This can be used on the probability of drawing $N$ green balls in a row we found, so we get
+\begin{align*}
+\prod_{i=0}^{N-1} 1-\frac{2N\varepsilon}{2N-i}&\leq \prod_{i=0}^{N-1} e^{-2N\varepsilon/(2N-i)} \\
+&= e^{\sum_{i=0}^{N-1}-2N\varepsilon/(2N-i)}
+\end{align*}
+This neat trick can be used since $e^x\cdot e^x=e^{x+x}$. The constants can be moved outside the sum, so
+\begin{align*}
+\prod_{i=0}^{N-1} 1-\frac{2N\varepsilon}{2N-i}&\leq  e^{-2N\varepsilon\sum_{i=0}^{N-1}1/(2N-i)}
+\end{align*}
+The sum can never exceed $1$ and it can never be below $\frac{1}{2}$, which means the factor $-2N\varepsilon$ is at max $-N\varepsilon$ and at minimum $-2N\varepsilon$, i.e. that
+\begin{align*}
+e^{-2N\varepsilon\sum_{i=0}^{N-1}1/(2N-i)}\leq e^{-N\varepsilon}
+\end{align*}
+If we put the two above inequalities together, we get:
+\begin{align*}
+&\prod_{i=0}^{N-1} 1-\frac{2N\varepsilon}{2N-i}\leq e^{-2N\varepsilon\sum_{i=0}^{N-1}1/(2N-i)}\leq e^{-N\varepsilon}
+\end{align*}
+Where the left hand side was the probability of drawing $N$ green balls in a row, so we have shown the inequality $\mathbb{P}\{\mbox{$N$ green balls are pulled in a row}\}\leq e^{-N\varepsilon}$.
+
+\newpage
+\section*{Question 3}
+This question is about the growth function
+\subsection*{1)}
+We are asked to show that
+\begin{align*}
+m_{\mathcal{H}}(2N)\leq m_{\mathcal{H}}(N)^2
+\end{align*}
+If we split the set of $2N$ into two sets with $N$ points, the most dichotomies we can get is the cross product of the two sets. From "Learning From Data", page $45$, we have the upper bound on the growth function
+\begin{align*}
+m_{\mathcal{H}}(N)\leq 2^N
+\end{align*}
+So in each set we have at most $2^N$ dichotomies. The cross product (and the max number of dichotomies in $m_{\mathcal{H}}(2N)$ is $2^N\cdot 2^N$. So we can insert this upper bound of the left side of the inequality we wanted to show 
+\begin{align*}
+2^N\cdot 2^N\leq m_{\mathcal{H}}(N)^2
+\end{align*}
+If the maximum dichotomies is reached each set of $N$ that means we can insert that number on our right side as well:
+\begin{align*}
+2^N\cdot 2^N&\leq \left(2^N\right)^2 \mbox{  or} \\
+2^{2N}&\leq 2^{2N}
+\end{align*}
+Which shows the inequality.
+
+\subsection*{2)}
+To write a generalization bound that only involves $m_{\mathcal{H}}(N)$, we use equation 2.12 from "Learning From Data":
+\begin{align*}
+E_{out}(g)\leq E_{in}(g)+\sqrt{\frac{8}{N}\ln \frac{4m_{\mathcal{H}}(2N)}{\delta}}
+\end{align*}
+The upper bound that was shown in previous question can easily be substituted into this equation at the cost of a looser bound:
+\begin{align*}
+E_{out}(g)\leq E_{in}(g)+\sqrt{\frac{8}{N}\ln \frac{4m_{\mathcal{H}}(N)^2}{\delta}}
+\end{align*}
+
+\newpage
+\section*{Question 4}
+\subsection*{1)}
+We are asked to prove the following by induction
+\begin{align*}
+\sum_{i=0}^d\binom{N}{i}&\leq N^d+1
+\end{align*}
+\textbf{Basis}: The statement should hold for $d=0$:
+\begin{align*}
+\sum_{i=0}^0\binom{N}{i}&\leq N^0+1 \\
+1&\leq 2
+\end{align*}
+It does.\\
+\\
+\textbf{Inductive step}: We assume our first equation holds for $d$ and want to show it holds for $d+1$ and $d\geq 1$ as well:\\
+\begin{align*}
+\sum_{i=0}^{d+1}\binom{N}{i}&\leq N^{d+1}+1
+\end{align*}
+We can take out the last element in the sum so we get
+\begin{align*}
+\binom{N}{d+1}+\sum_{i=0}^{d}\binom{N}{i}&\leq N^{d+1}+1 \\
+&=N^d+(N-1)N^d+1
+\end{align*}
+This is where we use the assumption so we insert the upper bound instead of the sum and get:
+\begin{align*}
+\binom{N}{d+1}+N^d+1&\leq N^d+(N-1)N^d+1 \\
+\binom{N}{d+1}&\leq (N-1)N^d \\
+&=N^{d+1}-N^d
+\end{align*}
+The right hand side grows faster for all $N$ and $d\leq 1$, but not for $d=0$. However, we have already shown that it holds for $d=0$.
+
+\subsection*{2)}
+We can use the above result to derive a bound on $m_\mathcal{H}(N)$ by using equation 2.9 from "Learning From Data":
+\begin{align*}
+m_\mathcal{H}(N)\leq \sum_{i=0}^d \binom{N}{i}
+\end{align*}
+Simply substitute the upper bound in the inequality with the one we found in (1):
+\begin{align*}
+m_\mathcal{H}(N)\leq N^d+1
+\end{align*}
+Again, this bound is a bit looser than equation 2.9.
+
+\subsection*{3)}
+The equation 2.12 in "Learning From Data" states:
+\begin{align*}
+E_{out}(g)\leq E_{in}(g)+\sqrt{\frac{8}{N}\ln \frac{4m_{\mathcal{H}}(2N)}{\delta}}
+\end{align*}
+Just like before we replace the factor $m_\mathcal{H}(N)$ with the upper bound we found in (2):
+\begin{align*}
+E_{out}(g)\leq E_{in}(g)+\sqrt{\frac{8}{N}\ln \frac{4\cdot ((2N)^d+1)}{\delta}}
+\end{align*}
+For the bound to be meaningful, $d$ should be (alot) less than $N$.
+
+\end{document}

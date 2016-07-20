@@ -1,0 +1,20 @@
+2.
+
+Functionality.
+* A way of buying and paying for books.
+* Ability to download and use the bought books.
+* A search and browse funtionality.
+
+Application domain.
+The application domain is Android phone users who are customers at Ebogreolen.dk
+
+Conditions
+The specification of android devices vary greatly and the application should run evenly on all devices.
+
+Technology.
+The system will be developed entirely in Java and will be run on Android smartphones with Android version 2.3 or higher.
+
+Objects
+
+Responsibility
+Making the user able to browse, buy, read and listen to ebooks and audiobooks.

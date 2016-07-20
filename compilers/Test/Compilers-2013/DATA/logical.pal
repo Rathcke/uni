@@ -1,0 +1,24 @@
+program logical;
+
+function andTest (n : int) : bool
+    return (0 < n and n < 10);
+
+function orTest (n : int) : bool
+    return (n < 0 or 10 < n);
+
+function notTest(n : int) : bool
+    return (not (5 < n) = not (not 5 < n));
+
+procedure main()
+var x : int;
+    y : int;
+    z : int;
+begin
+   x := 2;
+   y := 3;
+   z := 12;
+
+   if (andTest(x) and not andTest(12) and orTest(z) and
+       orTest(y-z) and notTest(2) and notTest(7)) then
+     write("1");
+end;

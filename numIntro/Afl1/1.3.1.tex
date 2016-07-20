@@ -1,0 +1,51 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 3}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Elementær Talteori}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+Lad sekvenserne være
+\begin{align*}
+x_1&=[1,0,-2,-6-14,-30,...] \\
+x_2&=[1,1,1,1,...] \\
+x_3&=[2,4,8,16,...]
+\end{align*}
+Dette kan bruges til at opstille ligningerne
+\begin{align*}
+1&=a+2b \\
+0&=a+4b
+\end{align*}
+Hvoraf vi kan udregne de 2 konstanter ved at isolere $b$ i den anden ligning og sætte dette udtryk ind i den første for $b$ for at få $a$
+\begin{align*}
+0&=a+4b \\
+b&=-\frac{a}{4} \\
+1&=a+2(-\frac{a}{4}) \\
+a&=2
+\end{align*}
+Og herefter udregne $b$
+\begin{align*}
+1&=2+2b \\
+b&=-\frac{1}{2}
+\end{align*}
+Af dette kan vi opstille den første sekvens som en lineær kombination af de 2 andre sekvenser.
+\begin{align*}
+x_1=2x_{2}-\frac{1}{2}x_{3}
+\end{align*}
+
+
+\end{document}

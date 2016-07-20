@@ -1,0 +1,15 @@
+digraph { 
+
+
+rankdir="LR";
+
+node[shape = circle];
+	s1 [label = "s1"];
+	s2 [label = "s2"];
+	s3 [label = "s3"];
+	
+s1 -> s2[label="1"];
+s1 -> s3[label="0"];
+s2 -> s2[label="1"];
+s3 -> s3[label="0"];
+}

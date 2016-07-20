@@ -1,0 +1,48 @@
+require 'socket'
+
+serv = TCPServer.new('localhost', 1339)
+
+dir = ""
+loop do
+  Thread.start(serv.accept) do |s|
+    req = s.gets
+    req = req.split
+    if (req[0] == "GET")
+      s.write "HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n"
+      if (req[1][-1] == "/")
+        dir = req[1]
+        if !File.exist?(dir)
+          s.write "HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n"
+        end
+        path = "index.html"
+        if File.exists?(dir + path)
+          file = File.new(dir + path, "r")
+          while (line = file.gets)
+            s.puts line
+          end
+          file.close 
+        else
+          dir.entries.each do |f|
+            if File.directory? f
+              s.puts("#{f}/")
+            else
+              s.puts("#{f}")
+            end
+          end
+        end
+      else
+        path = req[1]
+        if File.exists?(path)
+          file = File.new(path, "r")
+          while (line = file.gets)
+            s.puts line
+          end
+          file.close
+        else
+          s.write "HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n"
+        end
+      end
+      s.close
+    end
+  end
+end

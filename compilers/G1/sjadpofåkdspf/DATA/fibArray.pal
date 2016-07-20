@@ -1,0 +1,28 @@
+program fibonacciArray;
+
+function fillFib(n : int) : array of int
+var r : array of int;
+    i : int;
+begin
+   r    := new(n+1);
+   r[0] := 0;
+   r[1] := 1;
+   i    := 1;
+   while (i < n) do
+      begin   
+         i  := i + 1;
+         r[i] := r[i-1] + r[i-2];
+      end;
+   return r;
+end;
+   
+procedure main()
+var n : int;
+    a : array of int;
+begin
+   n := read();
+   if n < 1 then return;
+   a := fillFib(n);
+   write(a[n]);
+   write('\n');
+end; // main

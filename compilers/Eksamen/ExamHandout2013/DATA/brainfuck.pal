@@ -1,0 +1,108 @@
+program brainfuck;
+
+// Find matching [ and ] in a Brainfuck program.
+function findMatching(instructions : array of char;
+                      i : int) : int
+begin
+    while not (instructions[i] = ']') do
+    begin
+        i := i + 1;
+        if instructions[i] = '[' then
+        begin
+            i := findMatching(instructions, i) + 1;
+        end;
+    end;
+    return i;
+end;
+
+
+// Run a Brainfuck Program
+procedure runBF(tapeSize : int;
+                stackSize : int;
+                instructions : array of char)
+var
+    tape : array of int;
+    instrPos : int;
+    curInstr : char;
+    instrLen : int;
+    valPos : int;
+    curVal : int;
+    stack : array of int;
+    stackOffset : int;
+begin
+    tape := new(tapeSize);
+    instrPos := 0;
+    valPos := 0;
+    instrLen := len(0, instructions);
+
+    stack := new(stackSize);
+    stackOffset := 0;
+    
+    while instrPos < instrLen do
+    begin
+        curVal := tape[valPos];
+        curInstr := instructions[instrPos];
+
+        if curInstr = ',' then begin
+            tape[valPos] := ord(read());
+            instrPos := instrPos + 1;
+        end
+        else if curInstr = '.' then begin
+            write(chr(curVal));
+            instrPos := instrPos + 1;
+        end
+        else if curInstr = '>' then begin
+            valPos := valPos + 1;
+            instrPos := instrPos + 1;
+        end
+        else if curInstr = '<' then begin
+            valPos := valPos - 1;
+            instrPos := instrPos + 1;
+        end
+        else if curInstr = '+' then begin
+            tape[valPos] := curVal + 1;
+            instrPos := instrPos + 1;
+        end
+        else if curInstr = '-' then begin
+            tape[valPos] := curVal - 1;
+            instrPos := instrPos + 1;
+        end
+        else if curInstr = '[' then
+        begin
+            if curVal = 0 then begin
+                instrPos := findMatching(instructions, instrPos) + 1;
+ end
+            else begin
+                stack[stackOffset] := instrPos;
+                stackOffset := stackOffset + 1;
+                instrPos := instrPos + 1;
+            end;
+        end
+        else if curInstr = ']' then
+        begin
+            stackOffset := stackOffset - 1;
+            if curVal = 0 then
+            begin
+                instrPos := instrPos + 1;
+            end
+            else begin
+                instrPos := stack[stackOffset];
+            end;
+        end;
+    end;
+end;
+
+
+procedure main()
+var
+    rot13 : array of char;
+begin
+    runBF(10, 5, "+++++++++++++++++++++++++++++++++."); // Should print '!'.
+    runBF(10, 5, "++>++[-<++++>]<."); // Should print '\n'.
+    runBF(10, 1, ",."); // Should print the first character entered.
+
+    // ROT13, adapted from: http://esoteric.voxelperfect.net/files/brainfuck/src/rot13.b
+    rot13 := ",>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>>+++++[<----->-]<<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>>+++++[<----->-]<<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]>.[-]<";
+    runBF(1000, 1000, rot13);
+    runBF(1000, 1000, rot13);
+end;

@@ -1,0 +1,89 @@
+// sort.fo -- bubble sort of integer array 
+// reads a number N and then N numbers 
+// then prints these numbers in sorted order 
+
+program sort;
+
+procedure main()
+var n : int;
+    i : int;
+    a : array of int;
+begin
+   n := readInt();
+   a := readVect(n);
+
+   sort( a );
+
+   printVect( a );
+end;
+
+function readInt() :  int
+begin
+   write("\nType an int:");
+   return read(); // should read an int, see function type
+end;
+
+function readVect(n :  int) :  array of int
+var i  : int; 
+   arr : array of int ;
+
+begin
+   // special syntax not implemented yet
+   arr := new(n);
+   i := 0;
+   while  i < n  do
+   begin
+      write("\nType element ");
+      write(i);
+      write(": ");
+      arr[i] := read(); 
+      i := i + 1;
+   end;
+   return arr;
+end;
+
+procedure printVect(arr : array of int)
+var i : int;
+   n  : int;
+
+begin
+   n := len(0, arr);
+   write("\nSorted Vector is: [ ");
+   i := 0;
+   while i < n  do
+   begin
+      write(arr[i]);
+      if  i < (n-1) then 
+         write(", ");
+      i := i + 1;
+   end;
+   write(" ]\n");
+end;
+
+procedure sort(a : array of int)
+var i : int;
+   n  : int;
+
+begin
+   n := len(0, a);
+   
+   i := n - 1;
+   while 0 < i do 
+      var j : int;
+      begin
+         j := 0;
+         while j < i do
+         begin
+            if a[j+1] < a[j] then
+               var t : int; 
+
+               begin
+                  t      := a[j];
+                  a[j]   := a[j+1];
+                  a[j+1] := t;
+               end;
+            j := j + 1;
+         end;
+         i := i-1;
+      end;
+end;

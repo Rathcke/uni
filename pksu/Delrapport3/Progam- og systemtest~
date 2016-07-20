@@ -1,0 +1,3 @@
+Our intent is to use think aloud testing using not so tech savy friends and family as our test subject. We've deemed this appropriate as the Android Application market, along with our client, has a wide range of users. We have not started planing the usability testing yet, as we dont have a working version of our application.
+
+We are setting up a JUnit testsuit for the backend as part of the next sprint. 

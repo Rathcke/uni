@@ -1,0 +1,110 @@
+This is a human-readable summary of the differences between the
+"Updated Buenos" code and the one which was originally handed out.
+
+You can use this file to "patch" the code, instead of making the
+changes manually, by doing the following:
+1. take a backup of your current code (in case something goes wrong)
+2. open a command line and navigate to the root directory of your
+   code (buenos-exam201403)
+3. copy this file "workaround.patch" to the directory where you are
+4. issue the following command:
+     $ patch -p1 < workaround.patch
+
+
+diff -r -u buenos-exam201403-original/kernel/exception.c buenos-exam201403/kernel/exception.c
+--- buenos-exam201403-original/kernel/exception.c	2014-03-22 19:36:08.000000000 +0100
++++ buenos-exam201403/kernel/exception.c	2014-03-25 10:07:23.929774250 +0100
+@@ -90,7 +90,6 @@
+         tlb_store_exception();
+         break;
+     case EXCEPTION_ADDRL:
+-        break;
+ 	print_tlb_debug();
+ 	KERNEL_PANIC("Address Error Load: not handled yet");
+ 	break;
+diff -r -u buenos-exam201403-original/kernel/interrupt.c buenos-exam201403/kernel/interrupt.c
+--- buenos-exam201403-original/kernel/interrupt.c	2014-03-22 19:36:08.000000000 +0100
++++ buenos-exam201403/kernel/interrupt.c	2014-03-25 09:55:29.329747683 +0100
+@@ -186,22 +186,17 @@
+ 		 INTERRUPT_CAUSE_HARDWARE_5)) ||
+        scheduler_current_thread[this_cpu] == IDLE_THREAD_TID) {
+ 	scheduler_schedule();
+-        thread_table_t *thread = thread_get_current_thread_entry();
+-        process_id_t pid = thread->process_id;
+-        if(pid == -1) {
+-            /* Not a process thread. Use thread id with most significant
+-               bit flipped as ASID.
+-               Note: this limits both PROCESS_MAX_PROCESSES and the
+-               number of kernel work threads to 128 since ASID is one
+-               byte and the ASID address space is divided into two.
+-               */
+-            uint8_t asid = thread_get_current_thread() | 0x8;
+-            _tlb_set_asid(asid);
+-            return;
+-        } else {
+-            /* Use PID as ASID. This ensures that threads within a
+-               process shares the same ASID */
+-            _tlb_set_asid(pid);
+-        }
++	
++	/* Until we have proper VM we must manually fill
++	   the TLB with pagetable entries before running code using
++	   given pagetable. Note that this method limits pagetable
++	   rows (possible mapping pairs) to 16 and can't be used
++	   with proper pagetables and VM.
++
++           Note that if you remove this call (which you probably do when
++           you implement proper VM), you must manually call _tlb_set_asid
++           here. See the implementation of tlb_fill on details how to do that.
++        */
++	tlb_fill(thread_get_current_thread_entry()->pagetable);
+     }
+ }
+Only in buenos-exam201403/tests: execmany.c
+diff -r -u buenos-exam201403-original/vm/tlb.c buenos-exam201403/vm/tlb.c
+--- buenos-exam201403-original/vm/tlb.c	2014-03-22 19:36:08.000000000 +0100
++++ buenos-exam201403/vm/tlb.c	2014-03-25 10:01:36.646428023 +0100
+@@ -120,3 +120,29 @@
+ }
+ 
+ 
++/**
++ * Fill TLB with given pagetable. This function is used to set memory
++ * mappings in CP0's TLB before we have a proper TLB handling system.
++ * This approach limits the maximum mapping size to 128kB.
++ *
++ * @param pagetable Mappings to write to TLB.
++ *
++ */
++
++void tlb_fill(pagetable_t *pagetable)
++{
++    if(pagetable == NULL)
++	return;
++
++    /* Check that the pagetable can fit into TLB. This is needed until
++     we have proper VM system, because the whole pagetable must fit
++     into TLB. */
++    KERNEL_ASSERT(pagetable->valid_count <= (_tlb_get_maxindex()+1));
++
++    _tlb_write(pagetable->entries, 0, pagetable->valid_count);
++
++    /* Set ASID field in Co-Processor 0 to match thread ID so that
++       only entries with the ASID of the current thread will match in
++       the TLB hardware. */
++    _tlb_set_asid(pagetable->ASID);
++}
+diff -r -u buenos-exam201403-original/vm/tlb.h buenos-exam201403/vm/tlb.h
+--- buenos-exam201403-original/vm/tlb.h	2014-03-22 19:36:08.000000000 +0100
++++ buenos-exam201403/vm/tlb.h	2014-03-25 09:59:32.956423401 +0100
+@@ -95,6 +95,10 @@
+ void tlb_load_exception(void);
+ void tlb_store_exception(void);
+ 
++/* Forward declare pagetable_t (== struct pagetable_struct_t) */
++struct pagetable_struct_t;
++void tlb_fill(struct pagetable_struct_t *pagetable);
++
+ /* Utility functions */
+ uint32_t tlb_entry_get_vaddr(tlb_entry_t *entry);
+ uint32_t tlb_entry_get_paddr(tlb_entry_t *entry, uint32_t vaddr);

@@ -1,0 +1,95 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+\title{Proactive Computer Security \\ Assignment 5}
+\lhead{PCS}
+\rhead{Assignment 5}
+
+\begin{document}
+\maketitle
+
+\section{Fuzzer}
+The fuzzer is found \texttt{fuzzer.py}. The fuzzer I have implemented is a very simple one and the approach for its construction is very simple as well. I started by making a random byte string of a fixed length and then slowly increasing (by $1$) the length of it if it did not cause any crash. The string is always stripped for new line bytes, \texttt{NULL} bytes and spaces as I suspected these might mess up the fuzzing. It would send the random byte string through all the available commands and when it started causing crashes, I used the process of elimination to realize my crash came from the \texttt{JOINING} command. Obviously, the crash could be caused by other commands as well, but I knew this one worked. Thus, all the fuzzer does is creating a random byte string of length $1000$ and then incrementing the length by one until it crashes (random string for  each iteration), that is, until a \texttt{core} file is produced. I have commented the fuzzer, so it should make sense as it's also very simple. \\
+Note that the connected is closed and started for each iteration in order to join a channel again. If the connection is closed for some reason, we reestablish it as well.
+
+\section{Findings}
+Usually, the fuzzer has to run for under $50$ iterations before crashing. The line that succeeded to crash it and make a \texttt{core} file is written to a file \texttt{ded.txt} (you can toggle the \texttt{autowin} variable if you want to see the fuzzer in action as right now it just uses one that worked located in \texttt{ded2.txt}). \\
+If we fire up \texttt{gdb} on the core produced by the string in \texttt{ded2.txt} (it's called \texttt{core2} because the fuzzer runs until there is a file named \texttt{core} in the path):
+\begin{verbatim}
+    $ gdb yairc core2
+\end{verbatim}
+We can see that it has a segmentation fault at \texttt{0x15ad13fe} (if we use the line in \texttt{ded2.txt}). If we take a look at the input we gave and use a little time on this, we can see that it actually the address actually correspond to the bytes on indices $1005$ to $1008$ (which we can verify by running it again). Thus, we can change this to wherever we want in the memory by constructing a string that crashes the thread with the desired address on these indices of the string.
+
+\end{document}
