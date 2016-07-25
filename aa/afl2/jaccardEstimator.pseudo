@@ -1,0 +1,22 @@
+jaccardEstimator(S_a,S_b) {
+  k = S_a.length
+  i = 0
+  intCardi = 0
+  headA = S_a.ptr
+  headB = S_b.ptr
+  tSize = sizeof(val(headA))
+  for(i<k) {
+    headValA = val(headA)
+    headValB = val(headB)
+    if(headValA == headValB) {
+      headA += tSize
+      headB += tSize
+      intCardi += 1
+    } else if (headValA < headValB ) {
+             headA += tSize
+           } else {
+             headB += tSize
+           }
+  }
+  return (intCardi/k)
+}

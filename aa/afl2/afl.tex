@@ -1,0 +1,251 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Ola Rønning (vdl761)}
+\title{Advanced Algorithms \\ Assignment 2}
+\lhead{Advanced Algorithms}
+\rhead{Assignment 2}
+
+\begin{document}
+
+\maketitle
+
+\section*{Hash functions for sampling}
+
+\subsubsection*{Exercise 1 (a)}
+We want to show that
+\begin{align*}
+p&\leq Pr[h(x) < p] < 1.01p
+\end{align*}
+Since $p$ is the sampling probability, we have that $p=\frac{t}{m}$. We also have that $h(x)=h_m(x)/m$, thus we can write
+\begin{align*}
+\frac{t}{m}&\leq Pr[h(x) < \frac{t}{m}] < 1.01\frac{t}{m} &\Leftrightarrow \\
+\frac{t}{m}&\leq Pr[\frac{h_m}{m} < \frac{t}{m}] < 1.01\frac{t}{m} &\Leftrightarrow \\
+\frac{t}{m}&\leq Pr[h_m < t] < 1.01\frac{t}{m}
+\end{align*}
+Since this is a strongly universal hash function $h : U\rightarrow [m]$, the probability is at least $t/m$, which means that the above equation holds.
+
+\subsubsection*{Exercise 1 (b)}
+We want to find the complementary probability, that there is no keys $x,y\in A$ that hash to the same value and subtract that from $1$. We can find this as
+\begin{align*}
+P\{h(x)=h(y)\ |\ \exists x,y\in A\}&=1-P\{h(x)\neq h(y)\ |\ \forall x,y\in A\}\\
+&=1-\prod_{1\leq j<|A|}\frac{m-j}{m} \\
+&=1-\prod_{1\leq j<|A|}1-\frac{j}{m}
+\end{align*}
+If we let $j=|A|$ for each multiplicand in the product, the probability that there is no pair that hash to the same value become smaller, so it is still an upper bound.
+\begin{align*}
+P\{h(x)=h(y)\ |\ \exists x,y\in A\}&=1-P\{h(x)\neq h(y)\ |\ \forall x,y\in A\}\\
+&\leq 1-\prod_{|A|-1}1-\frac{|A|}{m} \\
+&= 1-\left(1-\frac{|A|}{m}\right)^{|A|-1}
+\end{align*}
+We now let $m$ be the worse case, that is $m=100|A|^2$, so
+\begin{align*}
+P\{h(x)=h(y)\ |\ \exists x,y\in A\}&=1-P\{h(x)\neq h(y)\ |\ \forall x,y\in A\}\\
+&\leq 1-\left(1-\frac{|A|}{100|A|^2}\right)^{|A|-1} \\
+&= 1-\left(1-\frac{1}{100|A|}\right)^{|A|-1}
+\end{align*}
+So our upper bound becomes $\mathcal{O}\left(1-\left(1-\frac{1}{100|A|}\right)^{|A|-1}\right)$.
+
+\newpage
+\section*{Bottom-$k$-sampling}
+\subsection*{Frequency estimation}
+\subsubsection*{Exercise 2}
+We want to show that
+\begin{align}\label{2a}
+E[|C\cap S_h^k(A)|/k]=|C|/|A|
+\end{align}
+The size of $S_h^k(A)$ is equal to $k$. Since for each element $x$ in $A$, the probability of $x$ belonging to $S_h^k(A)$ is $k/|A|$, that means that for each element of the random subset $C$, it also has probability $k/|A|$ of being in $S_h^k(A)$. We can then calculate the expected value of the union between $C$ and $S_h^k(A)$ as it is probability times the number of elements in $C$:
+\begin{align*}
+E[|C\cap S_h^k(A)|]=|C|\frac{k}{|A|}
+\end{align*}
+Or from equation \ref{2a}:
+\begin{align*}
+E[|C\cap S_h^k(A)|/k]&=\frac{|C|\frac{k}{|A|}}{k} \\
+&=\frac{|C|\cdot k}{|A|\cdot k} \\
+&=\frac{|C|}{|A|}
+\end{align*}
+And equation \ref{2a} is shown.
+
+\subsubsection*{Exercise 3 (a)}
+You would want to be able to find the element with the largest hash value $n$, compare the incoming key's value $m$ to this, remove the max element if $m<n$ and insert the incoming key. \\
+A fib-heap can extract the maximum $\mathcal{O}(\lg n)$ and find max and insert in $\mathcal{O}(1)$. Furthermore, one could imagine $k$ is a lot smaller than the number of hash values, so it will rarely need to insert and element and extract max, but it will always have to compare with the max element which is done in $\mathcal{O}(1)$ time.
+
+\subsubsection*{Exercise 3 (b)}
+The probability that we need to insert the incoming key and extract max is $k/n$ where $n$ is the key number $i+1$, which takes $\mathcal{O}(\lg k)$ time. Otherwise we only need constant amount of work to hash $x_{i+1}$ and compare to max. This means it is expected to be processed in $\mathcal{O}(\frac{k}{n}\lg k)$ time.
+
+\subsection*{Similarity estimation}
+\subsubsection*{Exercise 4 (a)}
+We want to show that
+\begin{align*}
+S_h^k(A\cup B)=S_h^k(S_h^k(A)\cup S_h^k(B))
+\end{align*}
+The left hand side has the $k$ elements with the lowest hash value, while the inner union on the right hand side can have lowest $n$ elements where $k\leq n\leq 2k$. \\
+This means that
+\begin{align}\label{3a}
+S_h^k(A\cup B)\subseteq S_h^k(A)\cup S_h^k(B)
+\end{align}
+And that means you can always take the $k$ smallest elements out of $n$ to obtain the same set.
+
+\subsubsection*{Exercise 4 (b)}
+We will prove that:
+\begin{align*}
+A \cap B \cap S_h^k(A\cup B) = S_h^k(A) \cap S_h^k(B) \cap S_h^k(A\cup B)
+\end{align*}
+by contradiction.\\
+Let \(x \in (A \cap B \cap S_h^k(A\cup B))\),
+\begin{align*}
+A \cap B \cap S_h^k(A\cup B) \neq S_h^k(A) \cap S_h^k(B) \cap S_h^k(A\cup B)
+\end{align*}
+That is there exist a element \(x \in A \wedge B\) that hashes to one of the k smallest values in \(A\cup B\). However, for the inequality to hold there must exist k smaller hashings in either \(A \vee B\), but this contradicts that x hashes to one of the k smallest hashings in \(A\cup B\), hence the equality must hold.
+\subsubsection*{Exercise 4 (c)}
+To estimate
+\begin{align}\label{unbiased}
+\frac{\left|S_h^k(A) \cap S_h^k(B) \cap S_h^k(S_h^k(A)\cup S_h^k(B))\right|}{k}
+\end{align}
+we devise a simple algorithm that looks at the k smallest elements and count how many are in both \(S_h^k(A) \) and \(S_h^k(B)\), we assume \(S_h^k(A)\) and \(S_h^k(B)\) are sorted in ascending order by hashing value from hashing with \(h\). This algorithm runs in \(\mathbb{O}(k)\) time. The pseudo code can be found in Listing \ref{estimator}.
+\lstinputlisting[caption={Algorithm to solve unbiased estimator of the Jaccard Similarity, see Formula \ref{unbiased}.},label=estimator]{jaccardEstimator.pseudo}
+
+\newpage
+\section*{Bottom-$k$-sampling with strong universality}
+\subsection*{A union bound}
+\subsubsection*{Exercise 5}
+If (I) and (II) are false, we can deduct the following: \\
+\\
+(I) tells us that all elements from $S$ (which has size $k$) hash to a value under $p$. \\
+(II) tells us that at most $(1+b)p|C|$ elements from $C$ hash to a value under $p$. \\
+\\
+This means that $|C\cap S|$ is at most $(1+b)p|C|$. Now we want to see if the following equation holds:
+\begin{align*}
+|C\cap S| > \frac{1+b}{1-a}fk
+\end{align*}
+We can reduce the right hand side:
+\begin{align*}
+|C\cap S| &> \frac{1+b}{1-a}fk \\
+&= \frac{1+b}{1-a}\frac{|C|}{|A|}k \\
+&= (1+b)\frac{k}{n(1-a)}|C| \\
+&= (1+b)p|C|
+\end{align*}
+Last reduction is because $p=\frac{k}{n(1-a)}$. But since we know that $|C\cap S|\leq (1+b)p|C|$, that means
+\begin{align*}
+|C\cap S|\leq (1+b)p|C| < |C\cap S|
+\end{align*}
+which can not be true. So it is proved by contradiction that if (I) and (II) are false, then so is (4).
+
+\newpage
+\subsection*{Upper bound with 2-independence}
+\subsubsection*{Exercise 6}
+We want to show that we can use Lemma 1 to show that
+\begin{align}\label{ex6}
+P_{(I)} = Pr\left[ X_A < k \right] \leq 1/r^2
+\end{align}
+Lemma 1 tells us that
+\begin{align*}
+Pr\left[ \abs{X-\mu} \geq r\sqrt{\mu} \right] \leq 1/r^2
+\end{align*}
+Since $X$ corresponds to $X_A$, $\mu$ to $\mu_A$, and $X_A$ is always less than $\mu_A$ since $X_A<\mu_A(1-a)$ for $0<a<1$, we can remove the absolute value tags and write:
+\begin{align*}
+1/r^2 &\geq Pr\left[ -(X_A-\mu_A) \geq r\sqrt{\mu_A} \right] \\
+\comment{Multiply both sides with $-1$} &= Pr\left[ X_A-\mu_A\leq -r\sqrt{\mu_A} \right] \\
+&= Pr\left[ X_A \leq \mu_A-r\sqrt{\mu_A} \right] \\
+\comment{Divide by $\mu_A$} &= Pr\left[ \frac{X_A}{\mu_A} \leq \frac{\mu_A}{\mu_A}-\frac{r\sqrt{\mu_A}}{\mu_A} \right] \\
+\comment{Since $\mu_A=\frac{k}{1-a}$} &= Pr\left[ \frac{X_A}{\mu_A} \leq \frac{\mu_A}{\mu_A}-\frac{r\sqrt{\frac{k}{1-a}}}{\frac{k}{1-a}} \right] \\
+&= Pr\left[ \frac{X_A}{\mu_A} \leq 1-\frac{\frac{r\sqrt{k}}{\sqrt{1-a}}}{\frac{k}{1-a}} \right] \\
+&= Pr\left[ \frac{X_A}{\mu_A} \leq 1-\frac{r\sqrt{k}}{\sqrt{1-a}\frac{k}{1-a}} \right] \\
+&= Pr\left[ \frac{X_A}{\mu_A} \leq 1-\frac{r\sqrt{k}\sqrt{1-a}}{k} \right] \\
+&= Pr\left[ \frac{X_A}{\mu_A} \leq 1-\frac{r\sqrt{1-a}}{\sqrt{k}} \right] \\
+\comment{Since $0<\sqrt{1-a}<1$} &= Pr\left[ \frac{X_A}{\mu_A} < 1-\frac{r}{\sqrt{k}} \right] \\
+&= Pr\left[ X_A < \left( 1-\frac{r}{\sqrt{k}} \right)\mu_A \right] \\
+\comment{As $k=\left( 1-\frac{r}{\sqrt{k}} \right)\mu_A$} &= Pr\left[ X_A < k \right]
+\end{align*}
+Note that the inequality becomes strictly less when we remove the term $\sqrt{1-a}$ as this makes the right hand side smaller. We have now proved equation \ref{ex6}.
+
+\subsubsection*{Exercise 7}
+We want to show that we can use Lemma 1 to show that
+\begin{align}\label{ex7}
+P_{(II)} = Pr\left[ X_C > (1+b)\mu_C  \right] \leq 1/r^2
+\end{align}
+Lemma 1 tells us that
+\begin{align*}
+Pr\left[ \abs{X-\mu} \geq r\sqrt{\mu} \right] \leq 1/r^2
+\end{align*}
+Since $X$ corresponds to $X_C$, $\mu$ to $\mu_C$, and $X_C$ is always larger than $\mu_C$ since $X_C>\mu_C(1+b)$ for positive $b$, we can remove the absolute value tags and write:
+\begin{align*}
+1/r^2 &\geq Pr\left[ X_C-\mu_C \geq r\sqrt{\mu_C} \right] \\
+&= Pr\left[ X_C \geq r\sqrt{\mu_C}+\mu_C \right] \\
+\comment{Divide by $\sqrt{\mu_C}^2$} &= Pr\left[ \frac{X_C}{\sqrt{\mu_C}^2} \geq \frac{r\sqrt{\mu_C}}{\sqrt{\mu_C}^2}+\frac{\mu_C}{\sqrt{\mu_C}^2} \right] \\
+&= Pr\left[ \frac{X_C}{\mu_C} \geq \frac{r}{\sqrt{\mu_C}}+1 \right] \\
+&= Pr\left[ X_C \geq \left( 1+\frac{r}{\sqrt{\mu_C}} \right) \mu_C \right] \\
+\comment{Since $b=r/\sqrt{fk}$} &= Pr\left[ X_C > \left( 1+b \right) \mu_C \right]
+\end{align*}
+Last reduction is possible since $fk<\mu_C$ which also makes the inequality strict and thus we have proved equation \ref{ex7}.
+
+\end{document}
