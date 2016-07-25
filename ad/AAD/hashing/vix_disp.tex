@@ -1,0 +1,110 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\begin{center}
+\section*{Hashing}
+\end{center}
+\subsection*{Universality}
+A hash function $h: U\rightarrow [m]$ maps values from a key universe $U$ into values in $m=[0...m-1]$. \\
+Universal hashing is the concept of generating a random \textit{universal} hash function $h$, so when we pick two distinct keys $x,y\in U$, the probability of collision is:
+$$Pr_h[h(x)=h(y)]\leq 1/m\ \ or\ \ Pr_h[h(x)=h(y)]\leq c/m$$
+
+\subsection*{Application}
+Universal - Hash tables with chaining. When we want lookups in expected constant time, $1+|L(h(x)|$. If we have used a universal hash function, we can expect the buckets to be of size $|S|/m$ . (We have the indicator varialbe $I(y)$. It is the number of collisions with a new key $x\not\in S$).
+$$E[L(h(x))]=E[\sum_{y\in S}I(y)]=\sum_{y\in S}E[I(y)]=\sum_{y\in S}E[h(x)=h(y)]=|S|\cdot \frac{1}{m}$$
+
+\subsection*{Strong universality}
+A stronger condition known as pairwise independence or strong universality is when given two distinct keys $x,y\in U$ hash to values $r$ and $q$ respectively with probability $1/m^2$. If it is strongly universal, it implies it is also universal, as
+$$Pr[h(x)=h(y)]=\sum_{q\in [m]}Pr[h(x)=q\land h(y)=q]=m/m^2=1/m$$
+Proof that two keys are hashed individually and each key is hashed uniformly into $[m]$. Uniformly as each pair has exactly $1/m^2$, and there are $m$ values of $r$ for each $q$. \\
+Independence (calculate $P[A|B]=\frac{P[A]*P[B]}{P[B]}$).
+
+\subsection*{Application}
+Strongly universal - coordinated sampling, important in handling of big data and machine learning. We can define a set $S_{h,t}(A)$ from a set $A$, a strongly universal hash function $h$ and a threshold $t$. The size is $|A|\cdot t/m$ as a strongly universal hash function means that values are uniformly mapped to $[m]$. \\
+We can say something about unions and intersections between two sets by multiplying with $m/t$. \\
+\\
+Chebyshev's inequality?
+$$Pr[|X-\mu | \geq q\sigma_x]\leq 1/q^2$$
+for $q>0$. Says something about that in any probability distribution, "nearly all" values are close to the mean.
+
+\subsection*{Implementations}
+\textbf{Multiply-mod-prime:} \\
+Universal (with $c=1$) where $h_{a,b}:[u]\rightarrow [m]$:
+$$h_{a,b}(x)=((ax+b) \mbox{ mod } p)\mbox{ mod } m$$
+Strongly universal where $h_{a,b}:[p]\rightarrow [p]$:
+$$h_{a,b}(x)=(ax+b)\mbox{ mod }p$$
+\\
+\textbf{Multiply-shift:} \\
+Universal (with $c=2$) where $h_a:[2^w]\rightarrow [2^d]$:
+$$h_a(x)=\lfloor (ax \mbox{ mod } 2^w)/2^{w-l}\rfloor$$
+Strongly universal where $h_{a,b}:[2^w]\rightarrow [2^l]$:
+$$h_{a,b}(x)=(ax+b)[w'-l, w']$$
+and $w'\geq w+l-1$
+
+\end{document}

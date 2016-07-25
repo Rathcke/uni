@@ -1,0 +1,89 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\begin{center}
+  \section*{NP-Completeness}
+\end{center}
+Ill start with explaining the question of $P=NP$. The problems in $P$ are problems that can be solved in polynomial time. The problems in $NP$ are problems that, given a certificate, can verify a solution in polynomial time, so obviously $P\subseteq NP$. Instead of studying optimization problems, we will focus on decision problems, that is, a problem for which the output is yes/no. \\
+We say a language $L$ is accepts in polynomial time, if an algorithm can correctly determine if some $x\in L$ for some input $x$. We can show that if a language is accepted in polynomial time, it also decides it in polynomial time. \\
+Reductions (with example linear equations) and we say $L_1 \leq_p L_2$. \\
+To show that $NP\subseteq P$, a key concept is reducebility of problems. The idea is we want to reduce problems to other problems, so called $NP$-complete problems, in polynomial time. If these problems can be solved in polynomial time, then $P=NP$. \\
+\\
+To give a concrete example, lets consider the $NP$-complete problem $3-CNF-SAT$. We want to show the clique problem (decided version) is $NP$-complete by reducing to it.\\
+We first prove it is in $NP$. It clearly is, as given a set $V'\subseteq V$, we just check if for each vertex, that there is an edge to all other vertices. Now we want to prove the reduction to clique. \\
+For each clause in $\phi$ (up to $k$), we create three vertices in a graph and contruct an edge, $(u, v)$, between vertices if they are in different triples and $u$ is not the negation of $v$. This graph can be built in polynomial time. Now if $\phi$ has a satisfying assignment, that means there is a clique of size $k$ since the construction of the graph ensures there is no edge between negation of literals.\\
+\\
+Another $NP$-complete problem is the vertex cover. We will show that $\mbox{CLIQUE}\leq_p \mbox{VERTEX-COVER}$. \\
+Obviously $\mbox{VERTEX-COVER}\in NP$ as we can just, for all edges, check if either $u$ og $v$ is in the cover set. Now, given a graph $G$, we also have the complement of it, $\overline{G}=(V, \overline{E})$ (computed in polynomial time). This is a reduction. $G$ has a clique of size $k$ only if $\overline{G}$ has a vertex cover of size $|V|-k$. If there is an instance of clique $<G, k>$, then we claim that the instance $<\overline{G}, |V|-k>$ of vertex cover is a reduction.
+If we have an edge $(u, v)\in \overline{E}$, then one of the vertices is not in the clique vertice set, $V'$. This means the edge is covered by a vertex in $V-V'$. This applies to all edges in $\overline{E}$, so all edges in $\overline{E}$ are covered by $V-V'$.\\
+Conversively, if $\overline{G}$ has a vertex cover $V'$ of size $|V|-k$, then for all edges $(u,v)\in \overline{E}$, at least one of $u$ and $v$ is in $V'$, and the opposite, if neither is, then the edge must be in $E$. Therefore $V-V'$ is a clique of size $k$.
+
+\end{document}

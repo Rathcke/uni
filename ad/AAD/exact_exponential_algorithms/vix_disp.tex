@@ -1,0 +1,97 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\begin{center}
+\section*{Exact Exponential Algorithms}
+\end{center}
+Some problems can be hard to solve. We will look for good exact exponential algorithms to solve these problems. One problem is the TSP problem, which by bruteforce takes $\mathcal{O}(n!)$ time. Another is the MIS problem that takes $\mathcal{O}(2^n)$ time by bruteforce. We introduce the notion $O^*(g(n))$ for a function $f(n)=O(g(n)poly(n))$. \\
+\\
+Dynamic approach to TSP works by calculating the lowest cost path in every subset. The amount of steps required to calculate the optimal route is $O(k^2)$, and we calculate all subsets (without $c_1$), so our running time is
+$$\sum_{k=1}^{n-1}O(\binom{n}{k}k^2)=O^*(2^n)$$
+The algorithm for MIS works by picking a vertex $v$ with minimum degree and finds the optimal solution (recursively) by removing a vertex from the neighbourhood $N(v)$.\\
+The worse case running time of this algorithm becomes the largest number of nodes, $T(n)$. We define $d(v)$ as the degree of the vertex we picked. That means we can express the number of nodes in the branching tree as
+\begin{align*}
+T(n)&\leq 1+T(n-d(v)-1)+\sum_{i=1}^{d(v)}T(n-d(v_i)-1) \\
+\comment{Since v had min degree} &\leq 1+T(n-d(v)-1)+\sum_{i=1}^{d(v)}T(n-d(v)-1) \\
+&=1+(d(v)+1)\cdot T(n-d(v)-1)
+\end{align*}
+Setting $s=(d(v)+1$, we get
+\begin{align*}
+T(n)&\leq 1+s\cdot T(n-s) \\
+&\leq 1+s+s^2+\cdots+s^{n/s} \\
+&=\frac{1-s^{n/s+1}}{1-s}=\mathcal{O}^*(s^{n/s})
+\end{align*}
+This has maximum for $s=3$, which means
+$$T(n)=O^*(3^{n/3})$$
+We say a problem is fixed parameter tractable if you have an algorithm that runs in $O(f(k)poly(n))$ time for some parameter $k$. If you know that vertex cover needs some size $k$, we can reduce the problem so it has $k^2+k$ vertices and $k^2$ edges. Do that by removing vertices with degree $0$ and $1$ (when $1$, we keep the neighboor). Also include vertices that has a degree strictly larger than $k$.
+
+
+\end{document}

@@ -1,0 +1,95 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\begin{center}
+\section*{Computational Geometry}
+\end{center}
+If we want to model a terrain in $3d$ where we have measured height in a points $p$ from a set $P$, we can do this by making a \textit{triangulation} of $P$, which is a planar subdivision whos bounded faces are triangles. These are then lifted to their height. \\
+Some triangulations seem more natural than other, specifically the triangulations that maximizes the minimum angle. One triangulation that satisfies this is the \textit{Delaunay Triangulation}.
+First we introduce Thales's theorem. Thales's theorem states that (with example):
+$$\measuredangle arb > \measuredangle apb=\measuredangle aqb > \measuredangle asb$$
+Now edge flipping is the act of flipping the edge that is adjacent to two triangles ($4$ vertices) to the opposite vertices. We do this if it is illegal, that is, if flipping it maximizes the minimal angle of the angle vector. \\
+\\
+A Delaunay graph can be found from Voronoi diagrams, if two faces share an edge in the Voronoi diagram we draw a straight lines between the two vertices that represent these faces. This is always a plane graph, meaning the edges do not intersect eachother. \\
+\\
+\textbf{Properties of a Delaunay triangulations}:
+\begin{itemize}
+  \item An edge can only be in the Delaunay graph if there exist a disc, with the endpoints on its boundary so there is no other node (or site) in the disc.
+  \item Three points are vertices to the same face if the circumcircle contains no other points in it.
+\end{itemize}
+We now want to show that a triangulation of $P$ is legal if and only if it is also a Delaunay triangulation of $P$. \\
+It follows from the definitions that a Delaunay triangulation is legal. We now want to show that any legal triangulation is also a Delaunay triangulation by contradiction. \\
+When it is not a Delaunay triangulation we know that there is a triangle $p_ip_jp_k$ whose circle contains a point $p_l$.
+We pick the $p_l$ that maximizes the angle $\measuredangle p_ip_jp_l$. We now consider the triangle $p_ip_jp_m$. Since it is a legal triangulation, that means the edge $e=p_ip_j$ is legal, and that means $p_m$ is not in the disc around $p_ip_jp_k$. We now have two discs where $p_l\in C(p_ip_jp_m)$. \\
+We now make a new quadriliteral by making the edge $p_jp_m$. By Thales's theorem, we now have that $\measuredangle p_jp_lp_m > \measuredangle p_ip_jp_l$ which is a contradiction to to the definition of the pair $(p_ip_lp_j,p_l)$. \\
+\\
+An algorithm to compute the Delaunay triangulation directly is a \textit{randomized incremental algorithm}. This works by creating a large triangle with the "highest" point and two extra points that do not interfere with the discs. We then pick a random point and draw triangles and legalize every edge afterwards. When randomized, it runs in $\mathcal{O}(n\lg n)$ since the expected number of \texttt{legalizeEdges} is $\mathcal{O}(1)$. We also keep a data structure so the expected time it takes to find the location (triangle) of a point $p$ is found in $\mathcal{O}(\lg n)$. 
+
+
+\end{document}

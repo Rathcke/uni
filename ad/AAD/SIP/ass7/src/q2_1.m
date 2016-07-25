@@ -1,0 +1,15 @@
+mat = load('TestImageQn2.mat');
+I = mat.TestImageQn2;
+se = [0 1 0; 1 1 1; 0 1 0];
+se2 = [0 0 1 0 0; 0 1 1 1 0; 1 1 1 1 1; 0 1 1 1 0; 0 0 1 0 0];
+I2 = imopen(I, se);
+I3 = imclose(I, se);
+subplot(1, 3, 1);
+    imshow(I);
+    title('Original Image');
+subplot(1, 3, 2);
+    imshow(I2);
+    title('Image after opening');
+subplot(1, 3, 3);
+    imshow(I3);
+    title('Image after closing');
