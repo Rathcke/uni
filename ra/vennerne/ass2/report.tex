@@ -1,0 +1,189 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Victor Petren Bach Hansen (grn762)}
+\title{Randomized Algorithms \\ Assignment 2}
+\lhead{Randomized Algorithms}
+\rhead{Assignment 2}
+
+\begin{document}
+\maketitle
+
+\section*{Summary}
+\subsection*{Chapter 2}
+\begin{description}
+  \item[Game Tree Evaluation:] A game tree $T_{d,k}$ is defined as a rooted tree where internal nodes with an even distance from the root is an AND node and nodes with an odd distance from the root is an OR node. Each internal node has $d$ children and has height $2k$, which means that any root-to-lead path passes through $k$ AND nodes and $k$ OR nodes. Leaves can take any real value, but we focus on the binary case, i.e. $0$ or $1$. An evaluation of the tree is as follows: each leaf
+    returns the value associated with it, the OR nodes returns the logical OR of all of its children and the AND nodes returns the logical AND of all of its children. The problem then consists of determining the value returned by the root node.
+
+    Based on the evaluation of a child, we can sometimes avoid evaluating all the other children, e.g. if a child of an OR node is $1$ or if the child node of an AND is $0$, there is no point in checking the rest. The worst case for a deterministic algorithm is an instance where we have to evaluate every singe leaf, ie $d^{2k}=n$. The expected runtime for the randomized algorithm proposed is atmost $n^{0.793}$, which beats the worst case of the deterministic.
+  \item[Minimmax principle:] We introduce a techinque to proving lower bounds on the running time of any randomized algorithm called the minimax principle. For a payoff matrix, $M$ and probability distributions $p$ and $q$, the expected payoff is:
+    $$
+    E[payoff] = p^TMq = \sum^{n}_{i=1} \sum^{m}_{j=1} p_iM_{ij}q_j
+    $$
+    Von Neumann's Minimax theorem then states, for a two-person zero-sum game:
+    $$
+    \max_p \min_q {p^TMq} = \min_q \max_p {p^TMq}
+    $$
+    which means that the largest expected payoff that R can guarantee by choosing a mixed (random) strategy is equal to the smallest amount expected payoff that C can guarantee when also using a mixed strategy. This is called the value of the game. \\
+    Yao extended this principle to prove lower bounds on the performance of randomized algorithms. Let a problem be $\Pi$ with a finite set $\mathcal{i}$ of input instances (of a fixed size) and a finite set of deterministic algorithms $\mathcal{A}$, for input $I \in \mathcal{I}$ and algorithm $A\in \mathcal{A}$, we let $C(I,A)$ denote the running time of an algorithm A with input instance I. For probability distributions $p$ over $\mathcal{I}$ and $q$ over $\mathcal{A}$ Yao's  Minimax
+    Principle states that:
+    $$\min_{A\in \mathcal{A}}E[C(I_p, A)]\leq \max_{I\in \mathcal{I}}E[C(I, A_q)]$$
+    which means that the expected running time of the optimal deterministic algorithm for an arbitrarily chosen input distribution $p$ is a lower bound on the     expected running time of the optimal (Las Vegas) randomized algorithm for $\Pi$.
+
+\subsection*{Chapter 3}
+\begin{description}
+  \item[Occupancy Problems:]
+The first part we went through was the occupancy problems, which most people know from the "bins and balls" problems. A famous one is the \textit{birthday problem}, where we want to calculate the probability that no two people have birthdays on the same day. This correspond to no $2$ of $m$ balls land in the same of the $n$ bins. There are variations to this, such as "what is the probability that, if we have $m$ balls and $n$ bins, there are no bins containing $k$ or more balls". Extending this, we can find expected numbers for different problems - one such we will study in Problem 3.3(a). We have studied bounds for these kind of problems as well. \\
+  \item[Markov and Chebyshev Inequalities:]
+    Expectations are after all just expectations, and most likely the actual value will deviate from the expectation. Thus, we need way to bound how much it will deviate. In particular, we want to bound the probability that it deviates by some value. Markov's inequality is used for this purpose and is given by some random variable $X$  and all $t>0$:
+    $$
+    \mathbb{P}\left[ X \geq t \right]\leq \frac{\mathbb{E}[X]}{t}
+    $$
+    However, this inequality if often very weak, but if we know the variation of random variable, we can use it to derive better bounds. One such bound is known as the Chebyshev inequality. It is given by the random variable $X$, some $t>0$, standard deviation $\sigma$ and expected value $\mu$ (of $X$):
+    $$
+    \mathbb{P}\left[ |X-\mu|\geq t \sigma\right] \leq \frac{1}{t^2}
+    $$
+    which is tighter than the Markov inequality. \\
+  \item[Randomized Selection:]
+    Randomized selection is used to find the $k$'th smallest element in a set $S$. Mainly, we studied the \texttt{LazySelect} algorithm. The algorithm tries to find two elements $a$ and $b$ which makes a set $P$. The idea is then that we can with high probability find the $k$'th smallest element in $P$. This is good as, skipping some analysis, we can expect to make only $2n+o(n)$ comparisons per run of the algorithm. The algorithm further find the $k$'th smallest element with probability $1-O(n^{-1/4}$, which makes it likely to succeed in the first try. This is better than any deterministic algorithm we know.
+\end{description}
+
+
+\end{description}
+\section*{Problem 2.1}
+We want to show that for any deterministic evaluation algorithm, there is an instance of $T_{d,k}$ that forces the algorithm to read all values on all $d^{2k}$ leaves.\\
+
+At a given AND node with $d$ children, we utilize the observation that in order order for the node to return $1$, we need all of its children to evaluate to $1$. By making sure the $d-1$ first children evaluate to $1$, we force the algorithm to also check all $d$ children, in order to decide what the node should return.
+
+Similary, in order for a given OR node to return $0$, we need all of its children to evaluate to $0$. Thus, by making sure that the $d-1$ first children evaluate to $0$, we force the algorithm to evaluate all the $d$ children, in order to decide what it should return.\\
+
+Thus, for any deterministic evaluation strategy, we can always construct an instance of $T_{d,k}$ such that we force the algorithm to evaluate each subtree, based on these observations.
+
+\section*{Problem 2.6}
+N/A
+
+\section*{Problem 3.1}
+We use Theorem 4.18 in [MR], which states that if we let $r=m/n$ and $Z$ be the number of empty bins when $m$ balls are thrown into $n$ bins, then:
+$$
+\mathbb{E}[Z]=n\left( 1-\frac{1}{n}\right) ^m\sim ne^{-r}
+$$
+Now, when $m=n$, we can write:
+\begin{align*}
+  \mathbb{E}[Z]&= n\left( 1-\frac{1}{n}\right) ^n
+\end{align*}
+Since we want to show that the expected number of empty bins approaches $ne$ and not just approximately $ne$ as the theorem says (because it includes $m$). We can write the expected number of empty bins for large $n$ as:
+\begin{align*}
+  \mathbb{E}[Z]&= \lim_{n\rightarrow \infty} n\left( 1-\frac{1}{n}\right) ^n \\
+               &= n/e
+\end{align*}
+which proves it using a little external help\footnote{http://wolframalpha.com} to derive that the limit of $(1-\frac{1}{n})^n$ is $1/e$. When we throw $m$ balls into $n$ bins, we cannot actually say something about the limit when $n$ approaches infinity as it depends on $m$ as well. We can simply say that:
+$$
+E[Z]\approx ne^{m/n}
+$$
+by using Theorem 4.18 again.
+
+\section*{Problem 3.3}
+If we look at a single memory module, call it $m_i$, what is the expected number of requests it will get? Let us look at the probability that it gets exactly $k$ requests. The number of ways to pick $k$ processors that will send a request to $m_i$ is exactly $\binom{n}{k}$. The probability that $k$ of them will pick $m_i$ is $\left(\frac{1}{n}\right)^k$. We also need the probability that the rest of the processors will \textit{not} pick $m_i$. This can be expressed as $\left(1-\frac{1}{n}\right)^{n-k}$. Putting all this together gives us the probability that memory module $m_i$ will get exactly $k$ requests:
+\begin{align*}
+  \mathbb{P}\left[ \mbox{Memory bank gets exactly $k$ requests} \right]&=\binom{n}{k} \left(\frac{1}{n}\right)^k \left(1-\frac{1}{n}\right)^{n-k} \\
+                                                                       &=P(k)
+\end{align*}
+For notation's sake, we call this probability for memory bank $m$ and requests $k$ for $P(k)$ (as each memory bank has the same probabilities). We could have used an upper bound to $P(k)$, which is $\left( \frac{e}{k}\right)^k$, but we decided to work with an exact expectation. Now, the expected number of requests that are satisfied for a memory bank can be written as:
+\begin{align*}
+  \mathbb{E}\left[ \mbox{Requests that are satisfied by $m_i$} \right]=\sum_{k=0}^2 k P(k)+\sum_{k=3}^n 2P(k)
+\end{align*}
+as we can handle at max $2$ requests, so for $k>2$, we only satisfy $2$ of them. Now, to account for all $n$ memory banks, we simply multiply this result by $n$, giving us:
+\begin{align*}
+  \mathbb{E}\left[ \mbox{Requests satisfied} \right]&=n\left(\sum_{k=0}^2 k P(k)+\sum_{k=3}^n 2P(k)\right)
+\end{align*}
+Just to verify that our derivation are right, we simulated the problem for $n=\{1,2,..,10\}$ a million times and took the average. Table \ref{tab1} shows the calculation above and the simulated version.
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+    \hline
+     & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+    \hline
+    Calculated & 1 & 2 & 2.88889 & 3.78125 & 4.6752 & 5.56996 & 6.46518 & 7.36069 & 8.25639 & 9.15223 \\
+    \hline
+    Simulated & 1 & 2 & 2.88875 & 3.78121 & 4.67492 & 5.56921 & 6.46471 & 7.35984 & 8.25656 & 9.15155 \\
+    \hline
+  \end{tabular}
+  \caption{Table showing the calculations for expected processed request versus the simulated number.}
+  \label{tab1}
+\end{table}
+As we see, these values are very close to each other, which indicates that our calculations are right.
+
+
+
+\end{document}

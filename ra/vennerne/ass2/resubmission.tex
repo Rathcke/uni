@@ -1,0 +1,114 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Victor Petren Bach Hansen (grn762)}
+\title{Randomized Algorithms \\ Assignment 2 - Resubmission}
+\lhead{Randomized Algorithms}
+\rhead{Assignment 2 - Resubmission}
+
+\begin{document}
+\maketitle
+
+\section*{Problem 3.1}
+When want to count the number of empty bins when we throw $n$ balls into $n$ bins, consider a single bin $i$. The probability that the bin is empty is equal to throwing the ball into another bin each of the $n$ times:
+\begin{align*}
+  \mathbb{P}[\mbox{bin $i$ is empty}] &= \left(\frac{n-1}{n}\right)^n \\
+                                      &= \left(1-\frac{1}{n}\right)^n \\
+                                      &\approx 1/e \comment{Approaches for $n\rightarrow \infty$}
+\end{align*}
+Let $Z_i$ be $1$ if bin $i$ is empty and $0$ otherwise. Then we have exactly that:
+$$
+\mathbb{E}[Z_i]=\mathbb{P}[\mbox{bin $i$ is empty}]\approx 1/e
+$$
+Since every bin has the same probability of being empty, we can find the expected number of empty bins:
+\begin{align*}
+  \mathbb{E}\left[\sum_{i=1}^n Z_i\right] &= \sum_{i=1}^n \mathbb{E}[Z_i] \comment{By linearity of expectation} \\
+                                          &\approx \sum_{i=1}^n 1/e \\
+                                          &=n/e
+\end{align*}
+Which is what we wanted to show. \\
+When we throw $m$ balls into $n$ bins, we can calculate the expected number of empty bins in the same manner. That is, look at the probability of bin $i$ being empty (that we hit another bin $m$ times):
+\begin{align*}
+  \mathbb{P}[\mbox{bin $i$ is empty}] &= \left(\frac{n-1}{n}\right)^m \\
+                                      &= \left(1-\frac{1}{n}\right)^m
+\end{align*}
+If we want to show an approximation as before, we can approximate the probability above to $\frac{1}{e^{m/n}}$. Then again, we let $Z_i$ be $1$ if bin $i$ is empty and $0$ otherwise and as before we can calculate the expected number of empty bins:
+\begin{align*}
+  \mathbb{E}\left[\sum_{i=1}^n Z_i\right] &= \sum_{i=1}^n \mathbb{E}[Z_i] \comment{By linearity of expectation} \\
+                                          &\approx \sum_{i=1}^n \frac{m1}{e^{m/n}} \\
+                                          &=ne^{-m/n}
+\end{align*}
+This probability hold generally. If we let $r=m/n$, where $m$ are the balls we throw into the $n$ bins. Then the number of empty bins will approximately be $ne^{-r}$.
+
+\end{document}

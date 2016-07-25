@@ -1,0 +1,154 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Victor Petren Bach Hansen (grn762)}
+\title{Randomized Algorithms \\ Assignment 3}
+\lhead{Randomized Algorithms}
+\rhead{Assignment 3}
+
+\begin{document}
+\maketitle
+
+\section*{Summary}
+\subsection*{Chapter 3.6-3.6.1}
+TODO
+
+\subsection*{Chapter 4.1}
+This chapter introduces the Chernoff bound, which is useful for sharp bounds to how much a random variable deviates from its expectation. We use them to find probabilities that some random variable $X$ is more than $(1+\delta)\mu$ where $\mathbb{E}[X]=\mu$. This is useful for analyzing algorithms - showing that the probability an algorithm does not achieve the desired performance is small. One such thing we will do in Problem 4.14. \\
+The chapter focuses on \textit{Poisson trials}, which are random variables that takes value $0$ or $1$ with some probability (which can vary from trial to trial). One important theorem from the chapter is that if we have $X_1,X_2,..,X_n$ independent Poisson trials, then for $X=\sum_{i=1}^n X_i$ and $\delta >0$, we have:
+$$
+\mathbb{P}[X > (1+\delta)\mu] < \left[ \frac{e^\delta}{(1+\delta)^{(1+\delta)}}\right]^\mu
+$$
+Another way to use it is for $0<\delta\leq1$, we have:
+$$
+\mathbb{P}[X < (1-\delta)\mu]<e^{-\mu\delta^2/2}
+$$
+We can use either one, though depending on the question we are asking, there is usually a preferable one.
+
+\section*{Exercise 3.10}
+Using Chebyshev's inequality, that states:
+$$
+  P[|X-\mu_X|\geq t\sigma^2_X ]\leq \frac{1}{t^2}
+$$
+which has the alternate form
+\begin{equation}
+  P[|X-\mu_X|\geq t\mu_X ]\leq \frac{\sigma^2_X}{t^2\mu_x}
+\end{equation}
+we want the probability that $X>\beta n \ln n$, for $\beta > 1$, or:
+$$
+  P[X > \beta n \ln n]
+$$
+We can start by substituting $\beta n \ln n$ with $t$, which gives
+$$
+  P[X > t]
+$$
+then subtracting the expected value $E[X]=\mu_x$ from both sides
+$$
+  P[X - \mu_x > t - \mu_x]
+$$
+Here we can do yet another substitution, namely $r=\frac{t}{\mu_X} -1$, which yields
+\begin{equation}
+  P[X - \mu_x > r\mu_x]
+\end{equation}
+We can here utilize the fact that
+$$
+  P[|X-\mu_X|\geq t\mu_X ] = P[(X-\mu_X)^2\geq t^2\mu_X^2 ]
+$$
+which means that we can square both sides in $(2)$ to get the same as in $(1)$. Using Chebyshev's inequality on $(2)$ then gives the following bound
+\begin{align*}
+  P[X - \mu_x > r\mu_x] &\leq \frac{\sigma^2_X}{r^2\mu_x} \\
+                        &=\frac{\sigma^2_X}{\left(\frac{t}{\mu_X} - 1\right)^2\mu_x}\\
+                        &=\frac{\sigma^2_X}{(t-\mu_X)^2}\\
+                        &=\frac{\sigma^2_X}{(\beta n \ln n-\mu_X)^2}
+\end{align*}
+\section*{Problem 4.14}
+As we have seen in the proof for the expected running time of randomized quicksort, the running time is given by the number of comparisons where we can expect $\mathcal{O}(n\lg n)$. If we want to show that the running time is $\mathcal{O}(n\lg n)$ with high probability, lets instead try to bound the maximum depth $d$ in the tree that the algorithm produces (the $\lg n$ part). Say we want to show that no leaf in the tree has depth more than $20\lg n$. If we look at this maximum path, let us look at the pivot elements in each split. As we might remember, we have a good split if we pick an element that splits it into two branches where either one contains at least $25$ percent of the elements. \\
+Lets assume that each good split is a $75/25$ split (as it is the worst case), then to reach a leaf node, we need to make $\lg_{4/3} n$ good splits. Let $X_i$ denote the type of split at pivot element $i$ on the maximum depth path. We say that $X_i=1$ when we have a good split and $0$ otherwise. This means we have $\mathbb{P}[X_i=1]=1/2$. Letting $X=\sum_{i=1}^d X_i$ means $\mathbb{E}[X]=\mu=d/2=10\lg n$. We want to show that the probability that $X < \lg_{4/3} n$ for $d=20\lg n$ is small. Intuitively this means we want to show that the probability we get less than $\lg_{4/3} n$ good splits when we expect $10\lg n$ good splits is small. Using Chernoff's bound (Theorem 4.2):
+\begin{align*}
+  \mathbb{P}\left[ X < (1-\delta)\mu\right] < e^{-\mu\delta^2/2}
+\end{align*}
+We can use $\mu$ to calculate $\delta$:
+\begin{align*}
+  (1-\delta)(10\lg_2 n)=\lg_{4/3} n \Leftrightarrow \delta\approx 0.75906
+\end{align*}
+If we decrease $\delta$, we increase the probability that $X< \lg_{4/3}$, so we let $s=3/4$. Inserting in Chernoff's bound gives us:
+\begin{align*}
+  \mathbb{P}\left[ X < (1-3/4)10\lg n\right] &< e^{-10\lg n(3/4)^2/2} \\
+                                             &= n^{-\frac{45}{16\ln 2}} \\
+                                             &< n^{-4} \\
+                                             &= 1/n^4
+\end{align*}
+So with probability at most $1/n^4$ we have a maximum depth of $20\lg n$. This means that with this probability we can expect \texttt{RandQS} to run in $\mathcal{O}(n\lg n)$.
+
+\end{document}
