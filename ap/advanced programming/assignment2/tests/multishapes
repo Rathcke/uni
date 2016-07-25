@@ -1,0 +1,8 @@
+circle a38 390 200 20 plum || rectangle a_box 10 400 20 20 orange
+a_box -> +(0, 0-200)
+a_box -> +(0, 200)
+a38 -> +(0, 200)
+a38 -> +(0, 0-200)
+a_box a38 -> +(100, 0)
+a38 a_box -> +(0-100, 0)
+toggle a38 || toggle a_box

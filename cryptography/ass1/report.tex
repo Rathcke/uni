@@ -99,13 +99,40 @@ TODO
 \section{Question 2}
 
 \subsection{(i)}
-The prime $p$ is the number $503$
+The prime $p$ is the number $503$. There are several ways to check if a number is prime. One well-known way is to see if a number $n$ is prime is by checking if any of the primes less than the square root of $n$ divides $n$. We could also use a primality test such as miller-rabin, which works well in this case as it is correct if it outputs a $n$ is composite, but could be wrong if it outputs that $n$ is prime (I was so lucky to have this lying around). There are also deterministic versions of primality tests. \\
+Choosing a cyclic group $(Z/pZ)^*$ for a prime $p$ is important as it means $\phi(p)=p-1$, i.e. that all members in the group are coprime with $p$. Thus, when we pick the generator $g$, we ensure that the final secret number can any value from $1$ to $p-1$.
 
 \subsection{(ii)}
-TODO
+An algorithm\footnote{Algorithm 2.5.16, Elementary Number Theory - Primes, Congruences and Secrets by W. Stein in 2011} I found which finds the smallest element $g$ that generates $(Z/pZ)^*$ gives the following approach:
+\begin{enumerate}
+  \item  $[p = 2?]$ If $p=2$ output $1$ and terminate. Otherwise set $a=2$.
+  \item  $[\mbox{Prime Divisors}]$ Compute the prime divisors $p_1,\ldots, p_r$ of $p-1$.
+  \item  $[\mbox{Generator?}]$ If for every $p_i$, we have $a^{(p-1)/p_i} \not\equiv 1$ (mod $p$), then $a$ is a generator of $(Z/pZ)^*$, so output $a$ and terminate.
+  \item  $[\mbox{Try next}]$ Set $a=a+1$ and go to Step 3.
+\end{enumerate}
+The prime factors, $p_i$ of $p-1=502$ is $2$ and $251$. This means there are $\varphi(502)=502(1-\frac{1}{2})(1-\frac{1}{251}=250$ primtive roots, so we should hopefully not need too many iterations of the algorithm. Table \ref{tab1} shows the calculations made in step $3$ of the algorithm:
+\begin{table}
+  \centering
+  \begin{tabular}{|c|c|c|}
+  \hline
+  $a$ & $a^{502/2}$ mod $503$ & $a^{502/251}$ mod $503$ \\
+  \hline
+  $2$ & $1$ & \\
+  \hline
+  $3$ & $1$ & \\
+  \hline
+  $4$ & $1$ & \\
+  \hline
+  $5$ & $502$ & $25$ \\
+  \hline
+  \end{tabular}
+  \caption{Table showing the calculation made in step $3$ of the above algorithm.}
+  \label{tab1}
+\end{table}
+And the algorithm terminates. The number $5$ is a generator for the cyclic group.
 
 \subsection{(iii)}
-TODO
+Let us randomly choose $a=41$, meaning we get $5^{41} \equiv 304$ mod $503$. So we have $A=304$ and our public key is $(503, 5, 304)$.
 
 \section{Question 3}
 

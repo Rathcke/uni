@@ -1,0 +1,110 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+    language=,
+    literate=
+        {æ}{{\ae}}1
+        {ø}{{\o}}1
+        {å}{{\aa}}1
+        {Æ}{{\AE}}1
+        {Ø}{{\O}}1
+        {Å}{{\AA}}1,
+    backgroundcolor=\color{listinggray},
+    tabsize=3,
+    rulecolor=,
+    basicstyle=\scriptsize,
+    upquote=true,
+    aboveskip={0.2\baselineskip},
+    columns=fixed,
+    showstringspaces=false,
+    extendedchars=true,
+    breaklines=true,
+    prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=single,
+    showtabs=false,
+    showspaces=false,
+    showlines=true,
+    showstringspaces=false,
+    identifierstyle=\ttfamily,
+    keywordstyle=\color[rgb]{0,0,1},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Victor Petrén Bach Hansen (grn762)}
+\title{Advanced Programming \\ Assignment 3}
+\lhead{Advanced Programming}
+\rhead{Assignment 3}
+
+\begin{document}
+\maketitle
+
+\section*{Relevant code}
+
+\subsection*{goodfriends}
+To implement the \texttt{goodfriends/3} predicate, the helper predicate \texttt{inList/2} was implemented, which is more or less is the same as the built-in \texttt{member/2}.\\
+\texttt{goodfriends/3} then gets the friend list of person X, and checks if person Y is contained in it using \texttt{inList/2}, and vice versa.
+
+\subsection*{clique}
+To determine whether a group is a clique, ie. everybody is friends with everybody, we first consider the simple case of 2 people. These 2 people will form a clique of they are good friends.\\
+For a larger group of people \texttt{clique/2} will first see if the first 2 people in the list are good friends. If they are, \texttt{clique/2} will then call itself recursively to check if they are good friends with the rest of the people.
+
+\subsection*{wannabe} This function calls the function \texttt{findP} which takes five arguments. The idea is, given a person X, to find a path from X to all persons in the graph. The first line in \texttt{findP} is the case where we are looking for a person Y from a list \texttt{[Y|YS]} (which is a list of persons we need to find a path to) and the person is equal to X. This should always succeed. Otherwise, we try to find a path to this person. Everytime we go through a person Z, we add the person to a list V, which indicates the person has been visited. This is to avoid cycles in the graph. The list is reset each time we have found a path. If there was a to person Y, we call the function recusively on \texttt{YS}. The function returns true when it matches the fact where \texttt{YS=[]}.
+The reason the function takes five arguments is because we take X twice and we need two graphs and a list V (visited persons). We have two graphs as one of them is used as the objective (to remove all persons from the list) and the other is used to find the friendlists of all persons, which should be possible even though they are removed as they can still be a "middleman" to another person. We take person X twice since all recursive calls through friendlists takes the middleman as argument. If a path is found, we have to call the function itself with X again, which is not possible otherwise.
+
+\subsection*{idol} This function calls the function \texttt{pathP}. This function uses \texttt{findP} described above to find a path from person Y to person X. This is achieved by switching the arguments, so for every person in the graph, we try to find a path from this person to person X. If this is possible for all persons in the graph, that means X is an idol.
+
+\subsection*{ispath}
+If the list is of length $n=1$, consisting of only 1 person, then the predicate is trivially true, granted that the given start and end persons are the same.
+The smallest possible path would be a list on the form $[X,A,Y]$, ie. only 1 arrow, $A$, specifying a relationship between 2 people $X$ and $Y$. For this case we pattern match on wheter the arrow points in one direction or the other. Based on this info we check if one person, or the other, is contained in that persons friend list.\\
+For longer lists, we assume that they are well formed, meaning alternating between persons and arrows, beginning and ending with a person, then we pattern match the same way as before on the 2 first people $X$ and $Y$, to see if the correct person is in the friend list. It then calls itself recursively without person $X$ and the first operator in the list, to check the relationship between person $Y$ and the next person.
+
+\section*{Running the program}
+The program is a single file \texttt{facein.pl} that should be easily runnable by loading the file and calling functions with proper arguments. To demonstrate how our predicate works, we have another file \texttt{facein\_test.pl} with $24$ tests. We have used the graph given in the assignment text, but with some tweaks sometimes to properly test the predicates. To run the tests, compile the \texttt{facein\_tests.pl} test suite and run with the command: \texttt{?- run\_tests.}\\
+To test \texttt{goodfriends}, we test that it fails when two friends are indeed not good friends and when one argument is a non-existent person in the graph. \\
+To test \texttt{clique}, we added an edge between jen and reed to create a clique of $3$ persons. This is to test the recursion works and is not just a  case of one \texttt{goodfriends} call. This was successfull and likewise, it fails if only the last two friends in a clique of $3$ are not good friends. When the recursion works, it should work if \texttt{goodfriends} is correct. \\
+To test \texttt{wannabe}, we added an edge from tony to jen and removed an edge from susan to andrzej. This makes andrzej and ken the only two persons in the graph to be wannabes. It correctly checks this and it fails when they are not (meaning there are not infinite cycles either). \\
+For \texttt{idol} we used the same graph as for \texttt{wannabe} and this should generate the opposite of wannabe (that ken and andrzej are the only two who are not idols). Again, this behaves as expected. \\
+To test \texttt{ispath} we used the same graph again. We tested it fails when a path is impossible (with edges both ways) and when a path does not match the given persons X and Y in the endpoints of the path. That is, the first element in the path is not X and the last is not Y. We tested it succeeds on an existing path (also with edges both ways). The last test checks if it succeeds given a path from X to Y where it passes Y on the way and then comes back to it later. This does succeed, which is because we have not implemented a way to keep track of visited person as we do in \texttt{wannabe}. \\
+The predicates checks solutions exactly as expected, however we have not tested if they work for enumerating solution - this is discussed in the following assessment section.
+
+\section*{Assessment}
+The program successfully checks solutions and we have not been able to generate an error. However, for enumerating solution, there are a few problems. It correctly finds solutions for {goodfriends} and only once (for each person). It also finds solutions for \texttt{cliques} only once, but generates an "out of local stack" error at some point which we have not resolved. \\
+For the functions \texttt{wannabe} and \texttt{idol}, it finds the solutions many times since they are solutions for different reasons. However, it does find all solutions. In \texttt{ispath}, it finds infinite solutions as we do not check for cycles. This should be resolved by passing a list of visited persons around as we have done in \texttt{findP} for \texttt{wannabe}.\\
+SWI prolog does not generate any error when compiling our code. We have tried to use pure prolog, but are unsure if "-$>$" which we use once is a part of this subset.
+
+
+\end{document}

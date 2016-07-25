@@ -1,0 +1,10 @@
+var a = 12+13;
+var b = 4-3;
+var d = 2*3;
+var e = 10%3;
+var f = true === false;
+var g = false === false;
+var h = 'hej' + 'sa';
+var i = 'eksamen tager kun ' + 23 + ' timer';
+var j = 45 < 40;
+var k = 100 < 1000;

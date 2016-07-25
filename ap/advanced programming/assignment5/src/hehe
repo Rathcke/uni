@@ -1,0 +1,50 @@
+%% TEST WORKERS 1 MAPPER 1 REDUCER
+rr("staterec.hrl"),
+c(worker),
+State = #state{workercount = 2, initial = 0, mapfun = fun(A) -> A + 1 end, redfun = fun(A,B) -> A + B end, master = self()},
+{_, Mapper1} = worker:start(State),
+{_, Reducer} = worker:start(State),
+worker:assign_map(Mapper1, [1,2,3]),
+worker:assign_reduce(Reducer),
+worker:begin_map(Mapper1, Reducer).
+timer:sleep(800),
+worker:begin_reduction(Reducer).
+
+
+%% TEST WORKERS 2 MAPPERS 1 REDUCER
+rr("staterec.hrl"),
+c(worker),
+State = #state{workercount = 2, initial = 0, mapfun = fun(A) -> A + 1 end, redfun = fun(A,B) -> A + B end, master = self()},
+{_, Mapper1} = worker:start(State),
+{_, Mapper2} = worker:start(State),
+{_, Reducer} = worker:start(State),
+worker:assign_map(Mapper1, [1,2,3]),
+worker:assign_map(Mapper2, [4,5,6]),
+worker:assign_reduce(Reducer),
+worker:begin_map(Mapper1, Reducer),
+worker:begin_map(Mapper2, Reducer),
+timer:sleep(800),
+worker:begin_reduction(Reducer).
+
+%% TEST MAPREDUCER
+c(mr),
+{_, M} = mr:start(),
+mr:job(M, 6, fun(A)-> A+1 end, fun(A,B)-> A+B end, 0, [1,2,3,4,5]),
+mr:begin_mapping(M),
+timer:sleep(1),
+mr:begin_reduce(M),
+timer:sleep(1),
+mr:get_result(M).
+
+
+%%% TEST SPLIT_INIT_MAPPERS
+c(mr),
+rr("staterec.hrl"),
+State = #state{workercount = 2, initial = 0, mapfun = fun(A) -> A + 1 end, redfun = fun(A,B) -> A + B end, master = self()},
+[P1, P2] = mr:split_init_mappers(2, State, [2,3,4,5], 2),
+{_, R} = worker:start(State),
+worker:assign_reduce(R),
+lists:map(fun(Pid) -> worker:begin_map(Pid,R) end, [P1, P2]),
+timer:sleep(8),
+worker:begin_reduction(R).
+

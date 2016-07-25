@@ -1,0 +1,108 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Victor Petrén Bach Hansen (grn762)}
+\title{Advanced Programming \\ Assignment 1}
+\lhead{Advanced Programming}
+\rhead{Assignment 1}
+
+\begin{document}
+\maketitle
+\section*{Relevant code}
+\subsection*{The Salsa monad}
+The implemented Salsa monad is very similar to the State monad. To construct a Salsa instance of type \texttt{a}, a function of the type $Salsa\:a \rightarrow Context\rightarrow Either\:String\: (a,\: Context,\: Animation)$ has to be provided. To deconstruct a \texttt{Salsa a} instance, the function \texttt{runSalsa} wrapped inside the type constructer can be invoked, by provding a context.\\
+The \texttt{Context} data type contains a mapping of all the unique ID's and their respective shape as a list of tuples, and also the initial framerate given.
+\subsection*{\texttt{interpolate}}
+The \texttt{interpolate} function works by calculating the difference in $x$ and $y$. It then split it into equal sizes $x'$ and $y'$ according to the framerate $n$. The function \texttt{iterate} is used on the starting point, always adding $x'$ and $y'$ to the same point. Even though \texttt{iterate} runs forever, we can use \texttt{take} $n$ so we get $n$ interpolating points (this works because of lazy evaluation). Since we need to snap the points to whole pixels, we use \texttt{round} on all coordinates in all points where the values are rounded to nearest integer.
+
+\subsection*{\texttt{evalExpr}}
+This function returns a Salsa Integer. Given some simple arithmetic operations with a number of arguments, called expressions, it recursively evaluates the expression. The function also includes the expressions \texttt{Xproj} and \texttt{Yproj} which can extract values from shapes in some context $c$. \\
+\\
+\textbf{Failing scenarios:}
+There are some scenarios on which an operation is not defined. It fails if we divide by $0$. Since we use \texttt{lookup} on some \texttt{id} when we want to extract a value from a shape, it can fail if there is no shape by that id.
+
+\subsection*{\texttt{command}}
+The command that is performed depends on the first argument in the function. It can construct rectangles and circles by making an instance of the type \texttt{Shape} (which can be either circle or rectangle). Besides defining the shape, an identifier for the shape is also passed as an argument. We then create a tuple consisting of the two and add them to the current context. This works by obtaining the context $c$ through the helper function \texttt{getContext}, making the addition (actually making a new context) and the using the other helper function \texttt{putContext} to update the context. \\
+The \texttt{command} function can also move objects. It takes an \texttt{id} of a shape and either a new position or a "vector". Either way, we can compute the end coordinates for the shape. We need to animate the movement, which is achieved by computing all interpolating points (according to framerate $n$) and for each frame, we draw the shape in these points. The entire animation is calculated using the \texttt{generateAni} function. Furthermore, the context is updated to include the new position for the shape. \\
+We can also toggle the visibility of a shape. Given some \texttt{id}, we can easily find the shape in the context, set the parameter \texttt{vis} to the opposite, and then update the context accordingly.\\
+\\
+\textbf{Failing scenarios:}
+There are a number of cases where this should fail. If we create a new shape with an \texttt{id} that is already in use, we invoke an error. When we move a shape, but the given identity does not exist, it is treated as an error. It also fails if the end position for the move command is not within the canvas (it has size $400x400$).
+
+\subsection*{\texttt{runProg}}
+This function takes a framerate and a program as arguments (program being a list of commands). We construct an initial context and use \texttt{runSalsa} on the context and a command. This either generates an error or it succeeds. If it succeeds, we update the context and append the animation generated by the command to our initial animation (which is empty). This is repeated until there are no more commands in the program and if this succeeds without any errors, animations for each command has been appended and we return that.
+
+\subsection*{Missing implementation}
+The \texttt{par} command has not been implemented. It has been partly implemented (line 127-140 in \texttt{SalsaInterp.hs}) where the idea is we execute both commands (sequentially) and try to merge the two new contexts, $c_1$ and $c_2$, into our context $c$ before the commands are executed. To merge, we use the helper function \texttt{mergeIds} which finds the differences between two context. The first context, $c_1$, is merged into $c$ and afterwards $c_2$ is merged into that one. The same concept is used for the animation where the \texttt{GPXInstr} are merged into the same frames. However, this would not provide a correct solution as it does not handle that two shapes should not be modified in two "parallel" commands.
+
+\subsection*{Tests}
+We have not undergone thorough testing of the implementation. We have tested the final implementation if it works as intended - that it produces the correct errors where they should be and that it make correct programs. We have not been able to "break" the program with the commands that are supported.
+
+\section*{Assessment}
+Besides missing one of the commands, the other commands seem to work as intended. The compilation produces no errors but using \texttt{hlint} will give you $4$ suggestions. We have chosen to ignore these as $3$ of them are "duplications" because the same variable names have been used. The last suggestion made it uncompilable. \\
+The file \texttt{simpleProg.txt} has the generated output of the simple program from the assignment text at framerate $n$, which produces a correct animation.
+
+\end{document}

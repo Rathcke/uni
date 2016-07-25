@@ -1,0 +1,214 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+    language=,
+    literate=
+        {æ}{{\ae}}1
+        {ø}{{\o}}1
+        {å}{{\aa}}1
+        {Æ}{{\AE}}1
+        {Ø}{{\O}}1
+        {Å}{{\AA}}1,
+    backgroundcolor=\color{listinggray},
+    tabsize=3,
+    rulecolor=,
+    basicstyle=\scriptsize,
+    upquote=true,
+    aboveskip={0.2\baselineskip},
+    columns=fixed,
+    showstringspaces=false,
+    extendedchars=true,
+    breaklines=true,
+    prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=single,
+    showtabs=false,
+    showspaces=false,
+    showlines=true,
+    showstringspaces=false,
+    identifierstyle=\ttfamily,
+    keywordstyle=\color[rgb]{0,0,1},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Victor Petrén Bach Hansen (grn762)}
+\title{Advanced Programming \\ Assignment 2}
+\lhead{Advanced Programming}
+\rhead{Assignment 2}
+
+\begin{document}
+\maketitle
+\section*{\texttt{SalsaParser}}
+The parser is built using the SimpleParse parser combinator library that was provided. It is constructed by combining various parsers that both checks that the input is well formed, based on the grammar, and builds the internal SalsaAst representation.
+
+\section*{Changes in the grammar}
+Multiple places in the grammar, namely in \texttt{Expr} and \texttt{Command}, there were occurences of self left recursiveness: the derivations \texttt{Expr ::= Expr ...} and \texttt{Command ::= Command '||' ...}.
+The grammar being left recursive is bad for top down parsing, since we can't determine where to go by looking at the first symbol.
+\texttt{Expr} also needed to account for the fact that the arithmetic operators \texttt{*} and \texttt{/} binds stronger than \texttt{+} and \texttt{-} and was therefore transformed in the following way:
+\begin{verbatim}
+Expr      ::= Prim ExprOpt
+
+ExprOpt   ::= '+' T Eopt
+            | '-' T Eopt
+            | e
+
+T         ::= Prim Topt
+
+Topt      ::= '*' Prim Topt
+            | '/' Prim Topt
+            | e
+\end{verbatim}
+For \texttt{Command} the transformation looked like this:
+\begin{verbatim}
+Command      ::= T Commandopt
+
+Commandopt   ::= '||' T Commandopt
+               | e
+
+T            ::= Idents '->' Position Commandopt
+             ::= 'toggle' shapeDef Commandopt
+             ::= shapeDef Commandopt
+             ::= 'hidden' shapeDef Commandopt
+\end{verbatim}
+This therefore results in the final grammar:
+\begin{verbatim}
+Program    ::= Commands
+
+Commands   ::= Command
+             | Command Commands
+
+Command    ::= T Commandopt
+
+Commandopt ::= '||' T Commandopt
+             | e
+
+T          ::= Idens '->' Position Commandopt
+           ::= 'toggle' shapeDef Commandopt
+           ::= shapeDef Commandopt
+           ::= 'hidden' shapeDef Commandopt
+
+ShapeDef   ::= 'rectangle' Ident Expr Expr Expr Expr Colour
+             | 'circle' Ident Expr Expr Expr Colour
+
+Idents     ::= Ident
+             | Ident Idents
+
+Pos        ::= '('Expr',' Expr ')'
+             | '+' '('Expr',' Expr ')'
+
+Expr       ::= Prim ExprOpt
+
+ExprOpt    ::= '+' T Eopt
+             | '-' T Eopt
+             | e
+
+T          ::= Prim Topt
+
+Topt       ::= '*' Prim Topt
+             | '/' Prim Topt
+             | e
+Prim       ::= integer
+             | Ident '.' 'x'
+             | Ident '.' 'y'
+             | '(' Expr ')'
+Colour     ::= 'blue' | 'plum' | 'red' | 'green' | 'orange'
+\end{verbatim}
+
+\section*{Salsa program examples}
+Examples of valid Salsa program that parse correctly:
+\begin{verbatim}
+*SalsaParser> parseString "hidden rectangle fst 1 2 3 4-2 blue"
+Right [Rect "fst" (Const 1) (Const 2) (Const 3) (Minus (Const 4) (Const 2)) Blue False]
+
+*SalsaParser> parseString "toggle fst || circle snd 1 2 3 plum"
+Right [Par (Toggle "fst") (Circ "snd" (Const 1) (Const 2) (Const 3) Plum True)]
+
+*SalsaParser> parseString "fst snd trd -> (1, 1)"
+Right [Par (Move "trd" (Abs (Const 1) (Const 1)))
+        (Par (Move "snd" (Abs (Const 1) (Const 1)))
+          (Move "fst" (Abs (Const 1) (Const 1))))]
+
+*SalsaParser> parseString "toggle fst circle snd 1 2*1/3-1 3 plum"
+Right [Toggle "fst",Circ "snd" (Const 1)
+        (Minus (Div (Mult (Const 2) (Const 1)) (Const 3)) (Const 1)) (Const 3) Plum True]
+
+*SalsaParser> parseString "  circle  fst   1  2 3  red"
+Right [Circ "fst" (Const 1) (Const 2) (Const 3) Red True]
+\end{verbatim}
+These five examples provides insight on how correct the parser is as it comes around almost all cases. The first one is a simple shape definition which is created with 'hidden' and an expression. It parses this correctly. The second is to test the \texttt{par} command. The third one shows that you can move several shapes and it correctly uses the \texttt{par} command to do this. The fourth one demonstrates a program with two commands which shows that arithmetic operations are parsed with their standard precendence. The last one simply shows that all whitespace is discarded. \\
+\\
+Here are some examples of Salsa programs that are invalid:
+\begin{verbatim}
+*SalsaParser> parseString "circle toggle 1 2 3 red"
+Left NoParse
+
+*SalsaParser> parseString "fst -> +(a, 7)"
+Left NoParse
+
+*SalsaParser> parseString "fst -> (2 3)"
+Left NoParse
+
+*SalsaParser> parseString "circle _fst 1 2 3 red"
+Left NoParse
+\end{verbatim}
+The first one will not parse because the \texttt{id} is one of the four reserved words. The second does not parse because the $x$-coordinate is not an expression. The third one is invalid because the position does not contain the ',' character. The fourth one does not parse as the \texttt{id} begins with an underscore. It allows for underscores within the name, but it must start with a letter.
+
+\section*{Running the program}
+In order to parse a string or a file, the following command will haveto be executed:
+\begin{verbatim}
+    SalsaParser> parseFile "path/to/file"
+\end{verbatim}
+or
+\begin{verbatim}
+    SalsaParser> parseString "some string that can be parsed"
+\end{verbatim}
+In the event that the file/string parses succesfully, a SalsaAst is returned. If the file/string is not able to parse a \texttt{NoParse} error is returned and if it results in a ambiguous parse, the error \texttt{AmbiguousParse} is returned.\\
+No concrete errormessages will be given, since the parser is based on the SimpleParse library, which makes it a bit more difficult.\\ \\
+
+For compiling the \texttt{SalsaParser.hs} the package \texttt{MissingH} has to be installed, which is need for the \texttt{Data.String.Utils} library. This library is used to strip a string of its trailing whitespaces and replacing newlines with spaces.
+\section*{Testing the parser}
+With the parse, there is also a \texttt{Hunit} testsuite, that can execute a number of defined tests based on assertions.\\
+To run the test, simply load the testmodule \texttt{ParserTest.hs} and run the following command
+\begin{verbatim}
+    ParserTest> runTestTT tests
+\end{verbatim}
+The test cases covers various scenarios where the parser should fail and succeed, such as invalid expressions, names commands etc.\\
+\section*{Assessment}
+The code does not generate any error with the flags \texttt{-Wall -fno-warn-unused-do-bind} but does provide 3 reduce suggestions with hlint. \\
+The parser correctly parses valid input (as far as we know!). It accounts for associativity and fails when it should as seen in the examples above.
+There might be several quirks, but we have focused on getting the more 'essential' aspects of the parser to work (such as moving two shapes in one command and the precedence of arithmetic operators) and these seem to work.
+We could have been more thorough with our testing, by using e.g. QuickCheck to hit all these edgecases, but the testing we have done has only provided positive results. That is, it failed when we expected it to fail and succeeded when it should.
+\end{document}
