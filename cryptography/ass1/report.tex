@@ -85,16 +85,34 @@
 
 \section{Question 1}
 \subsection{(i)}
-TODO
+Both Diffie-Hellman and ElGamal uses modular exponentation and they both rely on the diffuculty of breaking the discrete logarithm problem. They are similar in the sense that both of them are public-key protocols, though Diffie-Hellman is an example of public key-exchange while ElGamal is a public-key encryption scheme. \\
+The difference is that Diffie-Hellman is a protocol where two people compute a common secret, whereas ElGamal uses the public keys to encrypt a message as a one-time thing. This means that we do not need both people to be present in the exchange for ElGamal, but we do for Diffie-Hellman.
 
 \subsection{(ii)}
-TODO
+The encryption of a message $m$ works by taking the public key $(G, g, A)$ and choosing a random $b\in \{1,\ldots, |G|-1\}$ and then calculating $B=g^b$ as well as $c=A^bm$ (the encryption function) where $A=g^a$). The decryption works by computing $m=(B^a)^{-1}c$ (the decryption function). \\
+To prove they are inverse function, we need to show that:
+\begin{align*}
+  f(g(x))=x \mbox{ and } g(f(x))=x
+\end{align*}
+This means we have $f(x)=A^bx$ and $g(x)=(B^a)^{-1}x$. Calculating $f(g(x))$ gives:
+\begin{align*}
+  A^b((B^a)^{-1}x) &= (g^a)^b(((g^b)^a)^{-1}x) \\
+                   &= g^{ab}g^{-ba}x \\
+                   &= x
+\end{align*}
+And calculating $g(f(x))$ gives us:
+\begin{align*}
+  (B^a)^{-1}(A^bx) &= ((g^b)^a)^{-1}((g^a)^bx) \\
+                   &= g^{-ba}g^{ab}x \\
+                   &= x
+\end{align*}
+which proves that the two functions are inverse operations.
 
 \subsection{(iii)}
-TODO
+It is not required that $g$ is a generator for the cryptosystem to be safe. However, if the order of $g$ is composed of small prime factors, the Discrete Logarithm Problem becomes easy to solvei (using algorithms like Pohlig–Hellman). Thus, it is important that the order of $g$ has a large prime factor.
 
 \subsection{(iv)}
-TODO
+If the Discrete Logarithm Problem was not hard, an attacker would be able to compute the secret $a$. If the attacker could snatch the cyphertext pair $(B, c)$, it could then easily be decoded. But since the problem is believed to be hard, even if the encrypted message went through a middle-man, he is not able to decrypt it.
 
 \section{Question 2}
 
@@ -111,7 +129,7 @@ An algorithm\footnote{Algorithm 2.5.16, Elementary Number Theory - Primes, Congr
   \item  $[\mbox{Try next}]$ Set $a=a+1$ and go to Step 3.
 \end{enumerate}
 The prime factors, $p_i$ of $p-1=502$ is $2$ and $251$. This means there are $\varphi(502)=502(1-\frac{1}{2})(1-\frac{1}{251}=250$ primtive roots, so we should hopefully not need too many iterations of the algorithm. Table \ref{tab1} shows the calculations made in step $3$ of the algorithm:
-\begin{table}
+\begin{table}[H]
   \centering
   \begin{tabular}{|c|c|c|}
   \hline
@@ -126,7 +144,7 @@ The prime factors, $p_i$ of $p-1=502$ is $2$ and $251$. This means there are $\v
   $5$ & $502$ & $25$ \\
   \hline
   \end{tabular}
-  \caption{Table showing the calculation made in step $3$ of the above algorithm.}
+  \caption{Table showing the calculations made in step $3$ of the above algorithm.}
   \label{tab1}
 \end{table}
 And the algorithm terminates. The number $5$ is a generator for the cyclic group.
@@ -137,10 +155,11 @@ Let us randomly choose $a=41$, meaning we get $5^{41} \equiv 304$ mod $503$. So 
 \section{Question 3}
 
 \subsection{(i)}
-TODO
+Yes, she can recover $m_2$. If we use the same element $b$, that means the two cyphertext pairs are $(B_1, c_1) = (g^b, A^b\cdot m_1)$ and $(B_2, c_2)=(g^b, A^b\cdot m_2)$. As Eve knows $m_1$ and $c_1$, that means she also knows $m_1^{-1}$ (in $(Z/pZ)^*$. Using this, she compute $A^b=c_1\cdot m_1^{-1}$. Knowing this secret, she can simply calculate $(A^b)^{-1}$ and find $m_2=c_2(A^b)^{-1}$.
 
 \subsection{(ii)}
-TODO
+This is easy to do as the ElGamal encryption is \textit{malleable}, which means it is possible to transform one cyphertext into another valid cyphertext.meaning if we intercept the ciphertext $(B, c)$, we simply compute $(B, 2c)$ as it is a valid encryption of $2m$. It is easy to see this as $2c=(2m)A^b$. \\
+It is possible to transform ElGamal into a hashed version (one well-known is the Cramer–Shoup cryptosystem) to attempt to defend yourself against these kind of attacks.
 
 \section{Question 4}
 TODO
