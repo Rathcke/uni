@@ -1,4 +1,4 @@
-\documentclass[a4paper, fleqn]{article}
+  \documentclass[a4paper, fleqn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -9,6 +9,7 @@
 \usepackage{tikz}
 \usepackage{float}
 \usepackage{textcomp}
+\usepackage{kbordermatrix}
 \usetikzlibrary{patterns}
 \usepackage{pdfpages}
 \usepackage{gauss}
@@ -83,34 +84,49 @@
 \begin{document}
 \maketitle
 
-\section{Question 2}
+\section*{Question 2}
 TODO
 
-\section{Question 3}
-\begin{verbatim}
-http://www.math.wvu.edu/~hjlai/Teaching/Math677-777/HomeWork_1.pdf
-\end{verbatim}
-\subsection{(a)}
+\section*{Question 3}
+
+\subsection*{Part (a)}
 TODO
 
-\subsection{(b)}
+\subsection*{Part (b)}
 TODO
 
-\subsection{(c)}
+\subsection*{Part (c)}
 TODO
 
-\section{Question 4}
+\section*{Question 4}
 TODO
 
-\section{Question 5}
+\section*{Question 5}
 TODO
 
-\section{Question 6}
-TODO
+\section*{Question 6}
+Let the ground set $E=\{1,2,3\}$. Let $M_1=(E, \mathcal{I}(M_1))$ and $M_2=(E, \mathcal{I}(M_2))$ be the matroids where:
+\begin{align*}
+  \mathcal{I}(M_1)&=\{\emptyset, \{1\}, \{2\}, \{3\}, \{1,2\}, \{1,3\}\} \\
+  \mathcal{I}(M_2)&=\{\emptyset, \{1\}, \{2\}, \{3\}, \{1,3\}, \{2,3\}\}
+\end{align*}
+We can see that $M_1$ and $M_2$ are indeed matroids as they satisfy $(I1),(I2)$ and $(I3)$. However, if we look at $M_3=(E, \mathcal{I}(M_3))=(E, \mathcal{I}(M_1)\cap \mathcal{I}(M_2))$, it has following collection of subsets:
+\begin{align*}
+  \mathcal{I}(M_3)&=\{\emptyset, \{1\}, \{2\}, \{3\}, \{1,3\}\}
+\end{align*}
+This is not a matroid as it does not satisfy $(I3)$. To see this, consider $I_1=\{2\}$ and $I_2=\{1,3\}$. There exists no element $e\in I_2-I_1=\{1,3\}$ such that $I_1\cup \{e\}\in \mathcal{I}(M_3)$. That is, the subsets $\{1,2\}$ and $\{2,3\}$ do not exist in $\mathcal{I}(M_3)$.
 
-\section{Question 7}
-TODO
-
+\section*{Question 7}
+This is easiest shown with a counter-example. Consider the matrix:
+\begin{align*}
+  A=\kbordermatrix{
+    & 1 & 2 & 3 \\
+    & 1 & 0 & 1 \\
+    & 0 & 1 & 1
+  }
+\end{align*}
+Where $E$ is the set $\{1,2,3\}$ of column labels with the independent sets $\mathcal{I}=\{\emptyset, \{1\}, \{2\}, \{3\}, \{1,2\}, \{1,3\}. \{2,3\}\}$. Now let $\mathcal{I}^-=\mathcal{I}\cup \{1,2,3\}$. This includes the dependent subset $\{1,2,3\}$, but it still satisfies $(I1), (I2)$ and $(I3)^-$. \\
+It obviously satisfy $(I1)$ and $(I2)$ as $I^-$ is the powerset of $E$, that is, all the possible subsets of $E$. Likewise, it is easy to see that the set $\mathcal{I}^-$ satisfies $(I3)^-$, since if we have two subsets $I_1$ and $I_2$ where $|I_1|<|I_2$, then you can add any element $e\in E$ (we are guaranteed there is one) to $I_1$ and that set will be in $I^-$ as it is the powerset of $E$.
 
 
 
