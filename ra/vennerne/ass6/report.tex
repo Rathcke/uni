@@ -1,0 +1,165 @@
+\documentclass[a4paper, fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\setlength\parindent{0pt}
+\setlength\mathindent{75pt}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Victor Petren Bach Hansen (grn762)}
+\title{Randomized Algorithms \\ Assignment 6}
+\lhead{Randomized Algorithms}
+\rhead{Assignment 6}
+
+\begin{document}
+\maketitle
+
+\section*{Summary of Linear Probing with 5-Independence Hashing}
+We say that a hash function $h:\:[u]\rightarrow[t]$ is $k$-independent if for distinct keys $x_0,..x_{k-1}\in[u]$ and hashvalues $y_0,..y_{k-1}\in[t]$ have $ Pr[h(x_0)=y_0\land\ldots\land h(x_{k-1})=y_{k-1} ]=1/t^k$. This can be defined as the two conditions: $Pr[h(x_i)=y_i] = Pr[h(x_i=)=y_i\:|\: \bigwedge\limits_{j\in [k]\setminus \{i\}}h(x_j)=y_j]$ and that $h(x)$ uniformly distributed in $[t]$ for any $x \in [u]$.
+
+We can define the hashfunction as $h(x)=(a_{k-1}x^{k-1}, \ldots, a_1x+a_0)\mod p$, where we pick random $a_0,\ldots, a_{k-1}\in [p]$ for some prime $p>>t$.\\
+
+Linear probing is an implementation of hash tables that uses a hash function to map a set of $n$ key into an array of size $t$. We define the operation \textit{insert}, \textit{search} and \textit{delete} as:
+\begin{description}
+  \item[insert:] Calculate $h(x)$ and insert $x$ at that index in $t$. If it is occupied, scan $h(x)+1,h(x)+2,\ldots$ (where we wrap around) until an empty location is found and insert it.
+  \item[search:] We start searching at index $h(x)$ until we either find $x$ or an empty position. An empty position means $x$ is not in $t$.
+  \item[delete:] Scan from $h(x)$ untill we find $x$ and delete it, say, at position $i$. Then recursively fill the slots from elemets at position $i+1$ until we reach an empty position.
+\end{description}
+Theorem 1 then states that with linear probing these operations are all proportional to the number of locations from $h(x)$ to the next empty location.\\
+
+To obtain expected constant time operation cost with linear probing, we show that 5-independence suffices. A run $R$ is defined as the maximal interval of filled position. We are interrested in an expected upper bound on the length of this interval $r=|R|$. By using dyadic $\ell$-interval of length $2^{\ell}$ an expected length of $r$, using Lemma 1 and 2, is bounded by:
+$$
+E[r] \leq 3 +\sum_{\ell=0}^{\log_2 t}2^{\ell+3}\cdot P_{\ell}=\mathcal{O}\left( 1 + \sum_{\ell}^{\log_2 t}2^{\ell}P_{\ell} \right)
+$$
+which together with Theorem 1 proves Theorem 4, i.e. that the expected running time of the 3 operations are bounded by the above O notation.\\
+
+Using the probabilistic tool, 4th moment bound, which in Theorem 5 states: If the variables $X_0, \ldots, X_{n-1}\in\{0,1\}$ are $4$-wise independent, then $X=\sum_{i\in [n]}X_i$ and $\mu=E[X]\geq 1$ then
+$$
+  Pr[|X-\mu|\geq d\sqrt{\mu}]\leq 4/d^4
+$$
+we can then show that 5-independence suffices for linear probing which is summed up in the proof for Theorem 6, which states: Suppose we use a 5-independent hash function $h$ to store a set $S$ of $n$ keys in a linear probing table of size $t\geq 3/2n$ where $t$ is a power of two. Then it takes expected constant time to seach, insert or delete a key.
+
+\section*{Summary of RA 7.1-7.6}
+
+\section*{Problem 1}
+
+\section*{Problem 2}
+From the Chernoff bound we have:
+$$
+P[X>(1+\delta)\mu]<\left[ \frac{e^\delta}{(1+\delta)^{(1+\delta)}}\right]^\mu
+$$
+In our application, $X$ denotes the length of a run. As Theorem 6 from the notes about Linear Probing states that it takes constant time to perform the operations, that means that our expected length of a run is constant. Thus we have:
+$$
+P[X>(1+\delta)\mathcal{O}(1)]<\left[ \frac{e^\delta}{(1+\delta)^{(1+\delta)}}\right]^{\mathcal{O}(1)}
+$$
+If we use that $\delta = \ln n$, we get:
+$$
+P[X>(1+\ln n)\mathcal{O}(1)]<\left[ \frac{e^{\ln n}}{(1+\ln n)^{(1+\ln n)}}\right]^{\mathcal{O}(1)}
+$$
+Which is the same as:
+$$
+P[X>\mathcal{O}(\log n)]<\left[ \frac{n}{(1+\ln n)^{(1+\ln n)}}\right]^{\mathcal{O}(1)}
+$$
+The term in the denominator grows asymptotically faster than the numerator, which means for large $n$, the probability that the run is larger than $\mathcal{O}(\log n)$ is less than $\frac{1}{n^{10}}$, which in turn means the probability it at most $\mathcal{O}(\log n)$ is at least $1-\frac{1}{n^{10}}$ which is what we wanted to show.
+
+\section*{Problem 3}
+Again, we are interrested in the event that $X \geq \frac{3}{4} 2^{\ell}$, which implies $X-\mu \geq \frac{1}{12} 2^{\ell}> \frac{1}{10} \sqrt{2^{\ell}\mu}$. We want to use Chebyshev to bound this probability when assuming 3-independence. We here again know that as long as the random variables are pairwise independent, we have $\sigma^2 \leq \mu$:
+\begin{align*}
+  Pr[X-\mu\geq \frac{3}{4} 2^{\ell}] & \leq Pr[X-\mu \geq \frac{1}{10} \sqrt{2^{\ell}\mu}]\\
+                                     & =    Pr[(X-\mu)^2 \geq \frac{1}{100} 2^{\ell}\mu]\\
+                                     & \leq Pr[(X-\mu)^2 \geq \frac{1}{100} 2^{\ell}\sigma^2]\\
+                                     & =    Pr[|X-\mu)|  \geq \frac{1}{10} \sqrt{2^{\ell}}\sigma] \comment{using Chebyshev's ineq}\\
+                                     & \leq \frac{1}{\frac{1}{100}*2^{\ell}}\\
+                                     & =    100*2^{-\ell}\\
+                                     & =    \mathcal{O}(2^{-\ell})
+\end{align*}
+So we know that the probability that $I$ is nearly full is $100\cdot2^{-\ell}$, i.e. that $P_{\ell} = \mathcal{O}(2^{-\ell})$. As we are assuming 3-independence, we get from Theorem 4 that:
+\begin{align*}
+  \mathcal{O}\left(1+\sum_{\ell=0}^{\log_2 t}2^{\ell}P_{\ell}\right) &= \mathcal{O}\left(1+\sum_{\ell=0}^{\log_2 t}2^{\ell}\cdot 100\cdot 2^{-\ell}\right)\\
+                                                                     &= \mathcal{O}\left(1+\sum_{\ell=0}^{\log_2 t}100\right)\\
+                                                                     &= \mathcal{O}(\log n)
+\end{align*}
+Thus completing the proof
+
+\section*{Exercise 7.4}
+If we consider the fingerprint function we used for polynomial indentities, we can adapt it to fit the problem of testing string equality. We can treat the $k$th element in the string as the coefficient of the $k$th power of a symbolic variable. As suggested in section 7.5, for two strings (or vectors) $a=(a_1, a_2,\ldots,a_n)$ and $b=(b_1,b_2,\ldots,b_n)$, with each element drawn from the alphabeth $\Sigma$, we can encode each symbol as a number from $\{0,1,\ldots,k-1\}$, where
+$k=|\Sigma|$. We can then view the strings as the polynomials $A(z)=\sum_{i=0}^{n-1}a_iz^i$ and $B(z)=\sum_{i=0}^{n-1}b_iz^i$. The strings are therefore only equal iff the polynomials evaulate to the same value. This can be reduced, for $n$-bit numbers, to comparing $\mathcal{O}(\log n)$-bit numbers. Using this approach in the pattern matching problem becomes a problem, as a set of new random bits for each iteration of the described algorithm is required, resulting in a much worse running
+time than the suggested $\mathcal{O}(m+n)$.
+
+\section*{Problem 7.1}
+Construct the polynomial $Q=P_AP_B-P_C$, where we let $P_A, P_B$ and $P_C$ be the polymials defined by $P_A=det(Ix-A)$, $P_B=det(Ix-B)$ and $P_C=det(Ix-C)$ where we use the vector $x=(x_1,x_2,\ldots,x_n)$ and three $n$ by $n$ matrices $A,B$ and $C$. Doing this ensures that the polynomials have total degree $d=1$. The constructed polynomial $Q$ is obviously only $0$ when $AB=C$. Now we pick $r=(r_1,r_2,\ldots,r_n)$ from the set $S=\{0,1\}$. \\
+This enables us to use Theorem 7.2 to bound that the polynmial is not equivalent to $0$ by $\frac{d}{|S|}=\frac{1}{2}$. This is the same result we get from Theorem 7.1, which is what we wanted to show.
+
+\section*{Problem 7.4}
+
+
+\end{document}

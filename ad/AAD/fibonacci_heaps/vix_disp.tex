@@ -1,0 +1,107 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\begin{center}
+  \section*{Fibonacci Heaps}
+\end{center}
+Fibonacci is a mergeable heap with the advantage that it has very good amortized running times (only $\lg n$ for extract-min and delete) and is especially good when there are few extract-min (or max) and delete operations. The idea is to keep a root list that are all linked together. Each of these roots have their own tree. All nodes in the heap has, beside their pointers, some additional attributes, namely $x.degree$ and $x.mark$. \\
+The potential method in amortized analysis represents the prepaid work that can be used to pay for future operations. The amortized cost of an operation $\hat{c}_i$ can be expressed as
+$$\hat{c}_i=c_i+\Phi(D_i)-\Phi(D_{i-1})$$
+We defined the potential function of a Fibonacci Heap $H$ by $\Phi(H)=t(H)+2m(H)$ where $t(H)$ is the number of nodes in the root list and $m(H)$ is the number of marked nodes. \\
+\\
+We will focus on the amortized analysis of extract-min. Extract-min works by removing $H.min$ and moving all childs of the node to the root list and then we call the auxillary function \texttt{Consolidate}. \texttt{Consolidate} works by looping through the root list and if two roots have the same degree, the one with the highest key is inserted under the other and degrees are adjusted accordingly. This means that when it terminates, we have at most $D(n)$ roots, where $D(n)$ is the max degree of the nodes.\\
+We now want to show the amortized cost is $\mathcal{O}(D(n))$ for extract-min. First we calculate the actual cost. We have that extract-min processes $\mathcal{O}(D(n))$ children (inserting them to root list). \texttt{Consolidate} also contributes $\mathcal{O}(D(n))$ when it creates an array of size $D(n)$. Now, when we call \texttt{Consolidate}, the root list is at most $t(H)+D(n)-1$. Since we know the number of times we insert a node under another in \texttt{Consolidate} is at most $t(H)$ times, we get the work performed by \texttt{Consolidate} is at most proportional with $\mathcal{O}(D(n)+t(H))$, which is our actual cost. \\
+Our potential before making extract-min is $t(h)+2m(H)$. Our potential afterwards is $D(n)+1+2m(H)$ since the number of roots afterwards is at most $D(n)+1$ and the number of marked nodes has not changed, so we get the amortized cost, $\hat{c}_{em}$ is
+\begin{align*}
+  \hat{c}_{em}&=O(D(n)+t(h))+(D(n)+1+2m(H))-(t(H)-2m(H)) \\
+              &=O(D(n))+O(t(H))-t(H) \\
+              &=O(D(n))
+\end{align*}
+Intuitively the cost of performing each link is paid for by the reduction in potential due to the link's reducing the number of roots by one. We now want to show that $D(n)\leq \mathcal{O}(\lg n)$. \\
+\\
+We want to prove that for any node $x$ in a Fibonacci heap with degree $k$, then $size(x)\geq F_{k+2}\geq \phi^k$ and $\phi=(1+\sqrt{5})/2$. \\
+Let $s_k$ be the minimum size of the node $x$ with degree $k$, so $s_k\leq size(x)$. Now if we consider a node $z$ with degree $k$ and $size(z)=s_k$ with children $y1,..yk$ in order of when they were linked. We compute a lower bound for $size(x)$, so
+\begin{align*}
+  size(x)&\geq s_k \\
+  \comment{Counting 2 from $z$ itself and one for $y_1$}  &\geq 2+\sum_{i=2}^k s_{y_i.degree} \\
+  \comment{From Lemma 19.1} &\geq 2+\sum_{i=2}^k s_{i-2}
+\end{align*}
+We now show by induction that $s_k\geq F_{k+2}$. Bases are $k=0$ and $k=1$, and we now assume that $k\geq 2$ and that $s_i\geq F_{i+2}$ for $i=0,1,..,k-1$. Now
+\begin{align*}
+  s_k&\geq 2+\sum_{i=2}^k s_{i-2} \\
+     &\geq 2+\sum_{i=2}^k F_i \\
+     &= 1+\sum_{i=0}^k F_i \\
+\comment{From Lemma 19.2} &=F_{k+2} \\
+\comment{From Lemma 19.3} &\geq \phi^k
+\end{align*}
+It now follows that in an $n$-node fibonacci heap, that $n\geq size(x)\geq \phi^k$ when we have a node $x$ with degree $k$. If we take base-$\phi$ logarithms we get that $\lg_\phi n\geq k$. This means that the maximum degree $D(n)$ is $\mathcal{O}(\lg n)$.
+
+\end{document}

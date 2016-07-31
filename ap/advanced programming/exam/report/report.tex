@@ -1,0 +1,396 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{minted}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{pdfpages}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+    language=,
+    literate=
+        {æ}{{\ae}}1
+        {ø}{{\o}}1
+        {å}{{\aa}}1
+        {Æ}{{\AE}}1
+        {Ø}{{\O}}1
+        {Å}{{\AA}}1,
+    backgroundcolor=\color{listinggray},
+    tabsize=3,
+    rulecolor=,
+    basicstyle=\scriptsize,
+    upquote=true,
+    aboveskip={0.2\baselineskip},
+    columns=fixed,
+    showstringspaces=false,
+    extendedchars=true,
+    breaklines=true,
+    prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=single,
+    showtabs=false,
+    showspaces=false,
+    showlines=true,
+    showstringspaces=false,
+    identifierstyle=\ttfamily,
+    keywordstyle=\color[rgb]{0,0,1},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Victor Petrén Bach Hansen - grn762}
+\title{Advanced Programming \\ Exam 2015}
+\lhead{Advanced Programming}
+\rhead{Exam 2015}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\section{Subscript, Parser}
+DISCLAIMER: The grammar used for this question is the 1.2 version!\\
+
+The source code for the \texttt{SubsParser.hs} discussed in this section can be found in appendix \ref{SubsParser.hs}. The associated test can be found in appendix \ref{parserUnit}.\\
+
+In order to compile \texttt{SubsParser.hs}, the package \texttt{MissingH} has to be installed, which is need for the \texttt{Data.String.Utils} library. This library is used to strip a string of its trailing whitespaces and replacing newlines with spaces, i.e. string manipulation.
+\subsection{Parser library}
+\label{sub:Parser library}
+The parser is built using the SimpleParse parser combinator library that was provided. It is constructed by combining various parsers that both checks that the input is well formed, based on the grammar, and builds the internal SubsAst representation.
+
+Simple parse was chosen since it was the library I was familiar with from the previous assignment. A downside of using the \texttt{SimpleParse} library is the lack of error messages, only the following is currently supported:
+\begin{enumerate}
+  \item \texttt{Error NoParse}:
+    Indicating that the parser was not able to construct any ASTs from the given string/file
+  \item \texttt{Error AmbiguousParse}:
+    Indicating that the parser was able to construct multiple ASTs from the given string/file
+\end{enumerate}
+\subsection{Updated grammar}
+\label{sub:Updated grammar}
+Multiple places in the grammar, namely in \texttt{Expr1}, were there occurrences of self left recursiveness. The grammar being left recursive is bad for top down parsing, since we can't determine where to go by looking at the first symbol.
+
+\texttt{Expr1} also needed to account for the precedence and associativity of the various operators, i.e. the fact that the arithmetic operators \texttt{*} and \texttt{/} binds stronger than \texttt{+} and \texttt{-}, which in turn binds stronger than the \texttt{<} operator etc. The transformations regarding precedence and associativity was done according to Table 1 in the assignment text.
+
+Below, the transformed parts of the grammar can be seen (I do apologize in advance for the, at times, confusing naming convention):
+\begin{verbatim}
+Expr    ::= Expr1 ExprOpt
+
+ExprOpt ::= "," Expr1 ExprOpt
+          | e
+
+Expr1   ::= T1 E_EQ
+          | Ident E_AsStr
+
+E_AsExp ::= Ident E_AsStr E_AsExp
+          | e
+
+E_AsStr ::= "=" Expr1 E_AsExp
+          | e
+
+E_EQ    ::= "===" T1 E_EQ
+          | e
+
+T1      ::= T2 E_LT
+
+E_LT    ::= "<" T2 E_LT
+          | e
+
+T2      ::= T3 E_PM
+
+E_PM    ::= "+" T3 E_PM
+          | "-" T3 E_PM
+          | e
+
+T3      ::= T4 E_MM
+
+E_MM    ::= "*" T4 E_MM
+          | "%" T4 E_MM
+          | e
+
+T4      ::= Number
+          | String
+          | true
+          | false
+          | undefined
+          | '[' Exprs  ']'
+          | '(' Expr ')'
+          | '[' 'for' '(' Ident 'of' Expr ')' ArrayCompr Expr ']'
+          | Ident AfterIdent
+
+AfterIdent := FunCall
+            | e
+\end{verbatim}
+Due to the associativy and precedence of the "=" operator, this was was extracted from the \texttt{AfterIdent}.
+
+Left recursiong could also have been dealt with by using the functions \texttt{chainl}, but I had a much clearer idea of the approach that was taken. \\
+Implementations wise, it is pretty straightforward so I have chosen not to include any Haskell code.
+\subsection{Testing}
+\label{sub:Testing_p}
+With the parser, there is also a \texttt{Hunit} test suite, that can execute a number of defined tests based on assertions.\\
+To run the test, simply load the testmodule \texttt{ParserTest.hs} and run the following command
+\begin{verbatim}
+    ParserTest> runTestTT testsParser
+\end{verbatim}
+The test cases covers various scenarios where the parser should fail and succeed, such as:
+\begin{enumerate}
+  \item Precedence of operators
+  \item Associativity of operators
+  \item List comprehension
+  \item Functions calls
+  \item Programs of various sizes
+  \item Reserved keywords
+\end{enumerate}
+I chose not to do property based testing with QuickCheck, as it proved to be too time consuming with my limited experience, but doing this could have revealed many quirky edge cases where my parser also fails. Unit testing can also be very time consuming if every case has to be covered, but does a good job of illustrating if common use cases (or obvious error) parses as they should.
+\subsection{Assessment}
+\label{sub:Assessment_p}
+Compiling the parser with the flags: \texttt{-Wall -fno-warn-unused-do-bind} does not result in any warnings or errors, and running it with \texttt{hlint} produces 3 suggestions of reductions, but I have chosen to ignore these as they don't make much sense in this context.
+
+The testing yielded no errors (that I know of!) in the parser, which is an indicator of that it generally works pretty well, as the parser correctly parses valid input. It accounts for precedence and associativity of operations and fails when it should. The code itself, is pretty readable and not too obscure, maybe apart from some function names (is explained in the comments, though).
+
+As stated in the previous subsection, QuickChecking the program for edge cases would have been a stronger indicator of the robustness of the parser, but was not done due to the aforementioned reasons.
+\section{Subscript, Interpreter}
+The source code for the \texttt{SubsInterpreter.hs} discussed in this section can be found in appendix \ref{SubsInterpreter.hs}. The associated test can be found in appendix \ref{intUnit}.\\
+
+The interpreter can be run by running \texttt{runProg} with a given program (of the type \texttt{Program}) or in combination with the parser by running \texttt{runhaskell Subs.hs somefile.js} where \texttt{somefile.js} is the path to a file using the syntax described in the assignment.
+
+The SubsM monad proved to be, quite like the Salsa monad from the weekly assignment, similar to the State monad, as we maintain some environments that we pass along to future computations. To construct a SubsM instance of type \texttt{a}, a function of the type \[SubsM\: a \rightarrow Context\rightarrow Either\: Error\: (a,\: Env)\] has to be provided. To deconstruct the instance, the function \texttt{runSubsM} wrapped inside the type constructor can be invoked, by providing a context.\\
+The \texttt{Context} data type contains the variable and function environments, where the functions is a read-only environment containing the functions available for use, and the variable environment contains the value of the variables declared so far.
+\subsection{Implementation}
+\label{sub:Implementation}
+Generally, the implementation of the interpreter was pretty straightforward, apart from the list comprehension expression, which I will describe in section \ref{sub:List comprehension}. The most relevant parts of the interpreter is as follows:
+\paragraph{\texttt{evalExpr}}
+\label{par:evalExpr}
+This function evaluates some expression and returns a SubsM Value. Given some expressions, it recursively evaluates the expression until it reaches a leaf in the AST provided. The expressions can be e.g. some arithmetic operation, comparison operation or variable assignments. \texttt{evalExpr} can update the current environment if a legal assignment is performed. A more detailed description of my implementation of the list comprehension can be found in section \ref{sub:List comprehension}.\\
+\\
+\textbf{Failing scenarios:}
+If one attempts to assign a variable which has not been declared before, call functions with the wrong types, wrong number of arguments, functions that does not exists or performing list comprehension on something that is not a string or list will result in an error.
+
+\paragraph{\texttt{stm} }
+\label{par:stm }
+In \texttt{stm} we have the option to either do a variable declaration, the only time where we add to the variable environment, or simply execute an expression, that can possibly update the variable environment. If a variable is declared with an expression following it, this is assigned to the given variable name, and if not the name is assigned \texttt{UndefinedVal}.
+\paragraph{\texttt{runProg}}
+\label{par:runProg}
+This function takes a Subs program as input (program being a list of statements). We take the initial context and provide it to the \texttt{runSubsM} function along with a statement. This either generates an error or it succeeds. If it succeeds, we update the environment and repeat this for the next statement as well. This is repeated until there are no more statements in the program and if this succeeds without any errors, the resulting environment from performing these statements is
+returned.
+
+If an error is encountered when interpreting the program, will stop at first error received, and return it. This error will most likely be a operator type error, or a failure to either locate a given function or variable in the environments.
+\subsection{List comprehension}
+\label{sub:List comprehension}
+The list comprehension proved to be the most difficult part of the interpreter to implement, so only a partial solution was provided, described in the following section.
+\subsubsection{Simplifications}
+\label{ssub:Simplifications}
+The list comprehension in my implementation is a bit amputated compared to its intended behaviour. As of now, it only works for a single \texttt{for} expression and it does not allow any \texttt{if} statements as well, so in essence, the supported list comprehension is on the following form:
+\begin{center}
+  \texttt{[ for (n of e1) e2]}
+\end{center}
+Any additional \texttt{for} and \texttt{if} statements will simply be ignored at the moment, but they can still be included if one wishes to do so.
+
+It works by first making a 'local' copy of the current environment, evaluating the list/string \texttt{e1} and then recursively looking through each element of \texttt{e1}, saving the values as a variable declaration with the ident \texttt{n} in the local environment. In case that \texttt{e1} contains a variable with ident \texttt{n}, \texttt{e1} can be evaluated to get the correct expression. The ident \texttt{n} will shadow previous declarations of same names, but as it resets af the list
+comprehension finshes, it will not mess with the original scope of the program.
+
+An idea for implementing the \texttt{if} guards, would to just not include any values satisfying the predicate when computing the evaluated list/string.
+\subsection{Testing}
+\label{sub:Testing_i}
+The interpreter also comes with a \texttt{Hunit} testsuite, that can execute a number of defined tests based on assertions.\\
+To run the test, simply load the testmodule \texttt{InteInterpreterTest.hs} and run the following command
+\begin{verbatim}
+    InterpreterTest> runTestTT testsInterpreter
+\end{verbatim}
+The test cases covers various scenarios where the interpreter should fail and succeed, such as:
+\begin{enumerate}
+  \item List comprehension
+  \item Basic environment scopes
+  \item Programs of various sizes
+  \item Function calls
+\end{enumerate}
+The test cases do not cover all the different combinations of expressions that can be made in general, but the unit tests give a pretty good overview of the capabilities of the implementation. They also don't quite cover all cases where type errors in the function calls occur, but a sample of them has been provided, in order to illustrate that they do in fact return an error.
+
+I have also included a failing test case that shows that the implementation is not able to interpret more advanced list comprehension expressions correctly, but this is to be expected.
+
+For the same reasons as stated in the parser, QuickCheck was not done for the interpreter.
+\subsection{Assessment}
+\label{sub:Assessment_i}
+Testing showed that the interpreter generally works as intended, apart from the missing list comprehension implementation. The partial list comprehension implemented also works according to the simplifications made, correctly producing a resulting list by updating the environment locally, and resetting it to its original state, when finished.
+
+It will, in case an error occurs, fail to interpret the statements, and return an error with a message informing the user what went wrong. The error types returned are as described previously.
+\section{Generic Replicated Server Library}
+The source code for the \texttt{gen\_replicated.erl} and \texttt{replica.erl} discussed in this section can be found in appendix \ref{genreplicated.erl} and \ref{replica.erl}. Their associated test can be found in appendix \ref{gentest}\\
+
+The implementation of the generic replicated server can be found the in file \texttt{gen\_replicated.erl} with the corresponding callback module \texttt{replica.erl}.
+\subsection{Structure}
+\label{sub:Structure}
+The current implementation is not a complete one, according to the specification in the assignment text. The simplifications that I made, can be found in section \ref{ssub:simplifications_gen}.
+
+The \texttt{gen\_server} is defined as a custom behaviour, which means that importing it will result in warnings if the functions: \texttt{handle\_read/2}, \texttt{handle\_write/2} and \texttt{init/0} are not implemented in the module.
+
+The main structure of the actual implementation is as follows:
+\paragraph{Coordinator}
+\label{par:coordinator}
+The coordinator handles incoming requests from clients and forwards them to the replicas. When initialized, the coordinator initializes a state from a given callback module and recursively spawns the desired amount of replicas under its control, and keeps the \texttt{Pid}s in a list. It then enters a loop, waiting for incoming requests. The requests that the coordinator can receive is:
+\begin{description}
+  \item[\texttt{begin\_read} ] Informs the coordinator that it should begin some read request. The request is forwarded to an available replica, and it re-enters the receiving loop.
+  \item[\texttt{begin\_write} ] Informs the coordinator that it should begin some write request. The write request is forwarded to an available replica, and then enters a new loop, where it waits for a response from the writer replica. If the writer responds with  \texttt{update} and a new state, the coordinator sends out a copy to all other replicas, telling them to update their own respective state and re-enters the main receiving loop. If it received \texttt{noupdate} no new state should be
+    sent to the replicas, and it simply re-enters the main receiving loop. All other requests received while waiting for the writer to finish, is simply informed that the server is busy.
+  \item[\texttt{done\_read} ] Informs the coordinator that a replica has finished a read request, and it forwards the result to the client and re-enters the receiving loop again.
+  \item[\texttt{stop}] Informs the coordinator that is should terminate its state instance and stop looping. The coordinator will send the same message to all replicas, before terminating itself.
+\end{description}
+\paragraph{replica}
+\label{par:replica}
+The replica server receives tasks delegated by the coordinator and it can be assigned to be either a reader or writer. Replicas are spawned by the coordinator with an associated callback module, and are all initialized in the same inital state (where the concrete state depends on the callback module implementation). When spawned, a replica enters a receiving loop where i can get one of the following requests:
+\begin{description}
+  \item[\texttt{read}] Informs the replica to do a read job with a given request. The replica calls \texttt{handle\_read/2}, implemented by the callback module, where it can either receive a reply in form of a result or a \texttt{stop}. If it gets a result, it is sent back to the coordinator, which then returns it to the client. If it gets \texttt{stop} it tells the coordinator to stop, which will terminate all replicas and the coordinator.
+  \item[\texttt{write}] Informs the replica to do a write job with a given request. It will call \texttt{handle\_write/2}, implemented by the callback module. This call can return 3 values: \texttt{noupdate} which wont do anything, and the replica returns to its main loop after notifying the coordinator it is finished writing, \texttt{update} which will cause the replica to update its state, and tell the coordinator to do the same before returning to its main loop, and \texttt{stop} which is as previously described.
+  \item[\texttt{replicate}] Informs the replica to update its state with a given copy, sent by the coordinator, and return to the main loop
+  \item[\texttt{stop}] Informs the replica to terminate its state and not loop any more.
+\end{description}
+\paragraph{Callback module}
+\label{par:Callback module}
+The callback module (\texttt{replica.erl} in my case) is the module that does the actual concrete computations assigned by the coordinator. It implements the following functions:
+\begin{description}
+  \item[\texttt{start/1}] calls the \texttt{gen\_replicated} function \texttt{start} which starts a new generic replicated server.
+  \item[\texttt{init/0}] Initializes a fresh state. My implementation uses a dictionary data structure, for storing data in form of key/value pairs.
+  \item[\texttt{handle\_read/2}] Handles read requests. In my simple implementation of the callback module, it only accepts a single request, \texttt{tolist}, which converts the current dictionary state into a list and returns it.
+  \item[\texttt{handle\_write/2}] Handles a write request. In my implementation it only supports the request \texttt{\{add\_to\_dict, K, V\}} where a key \texttt{K} will be added to the dictionary with the value \texttt{V}, if it doesn't exist (returns \texttt{update}) or simply nothing happens if it already does (returns \texttt{noupdate}).
+\end{description}
+The requests accepted by the functions \texttt{handle\_read/2} and \texttt{handle\_write/2}, can also contain an extra argument \texttt{Time} (i.e. \texttt{ \{tolist, Time\}} and \texttt{ \{add\_to\_dict, K, V, Time\}} ), if we want the calls to sleep for \texttt{Time} amount of ms. This is only used for testing purposes though.
+\subsubsection{Simplifications}
+\label{ssub:simplifications_gen}
+In my implementation i have made some few restrictions in order to simply the \texttt{gen\_replicated} server:
+\begin{enumerate}
+  \item No blocking while writing to the state (and no queue for incoming read requests while performing a write)
+  \item No waiting for readers to finish before starting a write operation
+  \item No error handling in general. If something goes wrong, the server more or less crash and burn (for example, by sending more requests than available replicas).
+\end{enumerate}
+An implementation that would avoid starvation of readers and writers would be to maintain some form of queue that represents the operations in the order they were received. If a write request is received while reading, we should stop accepting any more reads while writing. If read requests were received while writing, these should be added to a queue and executed in the corresponding order, before allowing any write requests that comes after.
+\subsection{Testing}
+\label{sub:Testing_rep}
+In the test file \texttt{genTest.erl} resides a few functions that makes some assertions, using the EUnit unit testing library. These tests checks that the basic read/write operations works as intended, by assigning a writer replica and a reader replica and confirming that it actually writes and reads. There is also a small test for testing the concurrency of the read operation. It works by starting an \texttt{timer:exit\_after} operation which will throw an error after a specified amount of
+time, and then immediately spawning a number of processes which will make a sleeping read call. The time is chosen such that if the read operations was done sequentially, it would exceed and time out, but if done concurrently, the test will make the appropriate amount of assertions before timing out.\\
+\\
+Running the tests can be done with the following commands:
+\begin{verbatim}
+   c(replica),
+   c(gen_replicated),
+   c(genTests),
+   genTest:test().
+\end{verbatim}
+Which returns that all (albeit only 4) tests passes.
+\subsection{Assessment}
+\label{sub:Assessment_rep}
+From what I have tested, basic reading and writing to a state works as intended, but can easily be broken if not limiting oneself to to using it according to the simplifications stated. Testing also concluded that concurrent read works as intended.
+
+There is still some work left if the implementation is to be labelled as a robust system, but due to the fast approaching deadline, this was not prioritized.
+\section{AlzheimerDB}
+The source code for the \texttt{alzheimer.erl} and \texttt{dbtest.erl} discussed in this section can be found in appendix \ref{alzheimer.erl} and \ref{dbtest.erl}. Their associated test can be found in appendix \ref{alztest}\\
+
+I chose the implement the \texttt{alzheimer} callback module, before I attempted to implement the \texttt{gen\_replicated} module, which means that \texttt{alzheimer} uses the \texttt{gen\_server} behaviour. For storage in the callback module, a simple dictionary was used, as the functionality provided by one is more than enough for my intended purpose, and it makes some operations, such as lookups, simple.
+\subsection{Error handling}
+\label{sub:Error handling}
+The \texttt{alzheimers} module handles errors or exceptions that might occur by using \texttt{try ... catch} expressions where they should be properly handled, i.e. in the \texttt{handle\_call} function. That is, when the function \texttt{F} for some reason throws a \texttt{throw} exception or when \texttt{P} throws any kind of exception. When such an exception is caught, the \texttt{alzheimer} module will then forward the error, to whatever module is calling it.
+\subsection{Querying efficiently}
+\label{sub:Querying efficiently}
+Doing several concurrent reads would have been ideal for a generic replicated server model, where each read request would be distributed to a replica server by the coordinator and then return the result, when done.\\
+My implementation, as stated above, unfortunately uses the \texttt{gen\_server} behaviour, so the concurrency handling would be like any Erlang process. If a \texttt{gen\_server} receives multiple requests at the same time, they are placed in a processes message queue and processes handle their message one-by-one. My implementation, I realized a little bit too late, is not concurrent, and thus do not support concurrent reads. Concurrency when querying with \texttt{handle\_call} could have been
+handled in conjunction with \texttt{handle\_info} by sending a message back to the module where it would then spawn a new process to do the job.
+\subsection{Testing}
+\label{sub:Testing_alz}
+Testing the \texttt{alzheimer} module, consisted of 2 parts. First to create a module that used \texttt{alzheimer.erl} and then test this module. Testing the module was done with unit tests, using the EUnit library.
+\paragraph{Testing Program:}
+\label{par:Testing Program}
+For testing the \texttt{alzheimer} callback module, I have implemented another small module, \texttt{dbtest.erl}, that utilizes the \texttt{alzheimer} functions \texttt{query/2} and \texttt{upsert/3}. In \texttt{dbtest}, the function \texttt{insert/3} calls \texttt{upsert/3} with a \texttt{Pid}, a key \texttt{K} and a value \texttt{V} which then calls \texttt{upsert} with the predefined function \texttt{F}. \texttt{F} will then, based on its input, notify the alzheimers module whether to
+simply insert \texttt{V} in the database if it doesn't exist or tell it to modify it with \texttt{V} if it does. So no matter what, the dictionary will contain the value \texttt{V} after \texttt{insert/3} is executed.
+
+The other function \texttt{getRowsError/2} call the \texttt{query/2} function, to obtain all the rows in the database that satisfies a predefined predicate \texttt{P}. It will simply check if a given \texttt{LookupVal} is equal to any values in the dictionary and return true if they are and false if not. To also test that alzheimers catches an exception, \texttt{P} will throw and exception if any value in the dictionary is \texttt{throw\_error}.
+\paragraph{EUnit tests:}
+\label{par:EUnit tests}
+In the test file \texttt{alzTest.erl} resides a some functions that makes some assertions, using the EUnit unit testing library. This includes assuring that \texttt{dbtest} correctly inserts/updates the values in the database, and correctly returns an error if an exception was thrown at some point.
+
+Running the tests can be done with the following commands:
+\begin{verbatim}
+   c(dbtest),
+   c(alzTest),
+   alzTest:test().
+\end{verbatim}
+Where you will get the output:
+\begin{verbatim}
+  All 6 tests passed.
+\end{verbatim}
+\subsection{Assessment}
+\label{sub:Assessment_alz}
+The \texttt{alzheimer} callback module generally works alright when doing performing the various \texttt{upsert} and \texttt{query} requests. It inserts/updates the database as it should with the correct key/value, and returns the correct results when querying it.
+The error handling, in general, also seems to work pretty well, since it catches exceptions raised by either \texttt{P} or \texttt{F} and returns the error to the user.
+
+The callback module lacks concurrency, which means that it does not utilize the fact that query operations are read-only, which of course is unfortunate. If time allowed it, it could be implemented as briefly described before.
+
+Testing with the \texttt{dbtest} module reveals that \texttt{alzheimer} throws errors and passes when supposed to. The test cases can be found in \ref{alztest}.
+\newpage
+\appendix
+\section{Source code}
+\label{sec:Source code}
+\subsubsection{Parser}
+\label{SubsParser.hs}
+\inputminted{haskell}{../src/subs/SubsParser.hs}
+\subsection{Interpreter}
+\label{SubsInterpreter.hs}
+\inputminted{haskell}{../src/subs/SubsInterpreter.hs}
+\subsection{Generic replicated server}
+\label{sub:Generic replicated server}
+\subsubsection{\texttt{gen\_replicated.erl}}
+\label{genreplicated.erl}
+\inputminted{erlang}{../src/alzheimer/gen_replicated.erl}
+\subsubsection{\texttt{replica.erl}}
+\label{replica.erl}
+\inputminted{erlang}{../src/alzheimer/replica.erl}
+\subsection{AlzheimerDB}
+\label{sub:AlzheimerDB}
+\subsubsection{\texttt{alzheimer.erl}}
+\label{alzheimer.erl}
+\inputminted{erlang}{../src/alzheimer/alzheimer.erl}
+\subsubsection{\texttt{dbtest.erl}}
+\label{dbtest.erl}
+\inputminted{erlang}{../src/alzheimer/dbtest.erl}
+\section{Test files}
+\label{sec:Test files}
+\subsection{Parser tests}
+\label{Parsertests}
+\subsubsection{\texttt{ParserTest.hs}}
+\label{parserUnit}
+\inputminted{haskell}{../src/subs/ParserTest.hs}
+\subsection{Interpreter tests}
+\label{Interpretertests}
+\subsubsection{\texttt{InterpreterTest.hs}}
+\label{intUnit}
+\inputminted{haskell}{../src/subs/InterpreterTest.hs}
+\subsection{Generic replicated server tests}
+\label{ssub:Generic replicated server tests}
+\subsubsection{\texttt{genTests.erl}}
+\label{gentest}
+\inputminted{erlang}{../src/alzheimer/genTests.erl}
+\subsection{AlzheimerDB tests}
+\label{sub:AlzheimerDB tests}
+\subsubsection{\texttt{alzTests.erl}}
+\label{alztest}
+\inputminted{erlang}{../src/alzheimer/alzTests.erl}
+\end{document}

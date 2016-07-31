@@ -1,0 +1,107 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+\begin{center}
+\section*{Max Flows}
+\end{center}
+Flow networks is a directed graph $G=(V,E)$ with a capacity function $c$. We have a source $s$ and and a sink $t$. A \textit{flow} is a function $f:V\times V\rightarrow \mathbb{R}$ that satisfies. \\
+\\
+\textbf{Capacity constraint:} For all $u,v\in V$, we require $0\leq f(u,v)\leq c(u,v)$. \\
+\textbf{Flow conservation:} For all $u\in V-\{s,t\}$, we require
+\begin{align*}
+\sum_{v\in V} f(v,u)=\sum_{v\in V} f(u,v)
+\end{align*}
+\textbf{Maximum-flow problems} are flow problems where we wish to find a flow of maximum value.\\
+A \textbf{Residual network}, dentoted $G_f$, is a graphh $(V, E_f)$ where edges represent how we can change the flow in $G$. \\
+An \textbf{Augmentation} of a flow is a function $f\uparrow f'$ with value $|f\uparrow f'|=|f|+|f'|$. This value is actually stricly larger than $|f|$ (Corollary 26.3)\\
+\\
+Ford-Fulkerson is an algorithm that simply keeps finding augmenting paths until there is no more. Since an augmenting path always increases the flow by at least one unit and we can find an augmenting path in $O(E)$ time (breadth first with right data structure), the running time is $\mathcal{O}(E|f^*|)$. \\
+\\
+A cut $(S,T)$ is a removal of edges so that the graph is split into two subgraphs. The net flow is the flow from S to T minus the flow from T to S. The capacity of a cut is the total capacity from S to T. A \textbf{Minimum cut} is a cut that minimizes the capacity of the cut.
+
+\subsection*{Max-flow min-cut theorem}
+These are equivalent:
+\begin{enumerate}
+  \item $f$ is a maximum flow in $G$.
+  \item The residual network $G_f$ contains no augmenting paths.
+  \item $|f|=c(S,T)$ for some cut $(S,T)$ of $G$.
+\end{enumerate}
+$(1\Rightarrow 2)$: Suppose there is an augmenting path in $G_f$ and $f$ is a maximum flow, Corollary 26.3 says that the resulting flow value is stricly greater than $f$, which is a contradiction. \\
+$(2\Rightarrow 3)$: Suppose there are no augmenting paths in $G_f$. If we make a cut in the graph so nodes that can be reached from $s$ in $G_f$ is in $S$ and let $T=V-S$. We now consider a pair $(u\in S, v\in T)$. If $(u,v)\in E$, then $f(u,v)=c(u,v)$ as otherwise the edge would exist in $E_f$ and $v$ would be a part of $S$. If $(v,u)\in E$, then $f(v,u)=0$ since otherwise it would be positive and $(u,v)$ would exist in $E_f$ which places $v$ in $S$, if neither is in $EE$ then $f(u,v)=f(v,u)=0$ , thus
+\begin{align*}
+  f(S,T)&=\sum_{u\in S}\sum_{v\in T}f(u,v)-\sum_{v\in T}\sum_{u\in S}f(v,u)  \\
+  &=\sum_{u\in S}\sum_{v\in T}c(u,v) \\
+  &=c(S,T)
+\end{align*}
+By Lemma 26.4, we get $|f|=f(S,T)=c(S,T)$.\\
+$(3\Rightarrow 1)$: We have from Corollary 26.5 that any flow $f$ is bounded above by any cut $(S,T)$, thus when $|f|=c(S,T)$ means that $f$ must be a maximum flow. \\
+\\
+Edmonds-Karp is when we pick the augmented path as the shortest path from $s$ to $t$. This runs in $\mathcal{O}(VE^2)$, since the number of augmententations is $\mathcal{O}(VE)$ and we can find one in $\mathcal{O}(E)$.
+
+\end{document}

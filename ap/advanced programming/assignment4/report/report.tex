@@ -1,0 +1,115 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+    language=,
+    literate=
+        {æ}{{\ae}}1
+        {ø}{{\o}}1
+        {å}{{\aa}}1
+        {Æ}{{\AE}}1
+        {Ø}{{\O}}1
+        {Å}{{\AA}}1,
+    backgroundcolor=\color{listinggray},
+    tabsize=3,
+    rulecolor=,
+    basicstyle=\scriptsize,
+    upquote=true,
+    aboveskip={0.2\baselineskip},
+    columns=fixed,
+    showstringspaces=false,
+    extendedchars=true,
+    breaklines=true,
+    prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=single,
+    showtabs=false,
+    showspaces=false,
+    showlines=true,
+    showstringspaces=false,
+    identifierstyle=\ttfamily,
+    keywordstyle=\color[rgb]{0,0,1},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Victor Petrén Bach Hansen (grn762)}
+\title{Advanced Programming \\ Assignment 4}
+\lhead{Advanced Programming}
+\rhead{Assignment 4}
+
+\begin{document}
+\maketitle
+
+\section*{Relevant code}
+Our \texttt{facein} implementation makes use of the supervisor/worker concept, to increase the stability of the person servers. If a supervised process for some reason should terminate, it will do so in an well-ordered manner and start up a new process.
+
+\subsection*{\texttt{add\_friend}}
+This function works by taking two arguments, \texttt{Pid} and \texttt{Fid}. If they are the same, it produces an error as you can not add yourself as a friend. Otherwise, it is passed to \texttt{rpc} which send a message to the correct process. The name is found by the helper function \texttt{give\_info} and the person is looked up in the dictionary \texttt{Friends}. If the person already exists in the dictionary, an error is returned and otherwise it is added to the dictionary with key \texttt{Fid}.
+
+\subsection*{\texttt{friends}}
+This function works by passing arguments to \texttt{rpc} which sends a message to the process. It then converts the \texttt{Friends} dictionary to a list, extracts all names, and returns a list with these names.
+
+\subsection*{\texttt{broadcast}}
+Broadcast makes an unique reference, gets the name of the specified process and sends a message directly to the process as it is non-blocking. When a process receives the broadcast signal, it checks if the message reference already exist in the \texttt{Msgs} dictionary. If it does, it does add it, otherwise it add the message along with the sender name under that reference. \\
+The message is then sent to all persons on the process' friendlist by the helper function \texttt{send\_broadcast} with an radius of one less. When some process receives the broadcast signal with a radius of $0$, it does not send it further.
+
+\subsection*{\texttt{received\_messages}}
+This function is blocking, and works in the same manner as \texttt{friends} where the all the pairs in the dictionary \texttt{Msgs} is returned.
+
+\section*{Testing}
+In the test file \texttt{facein\_test} resides a few functions that makes some assertions, using the EUnit library, based upon the required minimal testing. This includes setting up the graph, calling \texttt{friends} on Jen Walters, broadcasting messages from Ken and Jessica with radius 3 and 2 and calling \texttt{received\_messages} on Tony, Susan and Reed.\\
+The test also included some failing scenarios we handle, namely adding yourself as a friend and adding a friend multiple times, should result in an error.\\ \\
+Running the tests can be done with the following commands:
+\begin{verbatim}
+   c(facein),
+   c(facein_test),
+   facein_test:test().
+\end{verbatim}
+Where you will get the output
+\begin{verbatim}
+   All 6 tests passed
+\end{verbatim}
+meaning, these tests all pass.\\
+NB: For some reason, when creating the graph, as seen in the test, the order friends will be added to a list, will not be the same every time, thus failing the test (the same goes for the order of received messages, when broadcasting)! If the test fails, try running the command \texttt{facein\_test:tests()} a few times, until it is satisfied. Due to the deadline, the reason for this scrambled order have not been identified.
+
+\section*{Assessment}
+The code can handle the "minimal testing" as explained above. There weren't any bugs with what "blackbox" testing we did, however there might be cases where it should produce an error where it does not. \\
+Only \texttt{broadcast} is non-blocking as there could be cases where it would need to go into that process again (when two processes are "friends" with eachother, so a message is sent back). This would also result in a deadlock as they wait for a response from each other. We have not been able to detect other potential deadlocks.
+
+\section*{Extending the program with \texttt{change\_name}}
+If such a function was implemented, we would have to either update all occurences of that person afterwards (in friendlist and sent messages) or alternatively store the process ID instead and fetch the name when we call the functions \texttt{friends} and \texttt{received\_messages} from the ID instead.
+
+
+\end{document}

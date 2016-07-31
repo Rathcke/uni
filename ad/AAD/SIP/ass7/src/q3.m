@@ -1,0 +1,36 @@
+I = imread('blobs.png');
+se1 = [0 1 0; 0 1 0; 0 1 0];
+se2 = [1 0 1; 1 0 1; 1 0 1];
+se3 = [0 0 0; 1 1 1; 0 0 0];
+se4 = [1 1 1; 0 0 0; 0 0 0];
+se5 = [1 1 1 1 1; 1 1 1 1 1; 1 1 1 1 1; 1 1 1 1 1; 1 1 1 1 1];
+se6 = [0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0];
+se7 = [0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0];
+se8 = [1 1 1 1 1; 1 1 1 1 1; 1 1 1 1 1; 1 1 1 1 1; 1 1 1 1 1];
+se9 = [0 0 0 0 0; 0 0 0 0 0; 0 0 1 0 0; 0 0 0 0 0; 0 0 0 0 0];
+se0 = [1 1 1 1 1; 1 0 0 0 1; 1 0 0 0 1; 1 0 0 0 1; 1 1 1 1 1];
+
+I2 = bwhitmiss(I, se1, se2);
+I3 = bwhitmiss(I, se3, se4);
+I4 = bwhitmiss(I, se5, se6);
+I5 = bwhitmiss(I, se7, se8);
+I6 = bwhitmiss(I, se9, se0);
+
+subplot(2, 3, 1);
+    imshow(I);
+    title('Original Image');
+subplot(2, 3, 2);
+    imshow(I2);
+    title('Vertical lines with 1 width');
+subplot(2, 3, 3);
+    imshow(I3);
+    title('Top of horizontal lines');
+subplot(2, 3, 4);
+    imshow(I4);
+    title('Filled squares of size 5x5');
+subplot(2, 3, 5);
+    imshow(I5);
+    title('Empty 5x5 squares');   
+subplot(2, 3, 6);
+    imshow(I6);
+    title('Dots of max 3x3 in a 5x5 area');

@@ -1,0 +1,216 @@
+<review for-group="Jürgensen_Kenneth__gjx139__group_698358">
+  <exercises>
+
+    <question1>
+      <title>Serializability and Locking</title>
+      <schedule1>
+        <text>
+          Is the solution provided both correct and includes a convincing short
+          argument justifying it?
+        </text>
+        <answer>YES</answer>
+        <comment></comment>
+      </schedule1>
+
+      <schedule2>
+        <text>
+          Is the solution provided both correct and includes a convincing short
+          argument justifying it?
+        </text>
+        <answer>YES</answer>
+        <comment></comment>
+      </schedule2>
+    </question1>
+
+    <question2>
+      <title>Optimistic Concurrency Control</title>
+      <scenario1>
+        <text>
+          Is the solution provided both correct and includes a convincing short
+          argument justifying it?
+        </text>
+        <answer>YES</answer>
+        <comment></comment>
+      </scenario1>
+
+      <scenario2>
+        <text>
+          Is the solution provided both correct and includes a convincing short
+          argument justifying it?
+        </text>
+        <answer>YES</answer>
+        <comment></comment>
+      </scenario2>
+
+      <scenario3>
+        <text>
+          Is the solution provided both correct and includes a convincing short
+          argument justifying it?
+        </text>
+        <answer>YES</answer>
+        <comment></comment>
+      </scenario3>
+
+    </question2>
+  </exercises>
+
+  <programming>
+
+    <question1>
+      <title>Description of implementation and tests</title>
+      <q1a>
+        <text>
+          Does the solution contain a clear description of the approach
+          used to achieve before-or-after atomicity?
+        </text>
+        <answer>YES</answer>
+      </q1a>
+      <q1b>
+        <text>
+          Provide comments on any aspects that you found unclear in the
+          description of the approach to achieve before-or-after atomicity
+        </text>
+        <answer>
+          No comments, considers the possibility of exception being thrown and explains when the locking happens.
+        </answer>
+      </q1b>
+      <q1c>
+        <text>
+          Does the code include implementations of Tests 1 and 2 of the
+          assignment description as well as of at least another two test
+          cases?
+        </text>
+        <answer>YES</answer>
+      </q1c>
+      <q1d-i>
+        <text>
+          Is it tested that the final state resulting from concurrent
+          execution
+          is correct in that it respects invariants designed in the test?
+        </text>
+        <answer>YES</answer>
+      </q1d-i>
+      <q1d-ii>
+        <text>
+          Is it tested that intermediate reads of the state during concurrent
+          execution respect invariants designed in the test, so that it is
+          arguable that these intermediate states could be found in an
+          equivalent serial schedule?
+        </text>
+        <answer>YES</answer>
+      </q1d-ii>
+      <q1e>
+        <text>
+          Provide comments on why you found that any portions of the test
+          descriptions were unclear according to the criteria, and suggestions for
+          improvement
+        </text>
+        <answer>
+          We were only able to run the tests locally, despite the fact that the group states
+          that they implemented them over HTTP.
+          - Regarding test1:
+            The client that keeps buying and restocking bookcopies runs on a fixed number
+            of iterations. There is a risk that this will finish way before the other client
+            begins taking snapshots. The snapshot client should invoke some sort of interrupt
+            to notify the buy/restock client it should stop.
+          - Regarding test4:
+            Some more meaningful assertions could have been made based on the expected outcome
+            of the test
+          Generally the 'self made' tests only tests throughput when reading and writing. Testing
+          for e.g. deadlocks or other properties could perhaps have been more interesting.
+        </answer>
+      </q1e>
+    </question1>
+
+    <question2>
+      <title>Correctness argument for locking protocol</title>
+      <q2a>
+        <text>
+          Is the variant of 2PL to which equivalence is being established in
+          the correctness argument clearly identified (e.g., conservative, strict,
+          conservative strict)?
+        </text>
+        <answer>YES</answer>
+      </q2a>
+      <q2b>
+        <text>
+          Is there a sound argumentation of why the steps in the locking
+          protocol designed correspond to steps taken in the chosen variant
+          of 2PL?
+        </text>
+        <answer>YES</answer>
+      </q2b>
+      <q2c>
+        <text>
+          Is there an argument for the need to take into account predicate
+          reads, with appropriate justification?
+        </text>
+        <answer>YES</answer>
+      </q2c>
+      <q2d>
+        <text>
+          Is there an argument for the need to take into account predicate
+          reads, with appropriate justification?
+        </text>
+        <answer>No comment. Predicate reads are discussed.</answer>
+      </q2d>
+    </question2>
+
+    <question3>
+      <title>Deadlocks</title>
+      <q3a>
+        <text>
+          Does the solution contain a correct argument for why deadlocks can
+          occur in the locking protocol or why deadlocks cannot occur?
+        </text>
+        <answer>YES</answer>
+      </q3a>
+      <q3b>
+        <text>
+          Provide comments on how the argument provided with respect to
+          deadlocks could be improved
+        </text>
+        <answer>Nothing to add again.</answer>
+      </q3b>
+    </question3>
+
+    <question4>
+      <title>Reflections on scalability</title>
+      <q4a>
+        <text>
+          Is there a sound argument about the scalability limits of the
+          concurrent implementation provided?
+        </text>
+        <answer>NO</answer>
+      </q4a>
+      <q4b>
+        <text>
+          Provide comments on how the reflections on scalability could be
+          improved
+        </text>
+        <answer>You only address scalability issues with increasing number of client. You should also discuss the behavior when there are more hardware resources available.</answer>
+      </q4b>
+    </question4>
+
+    <question5>
+      <title>Argumentation on decisions made for performance</title>
+      <q5a>
+        <text>
+          Is there a sound argument in the solution about the trade-off between
+          locking overhead and concurrency?
+        </text>
+        <answer>YES</answer>
+      </q5a>
+      <q5b>
+        <text>
+          Provide comments on how the argument about performance trade-offs in
+          the locking protocol could be improved
+        </text>
+        <answer>
+          All criteria for a 'YES' have been provided, but the answers are VERY brief.
+          Could have been described a little better, but will mark it as satisfacory.
+        </answer>
+      </q5b>
+    </question5>
+  </programming>
+</review>

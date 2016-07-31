@@ -1,0 +1,228 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (rfq695) \\ Victor Petrèn Bach Hansen (grn762)}
+\title{Advanced Computer Systems \\ Assignment 1}
+\lhead{Advanced Computer System}
+\rhead{Assignment 1}
+
+\begin{document}
+\maketitle
+
+\section{Fundamental Abstraction}
+\subsection{}
+Our high level solution makes some assumptions. The capacity of the machines in terms of memory should be known. Either we need to know if they are of equal size (and what size) or the size of each of the $K$ machines. We will consider the case when they are of equal size. That means we know the total memory size of the machines. We treat the memory of the first machine as the first part of the whole aggregated memory, the second machine as the second part and so on. \\
+Given a read or write with some parameter \texttt{addr} then, if they are of equal size, we can find out what machine we're reading or writing to/from by taking the total memory and dividing it with \texttt{addr} (integer division). Likewise, we can find out what the offset is by taking \texttt{addr} modulo the memory size of each machine. \\
+This scales very nicely if we add machines (computationally) - under the condition they have the same memory size as all the others. If they have different size, we would need to generate intervals and determining in what interval some adress is would be harder to calculate.
+
+\subsection{}
+Lets write the pseudocode for \texttt{READ} and \texttt{WRITE}:
+\begin{lstlisting}
+#DEFINE MACHINE_MEM = N
+#DEFINE TOTAL_MEM   = K*N
+
+READ(addr) {
+	machine      = TOTAL_MEM / addr;
+	machine_addr = addr % MACHINE_MEM;
+	switch ( readFromMach(machine, machine_addr) ):
+		case response:
+			return response;
+		default:
+			raise Exception("Something wrong")
+}
+
+WRITE(addr, val) {
+	machine      = TOTAL_MEM / addr;
+	machine_addr = addr % MACHINE_MEM;
+	switch ( writeToMach(machine, machine_addr, val) ):
+		case response:
+			return response;
+		default:
+			raise Exception("Something wrong")
+}
+\end{lstlisting}
+The \texttt{READ} code works by taking an \texttt{addr}, then calculating what machine and where in the machine we want to read from. Assuming we have a function to read from that machine, we return some response if we get one or if nothing happens, we throw an exception. \\
+The \texttt{WRITE} code works in the same way, but in addition to an \texttt{addr}, we also have a \texttt{val}, which is what we want to write to \texttt{addr}.
+
+\subsection{}
+When \texttt{READ} and \texttt{WRITE} on normal memory, it is atomic in words, i.e. it will be atomic when we read an int, but not if the int is misaligned (so we have to read two words). If the function we call in the switch {\texttt{readFromMach} and \texttt{writeToMach}} works in same way, the behaviour in our abstraction is the same. If multiple client access the abstraction concurrently, we would need locks to achieve atomicity when we write or read over more than one word.
+
+\subsection{}
+We do make assumption on the number of machines as well as the memory size of the machines. To allow for dynamic joins and leaves of machines, we could, whenever we add a machine, add it to the end of the "list". So if we have $K$ machines, a new machine would have number $K+1$. Whenever we remove a machine, all machines with a higher machine number, $M$, should get machine number $M-1$.
+
+\section{Techniques for Performance}
+\subsection{}
+Concurrency can speed up latency. If we are in some stage where several requests can be processed independently (that is, they do not need to wait for each other or access the same memory), it can theoretically speed it up by a factor $n$ in the stage. This is not true as there is parallization overhead - sending requests to the $n$ machines and recieving the results. \\
+There are also other things to take into account when designing a system that runs concurrently. Parallelization is nessecarily easy to implement as requests might not split easily into $n$ parts. Another problem is that you need to manage the concurrency as well as coordinate the subtaks. This means that sometimes introducing concurrency actually makes it more diffucult and thus it reduces the latency.
+
+\subsection{}
+Batching is performing several requests at once instead of doing them one at a time and therefore avoid the setup overhead by doing so. This can be used in the bottleneck stage where there is a queue of requests waiting to be processed. Dallying is the idea of delaying a request in hopes it wont be needed or that it can be used in batching. \\
+Suppose we want to send several messages to a next stage. We can avoid the expensive setup overhead of all of them by processing them as a group. An example of dallying could be when we consider two writing request that both write to the same memory space. Instead of writing twice, we could just perform the second write operation (assuming that we do not read from between them).
+
+\subsection{}
+Yes. A fast path is used for requests that are common, while a slow path is for uncommon requests. A cache can store frequent requests, so when we get a hit in the cache for a request, we can save the hassle of doing the work again. For example, we can avoid requesting a web page from a server - if we have done it before and have a cached copy of it.
+
+\section{Programming Task}
+The implementation, which is an extension to an existing codebase, can be found \texttt{code.zip} file uploaded along the report to absalon. Discussion of the implementation can be found in the next section.
+
+\section{Question for Discussion of Architecture}
+
+\subsection{}
+\subsubsection{}
+The implementation consists of implementing the three methods \texttt{rateBooks}, \texttt{getTopRatedBooks} and \texttt{getBooksInDemand} in the \textit{CertainBookStore} class and exposing them as RPCs according to the given architecture. For each method, additional unit tests have been added to the current test suite \texttt{BookStoreTest.java}, which are all executed non-locally now.\\
+\\
+\textbf{Implementation of \texttt{rateBooks:}} \\
+This method works by getting a set of \texttt{bookRating}'s as argument. It then iterates over the set and throws an exception if \textit{one} of the ratings is not between $0$ and $5$, if the ISBN is invalid or if it does not exist (does not has a key in the hashmap \texttt{bookMap}). If there is no exception, it rates the books and returns. This means it respects all-or-nothing semantics, as it rates them after ensuring there are not any exceptions. \\
+\\
+\textbf{Tests:}\\
+The unit test for \texttt{rateBooks} cover the cases of:
+\begin{description}
+  \item[Rating a book:] Rating a book with well formed ratings (meaning that the ISBN and rating is valid and the book exists in the bookstore) should result in an updated rating for each book.
+  \item[Rating with an invalid ISBN:] Rating a book with an invalid ISBN (a value $<1$) should result in an exception.
+  \item[Setting an invalid rating:] Rating a book with an invalid rating (an integer that is not in the range from $0$ to $5$, including both ends) should result in an exception
+  \item[Rating a book that doesn't exists:] Rating a book, whose ISBN is not present in the bookstore, should result in an exception.
+\end{description}
+In the test cases where the test results in an exception, the all-or-nothing semantics are tested by including well formed ratings along with ill-formed and checking that the rating does not change when failing.\\
+\\
+\textbf{Implementation of \texttt{getTopRatedBooks}:} \\
+Gets a number, \textit{num} as argument. throws an exception if it is below $0$ og larger than number of distinct books. It then values (books) from \texttt{bookMap}, sorts them by their rating in decreasing order and returns the first \textit{num} books (as instances of \texttt{immutableBook}). Again it respects all-or-nothing semantics as it only returns a list after checking for potential exceptions (and verifying there are none). \\
+\\
+\textbf{Tests:}\\
+The unit test for \texttt{getTopRatedBooks} cover the cases of:
+\begin{description}
+  \item[Negative number of books:] Attempting to get a negative number of top rated books, should result in an exception.
+  \item[More than available:] Attempting to get more top rated books than available, should result in an exception.
+  \item[Getting all books:] Getting all available books, should result in a list of all books in descending order of rating.
+  \item[Getting a subset of books:] Getting a subset of available books should result in the $n$ highest rated books (where $n$ is the number of top rated books requested), sorted in descending order of rating.
+\end{description}
+In the test cases where the test results in an exception, the all-or-nothing semantics are tested by checking that no books are returned.\\
+\\
+\textbf{Implementation of \texttt{getBookInDemand}:}\\
+Works by getting all values from \texttt{bookMap}. It then checks for each book that it has \texttt{saleMisses} larger than $0$, if so, it is added to a list (as an instance of \texttt{immutableBook}), which is returned in the end. This satisfies all-or-nothing semantics too as they are returned as a list. \\
+\\
+\textbf{Tests:}\\
+The unit test for \texttt{getBooksInDemand} cover the cases of:
+\begin{description}
+  \item[No books are in demand] If no books are in demand, the number of returned books, should be $0$.
+  \item[All books are in demand] If all books are in demand, the number of returned books, should be the total number of distinct books.
+  \item[Some books are in demand] If only some books are in demand, the number of returned books shold be the number of books in demand.
+\end{description}
+\hfill \\
+The methods have also been implemented in the \textit{BookStoreHTTPProxy}, \textit{StockManagerHTTPProxy} and \textit{BookStoreHTTPMessageHandler} classes, much similar to how the existing methods were implemented.
+
+\subsubsection{}
+The testing has been done with the use of RPCs. If this works we assume the local calls work as well.
+
+\subsection{}
+\subsubsection{}
+The architecture is strongly modular in the sense that we utilize RPC to bound the failure propagation between the bookstore/storemanager client and the bookstore service. The clients and services in the architecture is separated into independent modules, so that each module contains everything that is needed for it to execute the desired functionality. The clients sends the desired requests through a proxy and then wait for a response from the service, also sent through a proxy.
+
+\subsubsection{}
+They are isolated in the form that transaction are guaranteed to be serialized (that they follow before-or-after atomicity). But also in the form that they are independent which comes from strong modularity. Therefore if one part crashes, another part is not affected, so one type of client transactions are still possible even though it is not for the other type.
+
+\subsubsection{}
+No, not when we run it in the same JVM. If one things crashes, all of it crashes.
+
+\subsection{}
+\subsubsection{}
+Yes, the \texttt{handle} method in \textit{BookStoreHTTPMessageHandler} is a naming service as it calls some function based on the tags (such as "RATEBOOKS" that we implemented).
+
+\subsubsection{}
+The mechanism works by having a server application than can, for example, stringify an object and list this somewhere in a shared file system. A client application can then do the opposite, can get an object based from the string. This works when they both server and client have access to the shared file system.
+
+\subsection{}
+The RPC semantic implemented in the architecture is at-most-once semantics. The \texttt{SendAndRecv} method in \texttt{BookStoreUtility} sends a request and is blocking while it waits for a reponse. It either receives a response or it throws an exception, e.g. timed out exception, unknown client exception.
+Since we are dealing with various transactions, such as buying books, the at-most-ince semantics seems more appropriate, since these have side effects. We don't want the client stub to send many of the same buy requests, if the service for some reason doesn't respond right away. If something goes wrong we would rather just get an error, and maybe attempt to send the request again at some other time.
+
+\subsection{}
+\subsubsection{}
+Yes, it is safe as we are using thread-safe methods calls.
+
+\subsubsection{}
+If we are not making thread-safe method calls, it basically means we have undefined behaviour when we call the same method from two different thread. This is not good. If, for example, we were a bank where two withdrawals happens at the same time from the same account (the withdrawals will be two \texttt{WRITE} operations in the end). The last operation might disregard the first one so only one withdrawal is registered. \\
+The proxy servers should be deployed between the \textit{BookStoreHTTPServer} and the \textit{CertainBookStore}.
+
+\subsection{}
+\subsubsection{}
+Short answer is yes, though there are some details to it discussed in the next subsection.
+
+\subsubsection{}
+The \textit{BookStoreHTTPServer} is responsible for all the coordination work. There are no issues with introducing infinitely many proxies, as long as it can be coordinated by the server. However, since thread safe calls require that some form of lock implementation, we can only make so many locks as there is a finite amount of resources we can actually lock. If is the load is extremely heavy, requests would pile up and since the requests can time out as we saw earlier, it means we cannot serve infinitely many (as the time out is also a finite number of time).
+
+\subsection{}
+\subsubsection{}
+No, crashes results in a time out error, which would be the same if the proxy waited for an answer (unless it responds with something else on a time out).
+
+\subsubsection{}
+No, not really. If we cache information, we do not know if the information matches the information on the server that crashed.
+
+\subsubsection{}
+We would not have a guarantee of before-or-after atomicity as a cache hit might return some old information if the caches in web proxies are not up to date.
+
+\end{document}

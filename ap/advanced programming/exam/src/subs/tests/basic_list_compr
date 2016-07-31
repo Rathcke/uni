@@ -1,0 +1,5 @@
+var xs = [1,2,3,4,5];
+var a = [ for (x of xs) x<2];
+var b = [ for (x of xs) x === 2];
+var y = [ for (x of xs) x*x];
+var z = [ for (x of xs) x+2*2];
