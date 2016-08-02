@@ -1,4 +1,4 @@
-  \documentclass[a4paper, fleqn]{article}
+\documentclass[a4paper, fleqn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -90,7 +90,55 @@ TODO
 \section*{Question 3}
 
 \subsection*{Part (a)}
-TODO
+They do not contain the same elements as $\mathcal{I}(M_3[A])$ contains the subset $\{4,5,6\}$, but $\mathcal{I}(M_2[A])$ does not. We remember that a set of vectors are linearly independent if the matrix produced by the vectors has a non-zero determinant. Setting up the matrix $B$ produced by columns $4,5$ and $6$ gives us
+\begin{align*}
+  B = \begin{bmatrix}
+  1 & 1 & 0 \\
+  1 & 0 & 1 \\
+  0 & 1 & 1
+  \end{bmatrix}
+\end{align*}
+Calculating the determinant of $3$ by $3$ matrix can quickly be done by row reduction. Viewing it over GF(2) gives us:
+\begin{align*}
+    B_2 = \begin{bmatrix}
+    1 & 1 & 0 \\
+    1 & 0 & 1 \\
+    0 & 1 & 1
+    \end{bmatrix}
+    \rightarrow
+    \begin{bmatrix}
+    1 & 1 & 0 \\
+    0 & 1 & 1 \\
+    0 & 1 & 1
+    \end{bmatrix}
+    \rightarrow
+    \begin{bmatrix}
+    1 & 1 & 0 \\
+    0 & 1 & 1 \\
+    0 & 0 & 0
+    \end{bmatrix}
+\end{align*}
+Meaning the determinant is $0$ and the vectors are dependent. Doing the same over GF(3) gives us:
+\begin{align*}
+    B_3 = \begin{bmatrix}
+    1 & 1 & 0 \\
+    1 & 0 & 1 \\
+    0 & 1 & 1
+    \end{bmatrix}
+    \rightarrow
+    \begin{bmatrix}
+    1 & 1 & 0 \\
+    0 & 2 & 1 \\
+    0 & 1 & 1
+    \end{bmatrix}
+    \rightarrow
+    \begin{bmatrix}
+    1 & 1 & 0 \\
+    0 & 2 & 1 \\
+    0 & 0 & 1
+    \end{bmatrix}
+\end{align*}
+Giving us a determinant of $2$, non-zero, meaning the vectors are independent over this field.
 
 \subsection*{Part (b)}
 TODO
@@ -99,10 +147,15 @@ TODO
 TODO
 
 \section*{Question 4}
-TODO
+The circuit $C_3$ cannot be subsets of either $C_1$ or $C_2$ as one of $C_1$ and $C_2$ would not be a circuit then. This means $C_3$ cannot contain all elements in $C_1\cap C_2$ as we would be able to remove elements from $C_3$ to get either $C_1$ or $C_2$, and so $C_3=C_1$ or $C_3=C_2$. \\
+This means the only possibility where $C_2-C_1\not\subset C_3$ or $C_3=C_1$ is when it is when $C_3$ is composed of the element $e$, a proper subset of $C_1\cap C_2$ and a proper subset of $C_2-C_1$. \\
+Suppose $C_3$ is a circuit with the element $e$, the proper subset $I_1$ (of the intersection) and another $I_2$ (of the exclusion of $C_1$)
 
 \section*{Question 5}
-TODO
+Let $M=(E,\mathcal{I})$ be the direct sum of $M_1$ and $M_2$. \\ 
+Obviously, $(I1)$ holds for $M$ as if $\emptyset\in \mathcal{I}(M_1)$ and $\emptyset\in \mathcal{I}(M_2)$ then it also in the union set. \\
+The second condition, $(I2)$, follows quite easily as well. Note that $\mathcal{I}_1$ and $\mathcal{I}_2$ are disjoint sets as $E_1$ and $E_2$ are disjoint. Thus, if $(I2)$ holds in $M_1$ and $M_2$ then it must hold in $M$, since any $I\in \mathcal{I}_1$ or $I\in \mathcal{I}_2$ will be in the union of the two. Furthermore, any $I\in \mathcal{I}_1$ cannot be a subset of an $I\in \mathcal{I}_2$ and the same the other way around. \\
+Now, $(I3)$ holds as the two collections of subsets are disjoint. This means that if two sets $I_1$ and $I_2$ are from the same original matroid, then it holds as it did in $M_1$ and $M_2$. If they are from different matroids, then the set $I_2-I_1=I_2$, which means that any element $e$ we pick, it will be independent from all elements in $I_1$, and so $I_1\cup e$ will be independent.
 
 \section*{Question 6}
 Let the ground set $E=\{1,2,3\}$. Let $M_1=(E, \mathcal{I}(M_1))$ and $M_2=(E, \mathcal{I}(M_2))$ be the matroids where:
