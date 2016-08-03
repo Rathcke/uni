@@ -144,11 +144,21 @@ Meaning the determinant is $0$ and the vectors are dependent. Doing the same ove
 Giving us a determinant of $2$, non-zero, meaning the vectors are independent over this field.
 
 \subsection*{Part (b)}
-We note that the both vector matroid $M_2[A]$ has rank $r=3$. The matroid has all subsets of size $\leq 2$, meaning the graph will be simple as it has no self-loops or parallel edges. We know the graph has $|E|=6$ edges.
-
+The graph the $M_2[A]$ is isomorphic to the matroid on the complete graph $K_4$.
+The matroid has all subsets of size $\leq 2$, meaning the graph will be simple as it has no self-loops or parallel edges. We know the graph has $|E|=6$ edges, that it has rank $r(M)=3$ and the only dependent sets of size are $\{\{1,2,4\}, \{1,3,5\},\{2,3,6\}, \{4,5,6\}\}$. Figure \ref{fig1} shows the graph whose matroid is exactly $M_2[A]$. Let $E=\{e1, e2, e3, e4, e5, e6\}$ in the figure:
+\begin{figure}[H]
+  \centering
+  \includegraphics{fig1}
+  \caption{The graph $K_4$, whose matroid is equal to $M_2[A]$}
+  \label{fig1}
+\end{figure}
+The graph has no cycle of size $3$, any $4$ edges will contain a cycle and the only cycles of size $3$ are equal to the dependent sets mentioned above. \\
+This is the only graph $G$ with $|E|=6$ and $r(M)=3$ as it must be a single connected component meaning $|V(G)|=r(M)+1=4$.  Thus, we have $M_2[A]\simeq M(K_4)$. The matroid $M_3[A]$ is not graphic as it must be isomorphic to the matroid on $K_4$, but since it contains $4$ cycles of size $3$ and $M_3[A]$ only contains $3$ dependent sets of size $3$, it cannot be graphic.
 
 \subsection*{Part (c)}
-TODO
+For $M_3[A]$ to be GF(2)-representable, there must be a matrix $B$ with entries from GF(2), such that there is a one-to-one correspondence between the columns in $B$ and $E(M_3[A])$ and a set of columns are independent in $B$ iff. they are independent in $M_3[A]$. Let $f$ denote the isomorphism from $E(M_3[A])$ to $E(M_2[B])$.\\
+We assume $M_3[A]$ is GF(2)-representable. That means we have that column set $\{\{1,2,4\}, \{1,3,5\}, \{2,3,6\}\}$ in $A$ are circuits, which implies that $\{\{f(1),f(2),f(4)\}, \{f(1),f(3),f(5)\}, \{f(2),f(3),f(6)\}\}$ are circuits in $M_2[A]$.
+
 
 \section*{Question 4}
 The circuit $C_3$ cannot be subsets of either $C_1$ or $C_2$ as one of $C_1$ and $C_2$ would not be a circuit then. This means $C_3$ cannot contain all elements in $C_1\cap C_2$ as we would be able to remove elements from $C_3$ to get either $C_1$ or $C_2$, and so $C_3=C_1$ or $C_3=C_2$. \\
@@ -156,7 +166,7 @@ This means the only possibility where $C_2-C_1\not\subseteq C_3$ or $C_3=C_1$ is
 Suppose $C_3$ is a circuit with the element $e$, the proper subset $I_1$ (of the intersection) and another $I_2$ (of the exclusion of $C_1$)
 
 \section*{Question 5}
-Let $M=(E,\mathcal{I})$ be the direct sum of $M_1$ and $M_2$. \\ 
+Let $M=(E,\mathcal{I})$ be the direct sum of $M_1$ and $M_2$. \\
 Obviously, $(I1)$ holds for $M$ as if $\emptyset\in \mathcal{I}(M_1)$ and $\emptyset\in \mathcal{I}(M_2)$ then it also in the union set. \\
 The second condition, $(I2)$, follows quite easily as well. Note that $\mathcal{I}_1$ and $\mathcal{I}_2$ are disjoint sets as $E_1$ and $E_2$ are disjoint. Thus, if $(I2)$ holds in $M_1$ and $M_2$ then it must hold in $M$, since any $I\in \mathcal{I}_1$ or $I\in \mathcal{I}_2$ will be in the union of the two. Furthermore, any $I\in \mathcal{I}_1$ cannot be a subset of an $I\in \mathcal{I}_2$ and the same the other way around. \\
 Now, $(I3)$ holds as the two collections of subsets are disjoint. This means that if two sets $I_1$ and $I_2$ are from the same original matroid, then it holds as it did in $M_1$ and $M_2$. If they are from different matroids, then the set $I_2-I_1=I_2$, which means that any element $e$ we pick, it will be independent from all elements in $I_1$, and so $I_1\cup e$ will be independent.
