@@ -157,13 +157,27 @@ This is the only graph $G$ with $|E|=6$ and $r(M)=3$ as it must be a single conn
 
 \subsection*{Part (c)}
 For $M_3[A]$ to be GF(2)-representable, there must be a matrix $B$ with entries from GF(2), such that there is a one-to-one correspondence between the columns in $B$ and $E(M_3[A])$ and a set of columns are independent in $B$ iff. they are independent in $M_3[A]$. Let $f$ denote the isomorphism from $E(M_3[A])$ to $E(M_2[B])$.\\
-We assume $M_3[A]$ is GF(2)-representable. That means we have that column set $\{\{1,2,4\}, \{1,3,5\}, \{2,3,6\}\}$ in $A$ are circuits, which implies that $\{\{f(1),f(2),f(4)\}, \{f(1),f(3),f(5)\}, \{f(2),f(3),f(6)\}\}$ are circuits in $M_2[A]$.
-
+We assume $M_3[A]$ is GF(2)-representable. So we have:
+\begin{align*}
+  &\{\{1,2,4\}, \{1,3,5\}, \{2,3,6\}\}\subseteq \mathcal{C}(M_3[A]) \Rightarrow\\
+  & \{\{f(1),f(2),f(4)\}, \{f(1),f(3),f(5)\}, \{f(2),f(3),f(6)\}\} \subseteq \mathcal{C}(M_2[B])
+\end{align*}
+This also means that if we are in GF(2), then
+\begin{align*}
+  f(1)+f(2)+f(4)&=0 \\
+  f(1)+f(3)+f(5)&=0 \\
+  f(2)+f(3)+f(6)&=0
+\end{align*}
+These together means you cannot avoid enforcing that $f(4)+f(5)+f(6)=0$ (in GF(2)). This is a contradiction, since this subset is in fact independent in $M_3[A]$. \\
+The same argument applies to show that $M_2[A]$ is GF(3)-representable and the subset is dependent in that matroid.
 
 \section*{Question 4}
+I did not solve this. The following was just my approach to the problem. \\
+\\
 The circuit $C_3$ cannot be subsets of either $C_1$ or $C_2$ as one of $C_1$ and $C_2$ would not be a circuit then. This means $C_3$ cannot contain all elements in $C_1\cap C_2$ as we would be able to remove elements from $C_3$ to get either $C_1$ or $C_2$, and so $C_3=C_1$ or $C_3=C_2$. \\
 This means the only possibility where $C_2-C_1\not\subseteq C_3$ or $C_3=C_1$ is when  $C_3$ is composed of the element $e$, a proper subset of $C_1\cap C_2$ and a proper subset of $C_2-C_1$. \\
-Suppose $C_3$ is a circuit with the element $e$, the proper subset $I_1$ (of the intersection) and another $I_2$ (of the exclusion of $C_1$)
+Suppose $C_3$ is a circuit with the element $e$, the proper subset $I_1$ (of the intersection) and another $I_2$ (of the exclusion of $C_1$). \\
+My plan was to use $(C3)$ here, but it does not mean it is required to contain the entire subset $I_2$.
 
 \section*{Question 5}
 Let $M=(E,\mathcal{I})$ be the direct sum of $M_1$ and $M_2$. \\
