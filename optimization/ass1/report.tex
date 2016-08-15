@@ -1,0 +1,169 @@
+\documentclass[a4paper, fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage[margin=2.5 cm]{geometry}
+
+\setlength\parindent{0pt}
+\setlength\mathindent{75pt}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\newcommand\vgap{\noalign{\vskip 0.1cm}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (Student ID: 74763954)}
+\title{Optimization - MATH412 \\ Assignment 1}
+\lhead{Optimization - MATH412}
+\rhead{Assignment 1}
+
+\begin{document}
+
+\maketitle
+
+\section{Question 1}
+We want to spend at most $M$ dollar on the shares $i$ so we maximize $\sum_i x_ir_i$. The optimization problem is subject to three things:
+\begin{itemize}
+  \item We can't spend more than $M$ dollars on $\sum_i x_i$
+  \item We have to ensure we don't exceed the maximal risk, that is $\sum_i \sum_j \sigma_{ij}x_ix_j$ cannot be larger than a given maximal risk $R$.
+  \item We can't spend a negative amount on any $x_i$
+\end{itemize}
+Thus, we formulate our problem as follows:
+\begin{equation}
+  \begin{array}{rrrl}
+    &\text{Maximize:}   & \sum_i x_ir_i  & \\
+    \vgap
+    \hline
+    \vgap
+    &\text{Subject to:} & \sum_i x_i & \leq M \\
+    &                   & \sum_i \sum_j \sigma_{ij}x_ix_j &\leq R \\
+    &                   & \forall_i\text{,}\ \ x_i & \geq 0
+  \end{array}
+\end{equation}
+Where the constraints are in the same order as they were listed above.
+
+\section{Question 2}
+
+
+\section{Question 3}
+\subsection{(a)}
+Since the optimal function value for Rosenbrock's function is $0$, we look at the ratios $f(x_k)/f(x_{k-1})$. If we play around a little with the print function found in \texttt{math412demo.m}, we can output the ratio along with the function values for all $21$ iterations (accuracy is $10^{-5}$):
+\begin{verbatim}
+       itn      f value        ratio
+         1      4.73195
+         2      4.08778       0.8639
+         3      3.22853       0.7898
+         4      3.22371       0.9985
+         5      1.94126       0.6022
+         6       1.5991       0.8237
+         7      1.17655       0.7358
+         8     0.927681       0.7885
+         9     0.595927       0.6424
+        10     0.452672       0.7596
+        11     0.278192       0.6146
+        12     0.229962       0.8266
+        13    0.0854776       0.3717
+        14    0.0494553       0.5786
+        15    0.0180854       0.3657
+        16   0.00727567       0.4023
+        17  0.000782996       0.1076
+        18  4.79174e-05       0.0612
+        19  5.23502e-08       0.0011
+        20  2.62819e-13   5.0204e-06
+        21  6.85281e-19   2.6074e-06
+\end{verbatim}
+The function value is decreasing, but the convergence rate is not monotonically decreasing, though we can see that it has that tendency. It's hard to say anything about the convergence rate in terms of magnitudes from the early steps, though the fact it has a tendency to decrease suggests it is quadratic or at least superlinear. \\
+The convergence in the final iterations is extremely fast. This is probably due to the fact that it needs to find the "valley" in the function. With Newton's method, when it is within a certain range of a local minimum, usually called a neighbourhood $N$, the convergence is quadratic, which is most likely what happened around iteration $17$.
+
+\subsection{(b)}
+Lets look at the convergence rates for steepest descent. We use the same settings as we had for Newton's method. Since we hit the maximum number of iterations when we use steepest descent, we did not actually find a solution, but here is the info on the last $4$ iterations:
+\begin{verbatim}
+       itn      f value    ratio
+       347   0.00259442   0.9981
+       348   0.00259228   0.9992
+       349   0.00258512   0.9972
+       350   0.00257896   0.9976
+\end{verbatim}
+So as we can see, the convergence is really slow which suggests (or shows) that the convergence is linear. Even if we increased the number of iteration, we would get the same convergence rate. \\
+As mentioned in (a), in the final $4$ iteration, Newton's method convergence very fast (quadratic) towards a solution because it is in the neighbourhood $N$. \\
+Comparing the two, for this particular function, Newton's method performed a lot better. Even though Newton's method suffers from the problem that it is not guaranteed to find a solution, when we have a good guess for a starting point, it is often preferable to use.
+
+\subsection{(c)}
+TODO
+
+\subsection{(d)}
+TODO
+
+\subsection{(e)}
+TODO
+
+\section{Question 4}
+TODO
+
+
+\end{document}
