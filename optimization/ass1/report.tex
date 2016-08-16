@@ -108,7 +108,27 @@ Thus, we formulate our problem as follows:
 Where the constraints are in the same order as they were listed above.
 
 \section{Question 2}
-
+We fixed things (so not subject to constraints) are the mast's length $L$, the mast's mass $m$, the points $(x_i, y_i)$ where the wires are attached to, the length of the wires $\ell_i$ and some $k$ to calculate the energies of the tension in the wires. If I understand gravitational potential energy correctly, it is $mgh/2$, where $h$ is the $z$-position for the top of the mast meaning $h/2$ is the center of mass for the mast (and $g$ the gravitational acceleration constant). The energy in the tension of a wire located in $(x_i,y_i)$ is:
+\begin{align*}
+  [t_i]_+ &= \max\left\{ \frac{k}{2}\left( \sqrt{(x-x_i)^2+(y-y_i)^2+z^2}-\ell_i\right)^2, 0\right\}
+\end{align*}
+The constraints we need to take into account are:
+\begin{itemize}
+  \item The top of the mast is actually length $L$ away from the origin.
+  \item The position $z$ is positive (mast cannot be underground).
+\end{itemize}
+Which is all as there are no constraints for the $x$ and $y$ coordinates. So we can form the following constrained optimization (finding $(x,y,z)$) problem:
+\begin{equation}
+  \begin{array}{rrrl}
+    &\text{Minimize:}   & mgz/2 + \sum_i [t_i]_+ & \\
+    \vgap
+    \hline
+    \vgap
+    &\text{Subject to:} & \sqrt{x^2+y^2+z^2} & = L \\
+    &                   & z & \geq 0
+  \end{array}
+\end{equation}
+Again, the constraints are in the same order as they are listed above.
 
 \section{Question 3}
 \subsection{(a)}
@@ -137,8 +157,8 @@ Since the optimal function value for Rosenbrock's function is $0$, we look at th
         20  2.62819e-13   5.0204e-06
         21  6.85281e-19   2.6074e-06
 \end{verbatim}
-The function value is decreasing, but the convergence rate is not monotonically decreasing, though we can see that it has that tendency. It's hard to say anything about the convergence rate in terms of magnitudes from the early steps, though the fact it has a tendency to decrease suggests it is quadratic or at least superlinear. \\
-The convergence in the final iterations is extremely fast. This is probably due to the fact that it needs to find the "valley" in the function. With Newton's method, when it is within a certain range of a local minimum, usually called a neighbourhood $N$, the convergence is quadratic, which is most likely what happened around iteration $17$.
+The function value is decreasing, but the convergence rate is not monotonically decreasing, though we can see that it has that tendency. Now we know it has quadratic convergence, but from the output it is hard to say something about the convergence rate from the early steps, though the fact it has a tendency to decrease suggests it is quadratic or at least superlinear. \\
+The convergence in the final iterations is extremely fast. This is probably due to the fact that it needs to find the "valley" in the function. With Newton's method, when it is within a certain range of a local minimum, usually called a neighbourhood $N$, the convergence is extremely fast, which is most likely what happened around iteration $17$.
 
 \subsection{(b)}
 Lets look at the convergence rates for steepest descent. We use the same settings as we had for Newton's method. Since we hit the maximum number of iterations when we use steepest descent, we did not actually find a solution, but here is the info on the last $4$ iterations:
@@ -150,20 +170,24 @@ Lets look at the convergence rates for steepest descent. We use the same setting
        350   0.00257896   0.9976
 \end{verbatim}
 So as we can see, the convergence is really slow which suggests (or shows) that the convergence is linear. Even if we increased the number of iteration, we would get the same convergence rate. \\
-As mentioned in (a), in the final $4$ iteration, Newton's method convergence very fast (quadratic) towards a solution because it is in the neighbourhood $N$. \\
+As mentioned in (a), in the final $4$ iterations, Newton's method convergence very fast (quadratic) towards a solution because it is in the neighbourhood $N$. \\
 Comparing the two, for this particular function, Newton's method performed a lot better. Even though Newton's method suffers from the problem that it is not guaranteed to find a solution, when we have a good guess for a starting point, it is often preferable to use.
 
 \subsection{(c)}
-TODO
+For the Newton method, the $\alpha$-value is pretty much $1$ for each iteration, but it is smaller in some of the iteration in the beginning and middle. But for the last $7$ iterations it is $1$. Remember when $\alpha_k=1$, it means the method converges faster towards a solution, which again makes sense as it has located the valley where the minimum is. \\
+For steepest descent, the $\alpha$-values fluctuates between $0.19$ and $0.39$. It seems like it is $0.39$ every fifth iteration and $0.19$ otherwise. It makes sense that the value is rather low as we have observed it converges slower (it did not find a solution).
 
 \subsection{(d)}
-TODO
+Using $1000$ iterations with steepest descent does not yield a solution either. If we look at the function value, it almost does not change, so we have a very slow convergence. This is the same problem that we have in the handout, where no perceptible change in the objective function either.
 
 \subsection{(e)}
-TODO
+The two methods runs in exactly the same way. This is because the Hessian is positive definite in all iterations. This makes the methods similar as the implemented Newton method in \texttt{math412demo.m} will use steepest descent if it not positive definite, while the modified version will add a multiple of the unit matrix to make it positive definite in order to use it to hopefully provide a better convergence than the steepest descent method.
 
 \section{Question 4}
-TODO
-
+Using Newton's method with parameter "BA" finds a solution in $81$ iterations with accuracy $10^{-5}$. Up until iteration $50$, we have that $\mu<0$, meaning the Hessian is not positive definite and doesn't provide us with much information. The $\alpha$-values are $1$ most of the time, but for the first $49$ iteration it is solely $1$'s and afterwards we start getting lower values for $\alpha$. If we look at the convergence rate (I'm leaving the output as it is very long), we see a faster convergence in the beginning where we are actually using steepest descent, but in the end it is much slower. This is probably because of the "shallow dome" the function has. It means the function value doesn't change much compared to the valley found in Rosenbrock's function. \\
+Using the modified Newton method with parameter "BA", we see the same kind of convergence rate and values for $\alpha$. However, up until iteration $50$, we have $\mu = 1$ (because we use the modified version), meaning the Hessian is made positive definite and we can run a successful iteration of the modified Newton method which can give us better convergence. However, it does not seem to be the case that it actually gives a better convergence than the steepest descent method. \\
+\\
+Running Newton's method with "AF" instead finds a solution in $31$ iterations. The $\alpha$ values vary a lot. In the beginning we have $\alpha=64$ and $\alpha=16$, because the algorithm tries to take a larger step in hopes of converging faster. In later iterations, we see both lower and larger values (compared to using "BA") for $\alpha$. The large values for $\alpha$ in the beginning also means we see a significant convergence in the beginning, but it is much slower after up until the end. The $\mu$-values are sometimes negative, especially in the beginning, meaning we are actually using steepest descent in the beginning. \\
+Using the modified Newton method with "AF", we see the same $\alpha$-values and convergence. Like before, we instead observe for $\mu=1$, so the method utilizes the Hessian to converge to a solution. Again, there is no significant performance boost doing this over using steepest descent. Note that the Hessian is also heavy to compute, so it is not necessarily an advantage to try and use it.
 
 \end{document}
