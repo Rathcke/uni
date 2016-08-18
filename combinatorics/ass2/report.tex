@@ -76,6 +76,7 @@
 \def\MeanN{\frac{1}{N}\sum^N_{n=1}}
 \cfoot{Page \thepage\ of \pageref{LastPage}}
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
 \author{Nikolaj Dybdahl Rathcke (Student ID: 74763954)}
 \title{Combinatorics \\ Assignment 2}
 \lhead{Combinatorics}
@@ -85,16 +86,31 @@
 \maketitle
 
 \section*{Question 1}
+\subsection*{Part (a)}
+Note that as long as all $n$ elements in $R$ are connected to all the $r$ element in $L$,
+then every set of $r$ or fewer elements of $R$ will be independent and every set of more
+than $r$ elements will be dependent (because there will be too many to match). \\
+So $U$ is transversal for $r\leq n$
+
+\subsection*{Part (b)}
+TODO
+
+\subsection*{Part (c)}
 TODO
 
 \section*{Question 3}
 To do this, we need to show that (a) implies (b), that (b) implies (c) and that (c) implies (a).\\
 (a) $\Rightarrow$ (b): If $e$ is a loop, then any subset containing $e$ must be dependent and therefore cannot be a basis. \\
-(b) $\Rightarrow$ (c): If $e$ is no bases, then by $(I2)$, it cannot be in any independent sets, as all independent sets in $\mathcal{I}$ are subsets of the bases. \\
+(b) $\Rightarrow$ (c): If $e$ is in no bases, then by $(I2)$, it cannot be in any independent sets, as all independent sets in $\mathcal{I}$ are subsets of the bases. \\
 (c) $\Rightarrow$ (a): If $e$ is in no independent sets, then it must be a loop, as otherwise the set $\{e\}$ would be an independent set.
 
 \section*{Question 4}
-TODO
+We have that $C$ is a circuit, so $B=C-\{e\}$ must be independent and actually must be a
+basis. To see that $C$ must be a unique circuit in $B\cup \{e\}$, say we have another
+circuit distinct from $C$ called $C'$, which is contained in $B\cup \{e\}$. Then we must
+have that $e\in C\cap C'$ (as otherwise, the circuit is a subset of a the basis $B$). By
+(\textbf{C3}), we then have that there exists a circuit $C''\subseteq (C\cup C')-\{e\}$,
+implying that $C''=B$, which is a contradiction, so $C$ must be unique.
 
 \section*{Question 5}
 TODO
@@ -107,7 +123,7 @@ The uniform matrix $U_{m,n}$ is graphic for any $n$, where $m$ is an element of 
   \item $U_{n-1, n}$ is the graphic matroid of the cycle graph $C_{n+1}$ (so it has $n$ edges). If we include all edges, we have a cycle, otherwise we do not.
   \item $U_{n,n}$ is the graphic matroid of any forest with $n$ edges as a tree does not contain a cycle.
 \end{itemize}
-To realize these are the only ones, asumee $U_{m,n}$ is graphical for an $m$ such that $1<m<n-1$. For an independent set $I$ of size $m$, since $m<n-1$, we must have at least $2$ edges that would form a cycle if we added it to $I$. This means that either of the two edges connect two vertices that are already "covered" by the edges in $I$. Therefore, there must exist a subset (or circuit) of size $k\leq \lceil m/2\rceil +1$ that also contains a cycle. Since $k \leq m$ for any $m$, where $1<m<n-1$, that means we have a circuit that has size less than $m+1$, which is a contradiction to the definition of a uniform matroid.
+To realize these are the only ones, assume $U_{m,n}$ is graphical for an $m$ such that $1<m<n-1$. For an independent set $I$ of size $m$, since $m<n-1$, we must have at least $2$ edges that would form a cycle if we added it to $I$. This means that either of the two edges connect two vertices that are already "covered" by the edges in $I$. Therefore, there must exist a subset (or circuit) of size $k\leq \lceil m/2\rceil +1$ that also contains a cycle. Since $k \leq m$ for any $m$, where $1<m<n-1$, that means we have a circuit that has size less than $m+1$, which is a contradiction to the definition of a uniform matroid.
 
 \section*{Question 7}
 TODO
@@ -131,13 +147,23 @@ This minimum spanning tree is not unique as we could have picked $(a,g)$ instead
 \end{figure}
 
 \section*{Question 9}
-Obviously, there must exist a basis with maximal weight as we have a finite number of bases. Let $B_1$ be such a basis. For contradiction, assume that there is another basis $B_2\neq B_1$ with weight $w(B_2)=w(B_1)$. We now pick an element $x\in B_1\Delta B_2$ (the symmetric difference) with \textit{minimum} weight. This element must exist as it is a one-to-one function and $B_1\neq B_2$.\\
+Obviously, there must exist a basis with maximal weight as we have a finite number of bases. Let $B_1$ be such a basis. For contradiction, assume that there is another basis $B_2\neq B_1$ with weight $w(B_2)=w(B_1)$. We now pick an element $x\in B_1\Delta B_2$ (the symmetric difference) with \textit{minimum} weight. This element must exist as it is a one-to-one function and $B_1\neq B_2$.  \\
 Say that $x\in B_2-B_1$ (without loss of generality), then by (\textbf{B2}), there is an element $y\in B_1-B_2$, so that $B_3=(B_2-\{x\})\cup\{y\}$ is a basis. Since $w(x)<w(y)$, that means $w(B_3)\geq w(B_2)=w(B_1)$, which is a contradiction to the assumption that $B_1$ had maximal weight.
 
 \section*{Question 11}
-TODO
-
-
+Not necessarily. Obviously, there might be a matroid whose circuits contain $K$, but this
+is not guaranteed. Consider the ground set $E=\{1,2,3,4\}$ with the clutter:
+\begin{align*}
+  K=\{\{1,2\},\{1,3\},\{2,3,4\}\}
+\end{align*}
+This is a clutter as no set in the collection is a proper subset of another. If we have a
+matroid $M$ where $K\subseteq \mathcal{C}(M)$. \\
+Assume that $\mathcal{C}(M)$ must contain all the sets of $K$. If we let $C_1=\{1,2\}$ and
+$C_2=\{1,3\}$, then (\textbf{C3}) tells us that that if there is an $e\in C_1\cap C_2$,
+then there is another circuit $C_3\subseteq (C_1\cup C_2)-\{e\}$. This means there must be
+a circuit $C_3\subseteq \{2,3\}$, but since the set $\{2,3,4\}$ is already in
+$\mathcal{C}(M)$, that means $C_3$ must be an independent set in $M$, so $\mathcal{C}(M)$
+cannot contain all sets from $K$.
 
 
 
