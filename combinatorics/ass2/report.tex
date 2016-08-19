@@ -87,16 +87,37 @@
 
 \section*{Question 1}
 \subsection*{Part (a)}
-Note that as long as all $n$ elements in $R$ are connected to all the $r$ element in $L$,
-then every set of $r$ or fewer elements of $R$ will be independent and every set of more
-than $r$ elements will be dependent (because there will be too many to match). \\
-So $U$ is transversal for $r\leq n$
+Remember that a transversal matroid is a bipartite graph. Our ground set is the
+collection of all elements in the first vertex set $V_1$, and our independent sets,
+$\mathcal{I}$, is the collection subsets from $V_1$ that is a matching to the elements in
+$V_2$. \\
+Construct the bipartite graph, so that all $n$ elements from $V_1$ are connected to the
+$r$ elements $V_2$ (a complete graph), then any set with $\leq r$ elements are
+independent. Any set with more than $r$ elements will be dependent as there are too many to do a matching. \\
+So the uniform matroid $U_{r,n}$ is transversal as long as $r\leq n$.
 
 \subsection*{Part (b)}
-TODO
+We can show this with the counterexample in Figure \ref{fig2}:
+\begin{figure}[H]
+  \centering
+  \includegraphics{fig2}
+  \caption{A transversal matroid which is not paving.}
+  \label{fig2}
+\end{figure}
+The set $\{a,b\}$ is a circuit of size $2$, but both $\{a,c,d\}$ and $\{b,c,d\}$ are
+independent sets (and bases) of size $3$, meaning the matroid has rank $3$.
 
 \subsection*{Part (c)}
-TODO
+Again, we use a counterexample found in Figure \ref{fig3}, which is the cycle graph $C_3$
+with parallel edges:
+\begin{figure}[H]
+  \centering
+  \includegraphics{fig3}
+  \caption{A paving matroid which is not transversal.}
+  \label{fig3}
+\end{figure}
+It is paving as it has rank $2$ and minimal circuit size $2$. However it is not
+transversal.
 
 \section*{Question 3}
 To do this, we need to show that (a) implies (b), that (b) implies (c) and that (c) implies (a).\\
@@ -108,12 +129,12 @@ To do this, we need to show that (a) implies (b), that (b) implies (c) and that 
 We have that $C$ is a circuit, so $B=C-\{e\}$ must be independent and actually must be a
 basis. To see that $C$ must be a unique circuit in $B\cup \{e\}$, say we have another
 circuit distinct from $C$ called $C'$, which is contained in $B\cup \{e\}$. Then we must
-have that $e\in C\cap C'$ (as otherwise, the circuit is a subset of a the basis $B$). By
+have that $e\in C\cap C'$ (as otherwise, the circuit is a subset of the basis $B$). By
 (\textbf{C3}), we then have that there exists a circuit $C''\subseteq (C\cup C')-\{e\}$,
 implying that $C''=B$, which is a contradiction, so $C$ must be unique.
 
 \section*{Question 5}
-TODO
+Not completed.
 
 \section*{Question 6}
 The uniform matrix $U_{m,n}$ is graphic for any $n$, where $m$ is an element of the set $\{0,1,n-1, n\}$. The graphs are:
@@ -126,7 +147,7 @@ The uniform matrix $U_{m,n}$ is graphic for any $n$, where $m$ is an element of 
 To realize these are the only ones, assume $U_{m,n}$ is graphical for an $m$ such that $1<m<n-1$. For an independent set $I$ of size $m$, since $m<n-1$, we must have at least $2$ edges that would form a cycle if we added it to $I$. This means that either of the two edges connect two vertices that are already "covered" by the edges in $I$. Therefore, there must exist a subset (or circuit) of size $k\leq \lceil m/2\rceil +1$ that also contains a cycle. Since $k \leq m$ for any $m$, where $1<m<n-1$, that means we have a circuit that has size less than $m+1$, which is a contradiction to the definition of a uniform matroid.
 
 \section*{Question 7}
-TODO
+Not completed.
 
 \section*{Question 8}
 We solve this using Prim's algorithm. We start by picking a vertex, say $a$, and then pick the edge with the lowest weight. We keep picking an edge with minimum weight that is adjacent to the tree we are creating, and that includes a vertex that is not currently in the tree. The algorithm runs as follows (use Figure \ref{fig1} for reference:
