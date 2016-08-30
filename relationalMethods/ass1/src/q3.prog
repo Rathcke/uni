@@ -1,0 +1,24 @@
+Tournament(R)
+  DECL S,T,U
+  BEG
+    S = R & -I(R)
+    T = trans(succ(S)) & S
+    U = S & -S^
+    RETURN T | U
+  END.
+
+MinEdgeCover(R)
+  DECL S
+  BEG
+    S = R
+    RETURN S
+  END.
+
+ContainsTriangle(R)
+  DECL S
+  BEG
+    S = R & -I(R)
+    S = S * R
+    S = S * R
+    RETURN -empty(S & I(R))
+  END.
