@@ -285,8 +285,8 @@ following properties:
 \begin{itemize}
   \item Transitive (if $|x|<|y|$ and $|y|<|z|$, then obviously $|x|<|z|$).
   \item Irreflexive (cannot have $|x|<|x|$).
-  \item Assymetric (cannot have $|x|<|y|$ and $|y|<|x|$).
-  \item Antisymmetric (since it is assymetric).
+  \item Asymmetric (cannot have $|x|<|y|$ and $|y|<|x|$).
+  \item Antisymmetric (since it is asymmetric).
   \item Strict order (since it is irreflexive and transitive).
   \item Acyclic (since we cannot have $|x|<|y|<|x|$).
 \end{itemize}
@@ -294,16 +294,48 @@ So it has a few more properties.
 
 \section{Schröder Equivalences and Dedekind Formula}
 \subsection{(a)}
-TODO
 
 \subsection{(b)}
-TODO
 
 \subsection{(c)}
-TODO
 
 \subsection{(d)}
-TODO
+We want to prove that
+\begin{align*}
+  R(I\cap R^TR)&=R
+\end{align*}
+So we prove that
+\begin{align}\label{way1}
+  R(I\cap R^TR)\subseteq R
+\end{align}
+and
+\begin{align}\label{way2}
+  R\subseteq R(I\cap R^TR)
+\end{align}
+For Equation \ref{way1}, we have
+\begin{align*}
+  R(I\cap R^TR) &\subseteq RI\cap RR^TR \comment{sub-distributes over $\cap$} \\
+                &=R\cap RR^TR  \comment{$I$ is an identity of $\cdot$}\\
+                &=R \comment{As $R\subseteq RR^TR$}
+\end{align*}
+We need to show that indeed $R\subseteq RR^TR$. We can show that the following way:
+\begin{align*}
+  R &= LR\cap R \comment{Since $R\subseteq LR$ as $L$ is $\subseteq$-increasing} \\
+    &\subseteq (L\cap RR^T)(R\cap L^TR) \comment{Dedekind formula} \\
+    &= RR^T(R\cap L^TR) \comment{$L$ is an identity of $\cap$} \\
+    &= RR^T(R\cap R) \comment{$L^T=L$ is $\subseteq$-increasing} \\
+    &= RR^TR
+\end{align*}
+Now we show Equation \ref{way2}. Using the Dedekind formula on the right hand side, we get:
+\begin{align*}
+  R(I\cap R^TR) &= R(R^TR\cap I) \comment{$\cap$ is commutative} \\
+                &= R((R^T\cap IR^T)(R\cap RI)) \comment{Dedekind formula}\\
+                &= R((R^T\cap R^T)(R\cap R)) \comment {$I$ is an identity of $\cdot$} \\
+                &= R(R^TR) \comment{$\cap$ is idempotent} \\
+                &= RR^TR \comment{$\cdot$ is associative}
+\end{align*}
+We have already shown that $R\subseteq RR^TR$, so $R\subseteq R(R^TR\cap I)$. This proves
+that $R(I\cap R^TR)=R$.
 
 \section{Relational Programming}
 \subsection{(a)}
@@ -318,7 +350,7 @@ A program computing a tournament of a given relation $R$ can be seen below:
       RETURN T | U
     END.
 \end{verbatim}
-The first thing we do is to remove $I$ from $R$ as the resulting relation is assymetric.
+The first thing we do is to remove $I$ from $R$ as the resulting relation is asymmetric.
 The resulting relation is stored in $S$. \\
 Since we are not computing a completely random tournament of $R$, the idea was to use an
 upper triangular matrix without the diagonal (transitive closure of the successor
@@ -356,13 +388,86 @@ a single directed edge (from nodes $8$ to $7$). The resulting tournament is as b
 \end{figure}
 The computed relation is a tournament as all edges have a direction. The result also
 contains the edge that was already directed edge. I realize
-now that the defintion of the tournament was "an asymmetric relation whose symmetric
+now that the definition of the tournament was "an asymmetric relation whose symmetric
 closure is $R$", means we probably could have assumed that $R$ is symmetric! One thing to
 note is this implementation favors outgoing edges from lower numbered nodes and ingoing
 to the higher numbered ones.
 
 \subsection{(b)}
-TODO
+The following program finds a minimal edge cover of a graph. It can handle directions in
+the graph, but it will treat them as undirected edges, but does not tolerate self loops.
+The program also expects that there are no isolated vertices, that is, there exists an
+edge cover that includes all vertices in the graph.
+\begin{verbatim}
+  MinEdgeCover(R)
+    DECL S,T,U,V,W
+    BEG
+      S = R & -I(R)
+      U = S
+      WHILE -eq(U, O(U)) DO
+        T = atom(U)
+        V = T | T^
+        W = -(L(S) * V | V * L (S))
+        IF eq(L(S) * symm(S & W | V), L(S)) THEN
+          S = S & W | V
+          U = U & W
+        ELSE
+          U = U & -V
+        FI
+      OD
+      RETURN symm(S)
+    END.
+\end{verbatim}
+Essentially the program works by keeping track of edges that are part of the edge cover
+in $S$ and uses $U$ to iterate through all entries (edges) to see if they are part of the
+edge cover. \\
+We start by removing any self loops the graph might have and initializing $S$ and $U$ to
+the resulting relation. The \texttt{WHILE} loop works by picking a random (not so random
+in \textsc{RelView}) edge and, treating it as an undirected edge $e=(u,v)$, we see if
+removing all other edges adjacent to $u$ or $v$ ensures we are still able to cover
+all edges. If we can, we pick the edge $e$ and add it to $S$ as well as removing all other
+edges with endpoints in $u$ or $v$ from $S$. We set all entries containing $u$ or $v$ to
+$0$ in $U$. If we cannot pick the edge because we are unable to get an edge cover, we
+simply remove that edge from $U$ and repeat the process. \\
+When $U$ is empty, meaning there are no vertices that are not covered, we break out of
+the loop and return the symmetric closure of $S$, which is an undirected graph that is an
+edge cover for $R$. \\
+The algorithm behind the program is to find a maximal matching using a greedy algorithm
+and any vertices that are not matched are included as well. \\
+\\
+The running time of the program is $\mathcal{O}(|E||V|^{2.376})$. The maximum number of
+iteration in the while loop is $|E|$ as we remove at least one edge for every iteration.
+The dominating calculation in the loop is computing the composition of two relations. I believe the most common way to do this is by matrix multiplication, which with the
+Coppersmith–Winograd algorithm can be achieved in
+$\mathcal{O}(n^{2.376})=\mathcal{O}(|V|^{2.376})$, which means we have the above stated
+running time of the program. \\
+\\
+The following relation, $R$, contains both undirected and directed edges:
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.75]{fig11}
+  \includegraphics[scale=0.75]{fig12}
+  \caption{Relation $R$.}
+\end{figure}
+The program outputs the following
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.75]{fig13}
+  \includegraphics[scale=0.75]{fig14}
+  \caption{A minimal edge-covering of the relation $R$.}
+\end{figure}
+Since the edge-covering has $4$ edges, we know it's minimal. However, the program does
+not always give a minimal covering. It will do in most cases, but in some special cases
+it will fail due to the greedy choices that are made. Running the program on the
+following relation:
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.75]{fig15}
+  \caption{An edge-covering by \texttt{MinEdgeCover} on this relation is not minimal.}
+\end{figure}
+The minimal edge-cover is $\{(1,3), (2,4), (5,6)\}$, but the program will output
+$\{(1,2),(3,5),(4,5),(5,6)\}$. This is because it picks $(1,2)$ and sees an edge covering
+is still possible, but it is not minimal.
 
 \subsection{(c)}
 The following program check if relation $R$ contains a triangle:
@@ -386,10 +491,7 @@ directed or not, though the program only detects a triangle if it is a valid pat
 the graph.\\
 \\
 The running time of the program is determined by the time complexity of the computing the
-composition of two relations as it dominates the intersection calculations. I believe the
-most common way to do this is by matrix multiplication, which with the
-Coppersmith–Winograd algorithm can be achieved in $\mathcal{O}(n^{2.376})$, though the
-schoolbook algorithm runs in $\mathcal{O}(n^3)$. \\
+composition of two relations which is $\mathcal{O}(n^{2.376})=\mathcal{O}(|V|^{2.376})$.
 \\
 Consider the following relation, $R$, that does not contain a triangle:
 \begin{figure}[H]
@@ -442,14 +544,21 @@ $\subseteq$-antitone} \\
 which holds since composition with $L$ from the right is $\subseteq$-increasing.
 
 \subsubsection{(ii)}
-Remember that $E$ is a vector iff $E=EL$, so we have:
+Remember that $E$ is a vector iff. $E=EL$ or equivalently if $\overline{E}=\overline{E}L$.
+We derive the following:
 \begin{align*}
-  E&=\overline{\overline{D}L} \\
-   &=
+  E&=\overline{\overline{D}L} \Leftrightarrow \\
+  \overline{E}&=\overline{\overline{\overline{D}L}} \\
+              &=\overline{D}L \comment{$\overline{\phantom{I}}$ is involutive} \\
+              &=\overline{D}LL \comment{$L$ square} \\
+              &=\overline{E}L \comment{Substitute $\overline{E}$ in}
 \end{align*}
+Meaning $E$ is a vector.
 
 \subsubsection{(iii)}
+
 \subsubsection{(iv)}
+
 \subsubsection{(v)}
 
 \subsection{(d)}
@@ -459,13 +568,16 @@ $Q$ is by:
   Q &= \overline{L\left(D\cap \left(\overline{E}\cap \overline{I}\right)\right)}^T
 \end{align*}
 To see this, consider the intersection $\overline{E}\cap \overline{I}$. It has $1$ in all
-entries, but the ones that were $1$ in $E$ and $I$. Taking the intersection of this with
+entries except the ones that were $1$ in $E$ and $I$. Taking the intersection of this with
 $D$, gives us $D-E-I$ as we wanted. Now all columns that are all zeroes are the primes
 (and $1$), so taking the composition with $L$ from left will fill all other columns with
 $1$'s. If we take the complement, all columns in $Q$ are ones instead, and finally we transpose it to represent the set as a row vector as we did with $E$.
 
 \subsection{(e)}
-TODO
+\subsubsection{(i)}
+\subsubsection{(ii)}
+\subsubsection{(iii)}
+\subsubsection{(iv)}
 
 \subsection{(f)}
 For $P$, we just need to remove the element $1$ from $Q$. That is we want $Q-E$, so we
