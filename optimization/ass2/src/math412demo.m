@@ -42,6 +42,11 @@ if nargin < 2,
     fprintf('FILE NAME OR METHOD NOT SPECIFIED: RUN ABANDONED \n');  return;
 end;
 if ~exist('LStype'),  LStype = 'AF';  end;
+format compact;
+if nargin < 2,  
+    fprintf('FILE NAME OR METHOD NOT SPECIFIED: RUN ABANDONED \n');  return;
+end;
+if ~exist('LStype'),  LStype = 'AF';  end;N
 if ~exist('info'),  info = 1;  end;
 if info < 0,  info = abs(info);  printstop = 1;  else  printstop = 0;  end;
 if ~exist('acc'),  acc = 0.00001; elseif acc < 0,  acc = 10^acc;  end;

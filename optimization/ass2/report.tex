@@ -88,50 +88,135 @@
 
 \section{Question 1}
 \subsection{(a)}
-TODO
+Below is the information for the last $10$ iterations using the modified Newton method
+with accuracy $10^{10}$ and max iterations $350$:
+\begin{verbatim}
+  itn      f value   nr f evals        ||g||  alpha   steplength
+  341  1.51117e-07         3394  8.69725e-05   4096   0.00160562 Adding 1.I to H
+  342  1.50928e-07         3401      2.09084      1  1.13902e-07 Adding 1.I to H
+  343  1.50437e-07         3414  0.000173019   4096   0.00159968 Adding 1.I to H
+  344  1.50307e-07         3421      1.72976      1  1.60294e-07 Adding 1.I to H
+  345   1.4932e-07         3435  0.000243555  16384   0.00637515 Adding 1.I to H
+  346  1.47858e-07         3442      5.81595      1  3.85032e-07 Adding 1.I to H
+  347   1.4777e-07         3454  0.000585104   1024   0.00039278 Adding 1.I to H
+  348  1.47708e-07         3461      1.19657      1   2.2498e-07 Adding 1.I to H
+  349  1.46042e-07         3475  0.000342177  16384   0.00627681 Adding 1.I to H
+  350  1.45334e-07         3482      4.05282      1  1.57483e-07 Adding 1.I to H
+
+ Current x = 1.314e-05 7.612
+\end{verbatim}
+And the information using the Quasi-Newton method:
+\begin{verbatim}
+  itn      f value   nr f evals        ||g||  alpha   steplength
+  115  5.91679e-13          766    0.0754047    0.5  0.000141545
+  116  1.91392e-13          772    0.0209855      1   0.00307394
+  117   9.3012e-14          778    0.0215012      1    0.0029695
+  118  1.80482e-14          784    0.0528057      1   0.00023177
+  119  2.20637e-15          790     0.011015      1  0.000667806
+  120  3.14417e-17          796   0.00108763      1  0.000385836
+  121  1.29039e-19          802  0.000671294      1  3.67472e-05
+  122  1.40187e-23          808  5.53458e-05      1  1.71228e-06
+  123   1.6993e-26          814  2.01896e-07      1  3.37051e-08
+  124  3.99361e-30          820  7.49219e-09      1  1.10983e-09
+
+ Current x = 1.098e-05 9.106
+\end{verbatim}
+The \texttt{Powell2} function has a unique solution near $(0.00001098, 9.106)$. The
+modified Newton method hits max iterations and there is a very slow convergence in the
+last iterations. The method tries to take larger steps on every second iteration in hopes
+of converging to a solution faster, but the convergence is very slow. \\
+The Quasi-Newton method, however, is able to find the optimal solution in iteration
+$124$. Looking at all iterations (and the last), the method generally takes larger steps
+which causes it not to get "stuck" in the wrong area.
 
 \subsection{(b)}
-TODO
+I think the quasi-Newton method that is implemented uses BFGS algorithm which makes use
+of two additional matrices that construct a rank-two update matrix, which makes them more
+robust against these kind of functions.
 
 \section{Question 2}
 \subsection{(a)}
-TODO
+Below is the information of th first $10$ and last $10$ iterations from running the
+modified Newton method on the \texttt{meyer} test function. We use accuracy $10^{-10}$
+and max iteration set to $800$:
+\begin{verbatim}
+  itn      f value   nr f evals        ||g||        alpha   steplength
+    1  1.35515e+09           14  8.72767e+10        0.125      18.9914 Adding 4.2e+06.I to H
+    2  1.64792e+08           25  1.80271e+11            1      2.60644 Adding 6.7e+07.I to H
+    3  8.91446e+07           36  6.05482e+10            1      2618.54
+    4  6.17298e+07           47  2.13838e+10            1      4.82227 Adding 1e+06.I to H
+    5  1.26164e+07           59  1.00125e+10         0.25      1427.6
+    6       835313           70  2.48998e+10            1      1.70175 Adding 1e+06.I to H
+    7      12228.2           81  4.59121e+09            1      116.059
+    8      11952.8           92  6.97829e+07            1      3.76655 Adding 16.I to H
+    9      11705.4          103   1.5232e+07          0.5      13.7175 Adding  4.I to H
+   10      11482.3          115  9.80843e+07         0.25      10.9933 Adding  1.I to H
+  ...
+  696      87.9459         8165     0.160645           64  0.000929995 Adding 16.I to H
+  697      87.9459         8176       404.75            1  4.58277e-05 Adding 16.I to H
+  698      87.9459         8188      53.5929            4  8.00028e-05 Adding 16.I to H
+  699      87.9459         8199      214.138          0.5  9.36232e-06 Adding 16.I to H
+  700      87.9459         8211      94.0914         0.25  4.12331e-07 Adding 16.I to H
+  701      87.9459         8230      68.4762   0.00195312  4.70975e-09 Adding 16.I to H
+  702      87.9459         8243      68.3354        0.125  3.03064e-07 Adding 16.I to H
+  703      87.9459         8257      59.2213       0.0625  2.30278e-07 Adding 16.I to H
+  704      87.9459         8283      55.3157  1.52588e-05  6.46143e-11 Adding 16.I to H
+  705      87.9459         8338      55.3158  2.84217e-14  1.20289e-19 Adding 16.I to H
+
+  HALT BECAUSE OF A LINE SEARCH FAILURE
+  Current x =  0.00561       6181      345.2
+\end{verbatim}
+In the first $10$ iteration, we
+see some huge values for $||g||$, which suggests that we have narrow "valleys" in
+the function. The large values for $\mu$ means the method has a more reliable
+convergence, but it is a bit slower. \\
+In the last $10$ iterations, the $\alpha$-values are a lot smaller because the steps the
+method takes are small. The $||g||$ values are a lot smaller than in the first iterations
+and the $\mu$ values are all the same. This indicates the method takes smaller steps of
+same length because $||g||$ becomes smaller, which could mean it is about to hit a local
+minimum.
 
 \subsection{(b)}
-TODO
+Below is the information for the quasi-Newton method with the same parameters:
+\begin{verbatim}
+  itn      f value   nr f evals        ||g||        alpha   steplength
+    1  8.19554e+06           49  8.72767e+10  4.54747e-13    0.0396888
+    2  6.55538e+06           78  2.34554e+09  2.38419e-07      1.14833
+  ...
+  287      88.1011         2481  4.42175e+06            1       1.1626
+  288      88.0902         2489  1.56254e+06            1      1.69984
+  289      87.9914         2497  7.16522e+06            1     0.150524
+  290      87.9644         2505       595932            1     0.682582
+  291      87.9575         2513       444690            1      1.00865
+  292      87.9493         2521  2.33923e+06            1     0.311815
+  293      87.9465         2530       313605            4     0.728225
+  294      87.9459         2538       151718            1      0.26709
+  295      87.9459         2546       145928            1   0.00789142
+  296      87.9459         2555      11817.5            4    0.0179227
+  297      87.9459         2594      37509.8  2.32831e-10  3.04765e-12
+  298      87.9459         2646      37509.8  2.84217e-14  3.72066e-16 no QN update
+
+  HALT BECAUSE OF A LINE SEARCH FAILURE
+  Current x =  0.00561       6181      345.2
+\end{verbatim}
+The $\alpha$ values are very small in the first $2$ iterations, meaning the method takes
+smaller steps, which is probably due the large values of $||g||$. \\
+In the last $10$ iterations, the $||g||$ values are somewhat smaller and decreasing, but
+still quite large. However, in the last two iterations, they are larger and the
+$\alpha$-values are a lot smaller as well. This is most likely because the method stepped
+too far and passed a local minimum, so it is taking smaller steps backwards to find the
+minimum.
 
 \subsection{(c)}
-TODO
+The quasi-Newton method used fewer iterations and function evaluations. So even though
+both methods use an estimation of the Hessian, in this case, the quasi-Newton was faster
+than the modified Newton method. It seems that it is because it takes larger steps in the
+end so it locates the minimum faster compared to the very small steps the modified Newton
+method takes.
 
 \subsection{(d)}
-TODO
-
-\section{Question 3}
-\subsection{(a)}
-TODO
-
-\subsection{(b)}
-TODO
-
-\subsection{(c)}
-TODO
-
-\section{Question 4}
-TODO
-
-\section{Question 5}
-\subsection{(a)}
-TODO
-
-\subsection{(b)}
-TODO
-
-\subsection{(c)}
-TODO
-
-\subsection{(d)}
-TODO
-
-
+Both methods halt "because of a line search failure". This happens because it hits the
+maximum number of allowed function evaluations in a single line search (set to $45$). The
+"no QN update" means the Hessian wasn't updated due to the loss of positive definiteness.
 
 \end{document}
