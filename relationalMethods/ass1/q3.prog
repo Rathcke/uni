@@ -1,0 +1,36 @@
+Tournament(R)
+  DECL S,T,U
+  BEG
+    S = R & -I(R)
+    T = trans(succ(S)) & S
+    U = S & -S^
+    RETURN T | U
+  END.
+
+MinEdgeCover(R)
+  DECL S,T,U,V,W
+  BEG
+    S = R & -I(R)
+    U = S
+    WHILE -eq(U, O(U)) DO
+      T = atom(U)
+      V = T | T^
+      W = -(L(S) * V | V * L (S))
+      IF eq(L(S) * symm(S & W | V), L(S)) THEN
+        S = S & W | V
+        U = U & W
+      ELSE
+        U = U & -V
+      FI
+    OD
+    RETURN symm(S)
+  END.
+
+ContainsTriangle(R)
+  DECL S
+  BEG
+    S = R & -I(R)
+    S = S * R
+    S = S * R
+    RETURN -empty(S & I(R))
+  END.
