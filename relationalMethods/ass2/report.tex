@@ -1,0 +1,132 @@
+\documentclass[a4paper, fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\setlength\parindent{0pt}
+\setlength\mathindent{75pt}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\author{Nikolaj Dybdahl Rathcke (Student ID: 74763954)}
+\title{Relational Methods \\ Assignment 2}
+\lhead{Relational Methods}
+\rhead{Assignment 2}
+
+\begin{document}
+\maketitle
+
+\section*{Question 3}
+\subsection*{(a)}
+Then we can express the relation $R$ as:
+\begin{align*}
+  R&=\left((P\cap D)^T\cap \overline{\left(P\cap D\right)^T\overline{I}}\right)L
+\end{align*}
+We probably need some explanation for that. Everything in the parentheses is just the
+function $\mbox{up}(S)$, where $S=(P\cap D)^T$. The relation $S$ is then a relation that
+has an entry (set to $1$) in $(x,x)$ if $x$ is prime ($p^1$) and no entries in $(x,y)$
+for $x\neq y$. \\
+For any $x$ which is not prime, $S$ has entries in $(x,y)$ for prime factors $y_i$. Now, if a number is a prime power, it has only one prime factor, so using the
+\texttt{up} function will keep an entry in that row if it is a prime power and remove all
+entries if it not. Finally, taking the composition with $L$ will fill out the rows with an
+entry, so it is represented as a set. \\
+Note that the special cases for $x=0$ and $x=1$ are taken care of as these have no entries in
+$P\cap D$.
+
+\subsection*{(b)}
+For all prime powers $x$, we simply have an entry in $(x,x)$ by:
+\begin{align*}
+  F_1&=I\cap R
+\end{align*}
+For all non prime powers, we can get its divisors that are prime powers by:
+\begin{align*}
+  F_2=R\cap (D\cap \overline{I})
+\end{align*}
+Now we need to remove the entries $(x,z)\in F_2$ for all pairs of entries $(x,z),(y,z)\in
+F_2$ that satisfy $1=(x,y)\in (D\cap \overline{I})$. Say a function $F_3$ does that, then
+the relation is given by:
+\begin{align*}
+  F &= F_1\cup F_3(F_2)
+\end{align*}
+While I think you need to use direct products to construct $F_3$, I could not immediately
+make it work.
+
+\section*{Question 4}
+\subsection*{(c)}
+We can express $W$ by the simple relational definition:
+\begin{align*}
+  W = U\cap V
+\end{align*}
+This is easily seen as a kernel needs to be both absorbent and stable. So a set needs to
+satisfy that $S\subseteq P$ and $S\subseteq Q$. The sets that satisfy this is exactly
+those in $U\cap V$.
+
+\end{document}

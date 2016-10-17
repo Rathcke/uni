@@ -1,0 +1,143 @@
+\documentclass[a4paper, fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{kbordermatrix}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\setlength\parindent{0pt}
+\setlength\mathindent{75pt}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\author{Nikolaj Dybdahl Rathcke (Student ID: 74763954)}
+\title{Combinatorics (MATH429) \\ Assignment 5}
+\lhead{Combinatorics (MATH429)}
+\rhead{Assignment 5}
+
+\begin{document}
+\maketitle
+
+\section*{Question 1}
+For contradiction, assume we have two disjoint circuits in $M^*$ when for all pairs of
+hyperplanes $H_1$ and $H_2$ in $M$, then $H_1 \cup H_2 \neq
+E$. This means there is an element $e\in E$, which is in the cocircuits $C_1^*$ and $C_2^*$,
+who are the complements of $H_1$ and $H_2$ respectively. This is a contradiction, so to
+have two disjoint circuits in $M^*$, we must have two hyperplanes $H_1$ and $H_2$ in $M$
+where $H_1\cup H_2=E$. \\
+For the other way, assume we have two hyperplanes $H_1$ and $H_2$ so that $H_1\cup H_2 =
+E$, then for any element $e\in E$, either $e\in H_1$ or $e\in H_2$ or $e\in H_1,H_2$.
+If an element $f$ is in two cocircuits, it means that $f\neq\in H_1, H_2$, but no such
+element exists, therefore we must have two cocircuits are disjoint.
+
+\section*{Question 2}
+If $X$ is independent and not a basis in $M$, then there is a set of elements $A\in E$, so that
+$X\cup A\subseteq \mathcal{B}(M)$. This implies that the set $E(M)-X-e$ cannot be
+independent in $M^*$ as it not disjoint from the basis $X\cup A$ in $M$. \\
+Likewise, if $E(M)-X$ is independent but not a cobasis, then there is a set of elements
+$A$, so that $E(M)-X+A$ is independent, so $E(M)-X+A\subseteq \mathcal{B}(M^*)$, so $X$ cannot be independent. \\
+Therefore $X$ has to be a basis in $M$ and $E(M)-X$ has to be a cobasis.
+
+\section*{Question 4}
+\subsection*{(a)}
+It is both necessary and sufficient. Obviously it is necessary since if the bases are not
+in both $M$ and $M^*$, then $M\neq M^*$. It is sufficient, since if all the bases are
+equal to the cobases, then all independent sets are the same as they are all the proper
+subset of the bases (and cobases).
+
+\subsection*{(b)}
+It is necessary, but not sufficient. It is trivial to see that it is necessary if the
+matroid is identically self-dual. However, to see it is not sufficient, consider the
+following simple counter example.\\
+Let $M$ be the matroid on $E=\{1,2\}$ with $\mathcal{I}(M)=\{\emptyset,\{1\}\}$. This
+means the dual matroid has $\mathcal{I}(M^*)=\{\emptyset,\{2\}\}$. Now the two matroids
+have the same set of flats, namely the empty set, but they are not the same.
+
+\subsection*{(c)}
+It is both necessary and sufficient. If the circuits and cocircuits are the same, then
+the bases and cobases must be the same. The necessity and sufficiency then follows from the
+same argumentation as in (a).
+
+\section*{Question 6}
+For a matroid $M$ represented by matrix $A=[I_r|D]$, then the dual matroid $M^*$ is
+represented by the matrix $B=[-D^T|I_{n-r}]$. Since $M[A]$ contains no coloop, that means
+$-D^T$ does not contain any zero columns. When $D^T$ is transposed, we then have that
+there are no non-zero rows in $(D^T)^T=D$. Obviously, the identity matrix $I_r$ contains
+no zero rows either, meaning $A=[I_r|D]$ must contain at least two non-zero entries in
+each row.
+
+\section*{Question 7}
+If a matroid $M$ is $\mathbb{F}$-representable, then Theorem 8.4 tells us that the dual
+matroid $M^*$ is also $\mathbb{F}$-representable. \\
+The dual matroid of $U_{n,n+2}$ is the
+matroid $U_{2,n+2}$. This is exactly the $n+2$ line, which is only representable over
+fields $\mathbb{F}\geq n+1$.
+
+\end{document}

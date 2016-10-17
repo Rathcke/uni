@@ -1,0 +1,193 @@
+\documentclass[a4paper, fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage[margin=2.5 cm]{geometry}
+
+\setlength\parindent{0pt}
+\setlength\mathindent{75pt}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\newcommand\vgap{\noalign{\vskip 0.1cm}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke (Student ID: 74763954)}
+\title{Optimization - MATH412 \\ Assignment 4}
+\lhead{Optimization - MATH412}
+\rhead{Assignment 4}
+
+\begin{document}
+\maketitle
+
+\newpage
+
+\section{Question 1}
+\subsection{(a)}
+Since $\Phi$ is only subject to the simple bounds, we get the following KKT conditions:
+\begin{align*}
+  \ell_i-\overline{x}_i&=0 \comment{Primal feasibility} \\
+  \overline{x}_i-u_i&=0 \comment {Primal feasibility} \\
+  -\nabla \Phi &= \sum_i \gamma_i\nabla\left(\ell_i-\overline{x}_i\right)+\sum_i \beta_i
+  \nabla\left(\overline{x}_i-u_i\right) \comment{Stationarity}
+\end{align*}
+For minimization of $\Phi$. They hold with equality which is why there are no KKT
+condition for dual feasibility or complementary slackness
+.
+\subsection{(b)}
+Using the augmented Lagrangian method, we would use the modified function $\Phi'$
+\begin{align*}
+  \Phi'&= \Phi-\lambda c(x)
+\end{align*}
+Moving it to the right side in the stationarity condition in (a) gives us:
+negative term, so
+\begin{align*}
+  -\nabla \Phi &= -\lambda c(x) +\sum_i \gamma_i\nabla\left(\ell_i-\overline{x}_i\right)+\sum_i \beta_i
+  \nabla\left(\overline{x}_i-u_i\right)
+\end{align*}
+Say $L=n$ and $U=m$, we get $n+m+2$ equations with $n+m+2$ unknowns ($n$ of the $\gamma$
+variables, $m$ of the $\beta$ variables, $\mu$ and $\lambda$.  \\
+Though I did not get to do it, but I think we should be able to find an estimate for
+$\lambda$.
+
+\section{Question 2}
+\subsection{(a)}
+It is not active when a minimum lies no more than euclidean distance $r$ away
+from the current the $x$. That is, it is not active if $\dpip x-x^* \dpip\leq r$.
+
+\subsection{(b)}
+We start by looking at the KKT condition for primal feasibility:
+\begin{align*}
+  g(p)&=p^Tp-r^2\leq 0 \comment{Primal feasibility} \\
+\end{align*}
+If we write out the stationarity condition, we get:
+\begin{align*}
+  \nabla Q(p)-\mu\nabla \left(g(p)\right) &= \nabla\left(f(x)+p^T\nabla f +
+\frac{1}{2}p^T\nabla^2 fp \right)+\mu\nabla \left(p^Tp-r^2\right) \\
+&= 0
+\end{align*}
+Now taking the derivative with respect to $p$, will give us:
+\begin{align*}
+  \nabla\left(f(x)+p^T\nabla f + \frac{1}{2}p^T\nabla^2 fp \right)+\mu\nabla
+  \left(p^Tp-r^2\right) &= I\nabla f + \nabla^2 fp+\mu\nabla \left(p-r\right)
+  \comment{Since
+$\frac{\partial p^T\nabla^2fp}{\partial p}=p^T\nabla^2 f+I\nabla^2 fp=2\nabla^2 fp$} \\
+&=I\nabla f + \nabla^2 fp+\mu \left(Ip+p^T\right) \comment{As $\frac{\partial
+p^Tp}{\partial p}=Ip+p^T$} \\
+&=\nabla f + \nabla^2 fp+\mu Ip \comment{The $p^T$ term is kept in the lagrange
+multiplire $\mu$} \\
+&= 0
+\end{align*}
+Rewriting the last equation a little gives us:
+\begin{align*}
+  \nabla f + \nabla^2 fp+\mu Ip &= \nabla f + \left(\nabla^2 f+ \mu I\right)p = 0
+  \Leftrightarrow \\
+  \left(\nabla^2 f + \mu I\right)p&=-\nabla f
+\end{align*}
+which is the modified Newton step.
+
+\section{Question 3}
+We can set up the minimization problem corresponding to the maximization of $\mathcal{I}$:
+\begin{equation*}
+  \begin{array}{rrrl}
+    &\text{Minimize:}   & \sum_{i=1}^n p_i\log_2 p_i  & \\
+    \vgap
+    \hline
+    \vgap
+    &\text{Subject to:} & \sum_{i=1}^n p_i & = 1
+  \end{array}
+\end{equation*}
+The primal feasibility condition is:
+\begin{align*}
+  \sum_{i=1}^n p_i - 1 &= 0 \comment{Primal feasibility} \\
+\end{align*}
+The stationarity condition will then give us:
+\begin{align*}
+  \Delta\left(\sum_{i=1}^n p_i \lg p_i\right) + \lambda\Delta \left(\sum_{j=1}^n p_i-1\right) &= \sum_{i=1}^n
+    \frac{\lg(p_i)+1}{\lg(2)} +\lambda_i \\
+    &= 0
+\end{align*}
+This gives us $n$ similar equations, where for each $p_i$, then $p_i=2^{-\lambda-1}$. Now
+putting this together for the primal feasibility condition gives us
+\begin{align*}
+  n 2^{-\lambda_i-1}-1&=0 \Leftrightarrow \\
+  \lambda_i &= \frac{\lg n}{\lg 2}-1
+\end{align*}
+Solving for any $p_i$ in the $n$ equations we got from the stationarity condition gives
+us:
+\begin{align*}
+  \frac{\lg (p_i)+1}{\lg(2)}+\frac{\lg n}{\lg 2}-1&=0 \Leftrightarrow \\
+  p_i&=\frac{1}{n}
+\end{align*}
+To justify it is a minimum (maximum of $\mathcal{I}$), if we let two of the $p_i$
+be different values while still satisfying the primal feasibility condition, we see this
+value is larger, so $p_i=\frac{1}{n}$ for each $i$ is the solution that maximizes
+$\mathcal{I}$.
+
+\end{document}
+

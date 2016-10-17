@@ -1,0 +1,230 @@
+\documentclass[a4paper, fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{kbordermatrix}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\setlength\parindent{0pt}
+\setlength\mathindent{75pt}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\author{Nikolaj Dybdahl Rathcke (Student ID: 74763954)}
+\title{Combinatorics (MATH429) \\ Assignment 4}
+\lhead{Combinatorics (MATH429)}
+\rhead{Assignment 4}
+
+\begin{document}
+\maketitle
+
+\section*{Question 1}
+We know that $\{1,5,6\}$ is a basis $B$ and represented as a vector matroid:
+\begin{align*}
+  B =
+  \kbordermatrix{
+    & 1 & 5 & 6 \\
+    & 1 & 0 & 0 \\
+    & 0 & 1 & 0 \\
+    & 0 & 0 & 1
+  }
+\end{align*}
+Now we let non-Pappus matroid be represented by the following matrix $A$:
+\begin{align*}
+  A=\kbordermatrix{
+    & 2 & 3 & 4 & 7 & 8 & 9 \\
+    1 & 1 & 1 & 0 & 1 & 1 & 1 \\
+    5 & 1 & x_1 & 1 & x_2 & 0 & x_3 \\
+    6 & 1 & x_4 & x_5 & 0 & x_6 & x_7
+  }
+\end{align*}
+Since $\{2,6,9\}$ is a basis, we know its determinant is $0$, so we can work out what
+$x_3$ should be in the position by calculating the $3$ by $3$ determinant and equaling it to zero:
+\begin{align*}
+  1\cdot(0\cdot x_7-1\cdot x_3)-0\cdot(1\cdot x_7-1\cdot x_3)+1\cdot(1\cdot 1-1\cdot 0)=0
+  \\
+  \Rightarrow -x_3+1=0
+\end{align*}
+So $x_3=1$. \\
+Next, we look at $x_1$ and $x_4$. Since $\{1,2,3\}$ is not a basis. In
+the same way, we can isolate $x_3$ and $x_4$ by looking at the determinant:
+\begin{align*}
+  x_4-x_1=0
+\end{align*}
+So $x_1=x_4$. \\
+We can now look at $x_7$. We know $\{3,5,9\}$ is not a basis, which gives us:
+\begin{align*}
+  x_7-x_4=0
+\end{align*}
+So $x_1=x_4=x_7$. \\
+Now $\{3,4,8\}$ is not a basis, so we get:
+\begin{align*}
+  x_6+(x_4-x_1x_5)&=0 \ \ \ \ \Leftrightarrow \\
+  x_6&=x_4-x_1x_5 \\
+     &=x_1(1-x_5)
+\end{align*}
+Since $x_1=x_4$. Lastly, if we look at the circuit $\{2,4,7\}$:
+\begin{align*}
+  -(x_5x_2)+(x_5-1)&=0 \ \ \ \ \ \ \Leftrightarrow \\
+  x_5-1&=x_5x_2 \ \ \Rightarrow \\
+  x_5&\neq 0 \ \ \ \ \ \ \ \Rightarrow \\
+  x_2&=\frac{x_5-1}{x_5} \comment{Divide by $x_5$}
+\end{align*}
+We can now conclude that $\{7,8,9\}$ is not a basis as:
+\begin{align*}
+  -(x_6x_3)-(x_2x_7)+(x_2x_6) &= x_2x_6-x_6-x_2x_7 \\
+                              &= \frac{x_5-1}{x_5}x_6-x_6-\frac{x_5-1}{x_5}x_7
+  \comment{Substitute $x_2$} \\
+  &= \frac{x_5-1}{x_5}x_1(1-x_5)-x_1(1-x_5)-\frac{x_5-1}{x_5}x_7
+  \comment{Substitute $x_6$} \\
+  &=\frac{x_5(x_1-x_1x_5)-x_1(1-x_5)}{x_5}-x_1(1-x_5)-\frac{x_5-1}{x_5}x_7 \\
+  &=\frac{-x_1(1-x_5)-(x_5x_7-x_7)}{x_5} \\
+  &=\frac{-x_1+x_1x_5-x_5x_7+x_7}{x_5} \\
+  &=x_1-x_7-\frac{x_7-x_1}{x_5} \\
+  &= 0 \comment{Since $x_1=x_7$}
+\end{align*}
+as the determinant is $0$. So if the non-Pappus was representable over a field, then
+$\{7,8,9\}$ would not be a basis, but as we have just shown that it is not.
+
+\section*{Question 2}
+The set $\{1,2,4\}$ is a basis, so:
+\begin{align*}
+  B =
+  \kbordermatrix{
+    & 1 & 2 & 4 \\
+    & 1 & 0 & 0 \\
+    & 0 & 1 & 0 \\
+    & 0 & 0 & 1
+  }
+\end{align*}
+We can represent $Q_6$ by the following matrix:
+\begin{align*}
+  A=\kbordermatrix{
+    &   3 & 5 & 6 \\
+    1 & 1 & 1 & 1 \\
+    2 & x_1 & 1 & x_2 \\
+    4 & 0 & 1 & x_3
+  }
+\end{align*}
+We know $\{3,4,5\}$ is not a basis, so as before, we can isolate $x_1$:
+\begin{align*}
+  -1+x_1&=0 \Leftrightarrow \\
+  x_1&=1
+\end{align*}
+Any set with of size $3$ that include the element $\{6\}$ must be a basis, so the
+determinant is non-zero. \\
+For the determinant of $\{1,2,6\}$, we only get the term $x_3$, so $x_3\neq 0$. \\
+Another lucky choice of set that gives us some information is $\{2,5,6\}$:
+\begin{align*}
+  -(x_3)+1&\neq 0 \Leftrightarrow \\
+  x_3 &\neq 1
+\end{align*}
+The determinant of $\{1,4,6\}$ will give us:
+\begin{align*}
+  -x_2 \neq 0
+\end{align*}
+So $x_2\neq 0$. For the determinant of $\{3,4,6\}$, we get:
+\begin{align*}
+  -x_2+1&\neq 0 \Leftrightarrow \\
+  x_2&\neq 1
+\end{align*}
+If we look at the set $\{1,5,6\}$, we have:
+\begin{align*}
+  x_3-x_2 \neq 0 \Leftrightarrow \\
+  x_2 \neq x_3
+\end{align*}
+Now since $x_1,x_2\neq \{0,1\}$ and they are not equal each other, we need a field that
+has $4$ or more elements to represent the matroid $Q_6$.
+
+\section*{Question 3}
+A hyperplane is a flat with rank $r(M)-1$, that is, we cannot add any element to the
+hyperplane that increases its rank. So if $X$ is a hyperplane, we know it has rank
+$r(M)-1$. By Preposition 7.5(i) in the lecture notes, a set $X$ is spanning if
+$r(X)=r(M)$, meaning the hyperplane must be a maximal non-spanning set. \\
+If $X$ is a maximal non-spanning set, meaning if we add an element to the set, we must
+increases the rank of the set (as otherwise it's not maximal) and it will become a
+spanning set. Therefore the maximal non-spanning set must have rank $r(M)-1$ where we
+cannot add any element that increases its rank - which is exactly what a hyperplane is.
+
+\section*{Question 4}
+\subsection*{(a)}
+
+\subsection*{(b)}
+For a spanning set to be a unique, we need it to be a unique basis as well. We also need
+the basis to have rank equal to the size of the ground set. So a spanning set is unique
+in a matroid with ground set $E$, if the matroid has a unique basis $B$ so that $|B|=|E|$
+
+\section*{Question 7}
+
+\section*{Question 8}
+
+
+
+\end{document}
