@@ -1,0 +1,45 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 15}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Database and Web Programming}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke - rfq695}
+
+\begin{document}
+
+Intro: Dynamisk programmering bruges til optimerings opgaver hvor vi laver nogle valg der fører til \textbf{en} optimal løsning. Effektiv når vi har flere valg. Går ud på at gemme information eller løsninger der er klaret før.\\
+\\
+bruges altså ved at combine delproblemer som Divide and Conquer.\\
+\\
+Udviser optimal substruktur, så kan dynamisk programmering bruges. Se s. 379\\
+\\
+Rod cutting problem: Eksponentiel hvis ud bare implementerer den rekursivt (i to n)
+\\
+\\
+Top-down with memoization, saving previously solved problems på rodcut (auxillary array)\\
+Bottom-up method, solve smallest problems first på rodcut. Eventuel med optimal skæring.\\
+\\
+Bemærk, at der ikke er nogen universel løsning. Det gælder om selv at kunne analysere en struktur for en optimal løsning, rekursivt at definere en optimal løsning og lave en algoritme til at udregne værdien for en optimal løsning.\\
+\\
+LCS intro\\
+\\
+Theorem 15.1 s 392. (step 1)\\
+\\
+for at finde LCS af X og Y, find de 2 sub LCS som har de samme subsub LCS (overlappende substruktur) - rekusivt definer den (s. 393) step 2 - Lav en løsning (step 3/4).
+
+
+
+
+\end{document}

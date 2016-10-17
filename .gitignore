@@ -185,3 +185,14 @@ TSWLatexianTemp*
 
 # KBibTeX
 *~[0-9]*
+ad/1 Del og hersk (2.3, 4, 7)/
+ad/2 Hobe (6)/
+"ad/3 Balancerede bin\303\246re s\303\270getr\303\246er (12, 13)/"
+ad/4 Dynamisk programmering (15)/
+"ad/5 Gr\303\245dige algoritmer (16)/"
+"ad/7 Mindste udsp\303\246ndte tr\303\246er (23)/"
+ad/8 Korteste vej algoritmer (24)/
+ad/AAD/.gitignore
+ap/advanced programming/.DS_Store
+ra/vennerne/.gitignore
+relationalMethods/ass1/src/examples/

@@ -1,0 +1,37 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 15}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Database and Web Programming}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke - rfq695}
+
+\begin{document}
+
+Et mindste udspændt træ $T$ er et træ eller graf hvis kanter er et subset af en vægtet, ikke directed graf G(V,E) med vægt funktion w, hvor vægten af alle kanter er mindst mulig (mindste) og hvor alle knuder er forbundet i dette træ eller graf, deraf navnet udspændt.\\
+\\
+Kigger på 2 algoritmer (prim og kruskal). Begge bruger en grådig strategi.\\
+Med generic-MST vises ideen med den grådige strategi. (Opskriv pseudokode). Den laver et valg som gror træet T en kant ad gangen og gemmer disse i et set A. Gælder om at maintaine loop invariant:\\
+\\
+Definitioner, Lav et cut (S, V-S). Et kant krydser det cut. Respekterer hvis ingen kanter i A krydser cut. En let kant er den mindste.\\
+\\
+Theorem 23.1
+\\
+Linje 3 i Generic-MST viser altså, at det gælder om at finde på en måde at finde safe edge, som i den sidste ende vil være de edges der opbygger mindste uspændre træ T.\\
+\\
+Kruskal: Hvad gør den - maybe running time disjunkte sæt.\\
+\\
+Prims: Hvad gør den -  Den gør af min heap.. Samme asymptotiske køretid som kruskal, kan dog implementeres med fibonacci heaps for at køre O(E+V lg V). 
+ 
+\end{document}

@@ -1,0 +1,48 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 15}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Database and Web Programming}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke - rfq695}
+
+\begin{document}
+
+Intro: Grådige algoritmer er følger en metode, hvor der bliver taget nogle valg som er lokalt optimale og håber det er globalt optimalt. Dette er dog ikke altid tilfældet, men nogle gange er det.\\
+Altså er den forskellig fra dynamisk programmering i den forstand at der ikke tages hensyn til subproblemer når der foretages grådigt valg - Greede choice prpoerty.\\
+Både dynamisk programmering og grådige algoritmer gør brug af optimal substruktur og derfor er der forskel på hvornår du skal bruge en dynamisk programmering løsning eller bare en grådig løsning.
+
+\subsection*{Greedy strategy}
+Here we list the procedure one must follow in order to design a greedy
+algorithm. Each point will be discussed in depth under its own section.
+\begin{enumerate}
+	\item \textbf{Describe} the optimization problem as one in which making a
+choice, we are left with one subproblem.
+	\item \textbf{Prove} that the greedy choice always yields a globally
+optimal solution.
+	\item \textbf{Demonstrate} optimal substructure by showing that, having
+made a greedy choice, what remains is a subproblem with the property that if
+we combine an optimal solution with the greedy greedy choice, we arrive at an
+optimal solution to the original problem.
+\end{enumerate}
+
+\subsection*{Huffman codes}
+Snak om prefix codes med alfabet \textit{C} ved fuldt binært træ. $d_T(c)$ er dybden i træet og c.freq er for en character \textit{c} i C. Vis bitcost (sumtegn c:C $->$ $c.freq*d_T(c)$\\
+\\
+\textbf{Huffman algoritme (O(n lg n)} bruger en min-priotets kø med freq som key. Merger de 2 mindste freq sammen til en ny node med summen af deres freq. Gøres $|C|-1$ gang. \textbf{MED EKSEMPEL}\\
+\\
+Lemma 16.2 med proof\\
+Måske lemma 16.3.
+
+\end{document}

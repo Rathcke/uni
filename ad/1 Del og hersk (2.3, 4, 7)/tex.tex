@@ -1,0 +1,84 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 15}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\title{Database and Web Programming}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke - rfq695}
+
+\begin{document}
+
+Intro: Divide and conquer er en tilgang, hvor et problem bliver lavet om til flere subproblemer som ligner det originale problem men er mindre i størrelsen, hvorefter de slttes sammen for at lave en løsning til det originale problem.\\
+\\
+Eksempel med merge sort: Hvad gør den (merge (theta(n)) comparer dem og merger, mergesort deler den op) - divide i n/2 - conquer, sorterer rekursivt - combine de 2 delproblemer.\\
+\\
+Vis køretid på \textit{rekusions ligning (T(n)} (s. 35+67 (aT(n/b) + D(n) + C(n))\\
+løs med rekursions-træ, substitution og master method.\\
+\\
+\textbf{Rekursions-træ:} Det træ der er tegnet, add køretid for hvert level (cn) og gæt på O(lg n * n). Dette giver kun en ide og ikke noget konkret.\\
+\\
+\textbf{Substitution}
+% p. 83-87, CLRS
+The substitution method for solving recurrences consists of
+two steps:
+\begin{itemize}
+\item Guess the form of the solution.
+\item Use mathematical induction to find constants in the form and show that
+the solution works.
+\end{itemize}
+The inductive hypothesis is applied to smaller values,
+similar like recursive calls bring us closer to the base case
+\\\\
+\noindent \textbf{Example}\\
+The recurrence relation for the cost of a divide-and-conquer method is
+$T(n) = 2T( \lfloor n/2 \rfloor ) + n$. Our induction hypothesis of $T(n)$ is
+$O(n \lg n)$ or $T(n) \leq cn \lg n$ for some constant $c$, independent of $n$.
+
+Assume the hypothesis holds for all $m < n$ and substitute m = n/2 rundet ned:
+\begin{align}
+	T(n) &\leq 2(c \lfloor n/2 \rfloor \lg_2 (\lfloor n/2 \rfloor )) + n \\
+	&\leq cn \lg_2(n/2)+n \\
+	&= cn \lg_2(n) - cn \lg_2(2)+n \\
+	&= cn \lg_2(n) - cn + n \\
+	&\leq cn \lg_2 (n)
+\end{align}
+as long as $c \geq 2$  (vises via basisstep).
+
+\textbf{Master method}
+
+
+\noindent \textbf{Example} \\
+Consider the recurrence $T(n) = 2T(n/2) + f(n)$ of merge sort. We identify the
+variables values as $a = 2$ since each recursive call creates two subproblems
+and $b = 2$ since each of these are of $n/2$ the size of the previous problem.
+The combine step is of linear time $\Theta(n)$.
+
+We then have that $O(n^{\lg_2 2}) = f(n)$, since $f(n) = \Theta(n)$ and this
+satisfies the previous equation, because $O(n^{\lg_2 2}) = \Theta(n)$.
+Therefore, the second case of the master theorem applies to this algorithm,
+and the complexity of it is then $\Theta(n^{lg_2 2}\lg n) = \Theta(n \lg n)$.
+\\\\\\\
+\textbf{Quicksort}\\
+Hvad gør den (divide, conquer, combine (s 170)).\\
+\\
+Proof ved loop invariant (s. 173).\\
+\\
+evt: Worst case er $\theta (n^2$). Best case er $\theta(n lg n)$. Meget tættere på best case end worst case\\
+\\
+randomized quicksort.
+
+
+
+
+\end{document}
