@@ -1,0 +1,244 @@
+\documentclass[a4paper, fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\setlength\parindent{0pt}
+\setlength\mathindent{75pt}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\begin{document}
+
+\section*{Question 1}
+Define the relations
+\begin{align*}
+R &=
+\begin{pmatrix}
+  0 & 0 \\
+  1 & 0
+\end{pmatrix} \\
+S &=
+\begin{pmatrix}
+  0 & 1 \\
+  0 & 0
+\end{pmatrix} 
+\end{align*}
+Then we have:
+\begin{align*}
+R\overline{S} &= 
+\begin{pmatrix}
+  1 & 0 \\
+  0 & 0
+\end{pmatrix} \\
+R^T \cap \overline{RS} &=
+\begin{pmatrix}
+  0 & 1 \\
+  0 & 0
+\end{pmatrix} \cap
+\begin{pmatrix}
+  1 & 1 \\
+  1 & 0
+\end{pmatrix} \\
+&=
+\begin{pmatrix}
+  0 & 1 \\
+  0 & 0
+\end{pmatrix} 
+\end{align*}
+Which means $R\overline{S}\neq R^T \cap \overline{RS}$ for these two relations.
+
+\section*{Question 2}
+TODO
+
+\section*{Question 3}
+The relation $R$ is:
+\begin{itemize}
+ \item Reflexive
+ \item Symmetric
+ \item Transitive
+ \item Preorder (it is reflexive and transitive)
+ \item Equivalence (it is reflexive, symmetric and transitive)
+\end{itemize}
+The relation $S$ is:
+\begin{itemize}
+ \item Reflexive
+ \item Symmetric
+ \item Transitive
+ \item Antisymmetric
+ \item Preorder (it is reflexive and transitive)
+ \item Order (it is reflexive, transitive and antisymmetric)
+ \item Equivalence (it is reflexive, symmetric and transitive)
+ \item Partial identity
+\end{itemize}
+
+\section*{Question 4}
+TODO
+
+\section*{Question 5}
+\subsection*{(1)}
+Before we enter the while loop, we have:
+\begin{align*}
+  Q=\begin{pmatrix}
+  1 \\
+  1 \\
+  1 \\
+  1 \\
+  1
+  \end{pmatrix}
+  S =\begin{pmatrix}
+  1 \\
+  0 \\
+  1 \\
+  1 \\
+  1
+  \end{pmatrix}
+\end{align*}
+After the first iteration:
+\begin{align*}
+  Q=\begin{pmatrix}
+  1 \\
+  0 \\
+  1 \\
+  1 \\
+  1
+  \end{pmatrix}
+  S =\begin{pmatrix}
+  1 \\
+  0 \\
+  1 \\
+  0 \\
+  1
+  \end{pmatrix}
+\end{align*}\\
+After the second iteration:
+\begin{align*}
+  Q=\begin{pmatrix}
+  1 \\
+  0 \\
+  1 \\
+  0 \\
+  1
+  \end{pmatrix}
+  S =\begin{pmatrix}
+  1 \\
+  0 \\
+  0 \\
+  0 \\
+  0
+  \end{pmatrix}
+\end{align*}
+After the third iteration:
+\begin{align*}
+  Q=\begin{pmatrix}
+  1 \\
+  0 \\
+  0 \\
+  0 \\
+  0
+  \end{pmatrix}
+  S =\begin{pmatrix}
+  0 \\
+  0 \\
+  0 \\
+  0 \\
+  0
+  \end{pmatrix}
+\end{align*}
+After the fourth iteration:
+\begin{align*}
+  Q=\begin{pmatrix}
+  0 \\
+  0 \\
+  0 \\
+  0 \\
+  0
+  \end{pmatrix}
+  S =\begin{pmatrix}
+  0 \\
+  0 \\
+  0 \\
+  0 \\
+  0
+  \end{pmatrix}
+\end{align*}
+Since they are equal, we break out of the while loops and the program returns \texttt{TRUE}.
+
+\subsection*{(2)}
+The relation $R$ with entries in $(1,2),(2,3),(3,4),(4,5)$ or defined as:
+\begin{align*}
+  R = \{(x,y)\ |\ (x,y)\in A \times A \land y=x+1\}
+\end{align*}
+for $A=\{1,2,3,4,5\}$ will make $5$ complete iterations. This is because they are not equal to begin with (as row $5$ is empty) and it will only make a row in $S$ empty if the $y$'th row is also empty. Therefore it will take remove the entry in row $4$, then row $3$ until it is empty. This takes $4$ iterations, but since $Q$ is an iteration behind, we will need a fifth to make them equal.
+
+\section*{Question 6}
+
+
+\end{document}
