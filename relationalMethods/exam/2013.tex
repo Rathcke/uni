@@ -114,7 +114,24 @@ After the first iteration:
   0 \\
   1 \\
   1 \\
-  0  
+  0
+  \end{pmatrix}
+  P =\begin{pmatrix}
+  0 \\
+  1 \\
+  0 \\
+  0 \\
+  1
+  \end{pmatrix}
+\end{align*}
+After the second iteration:
+\begin{align*}
+  Q=\begin{pmatrix}
+  0 \\
+  1 \\
+  1 \\
+  1 \\
+  1
   \end{pmatrix}
   P =\begin{pmatrix}
   0 \\
@@ -124,11 +141,25 @@ After the first iteration:
   0
   \end{pmatrix}
 \end{align*}
-Now, $P$ is empty, so we break out of the loop and return $Q$.
+Now, $P$ is empty, so we break out of the loop and return $Q$. We can reach nodes
+$2,3,4$ and $5$ from node $3$.
 
 \subsection*{(2)}
-
-
-
+We can transform $S$ into a vector by calculating \texttt{SL}. That way, the program runs
+as usual, but since we need to return a partial identity, we return the intersection of
+\texttt{Q} with the identity matrix instead. This yields the following program:
+\begin{verbatim}
+Reachable(R,S)
+  DECL P,Q
+  BEG
+    Q = SL
+    P = -Q & R^ * Q
+    WHILE -empty(P) DO
+      Q = Q | P
+      P = -Q & R^ * P
+    OD
+    RETURN Q & I
+  END.
+\end{verbatim}
 
 \end{document}

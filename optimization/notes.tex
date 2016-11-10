@@ -85,28 +85,129 @@
 \maketitle
 
 \section{Unconstrained Optimization}
-\subsection{Newton's Method}
-
-\subsection{Modified Newton's method}
-
-\subsection{Quasi-Newton}
 
 \subsection{Steepest Descent}
+Takes small steps along the direction where $f$ decreases most rapidly ($-\nabla f_k$).
+
+\subsection{Newton's Method}
+Estimates function using taylor series:
+$$
+f(x_k+p)\approx f_k+p^T\nabla f_k +\frac{1}{2}p^T\nabla^2 f_k p = m_k(p)
+$$
+Setting derivate equal to zero estimates the minimum of $f$. Usually uses step length
+$\alpha=1$, unless results are unsatisfactory. Quadratic convergence when we get close to
+solution. However, the hessian $\nabla^2 f$ is expensive. \\
+If the hessian is not positive definite, we use steepest descent instead.
+
+\subsection{Modified Newton's method}
+Same approach, but adding giving the steepest descent vector ($-g^k$) a bias, achieved by
+adding a multiple of the unit matrix, $v$, to the hessian so it is positive definite.
+Direction can then be solved:
+$$
+(G^k+vI)s^k = -g^k
+$$
+
+\subsection{Quasi-Newton}
+Superlinear convergence, but approximates the hessian $B_k$ (usually symmetric) using an initial guess for
+it. The hessian is updated after each iteration using the fact that changes in the
+gradient gives information about the second derivative of $f$ along the search direction.
+That is, we update the hessian so it mimics:
+$$
+\nabla^2 f_{k+1}(x_{k+1}-x_k)\approx \nabla f_{k+1}-\nabla f_k=y_k
+$$
+by
+$$
+B_{k+1}s_k=y_k
+$$
+with $s_k=x_{k+1}-x_k$. Either by symmetric-rank-one or BFGS. Both maintains symmetry. We
+can use this to find the new search direction $p_k$. Finding search direction by:
+$$
+p_k=-B_k^{-1}\nabla f_k
+$$
 
 \subsection{Conjugate Gradients}
+We find the descent direction by:
+$$
+p_k=-\nabla f(x_k)+\beta p_{k-1}
+$$
+The $\beta$ is a scalar that ensures $p_k$ and $p_{k-1}$ are conjugate. It works by
+minimizing the convex quadratic function
+$$
+\phi(x)=\frac{1}{2}x^TAx+b^Tx
+$$
+They do not gain the fast convergence rates of the Newton's methods, but uses less space
+as we dont have to store the matrices.
 
-\subsection{Exact Linesearch}
+\subsection{Gauss-Newton}
+Used to minimize the sum of squares. It is often advantageous since we do not calculate
+the second derivate hessian matrix, but using the Jacobian (first-derivate) instead and
+using
+$$
+B_k=J_k^TJ_k
+$$
+so the step $p_k$ is computed from
+$$
+J_k^TJ_kp_k=-\nabla f_k=-J_k^Tr_k
+$$
+where $r$ is the function in the sum of squares.
 
-\subsection{Inexact Linesearch}
+\subsection{Exact Linesearch vs. Inexact}
+Solving $f'(x_K+\alpha p_k)=0$ for $\alpha$ or we can do it loosely (backtracking or
+wolfe conditions). Backtracking takes a large step and the backtracks. Wolfe conditions
+are used in quasi newton and takes an acceptable step length that reduces the objective
+function sufficiently. Measured by:
+$$
+f(x_k+\alpha p_k)\leq f(x_k)+c_1\alpha\nabla f_k^Tp_k
+$$
+For a $c\in(0,1)$. Sometimes called the armijo condition. And to avoid too small steps:
+$$
+\nabla f(x_k+\alpha_kp_k)^Tp_k\geq c_2\nabla f_k^Tp_k
+$$
+For $c\in (c_1,1)$.
+
+\subsection{Rates of Convergence}
+Key measure of perfomance. It is Q-linear if
+$$
+\frac{\dpip x_{k+1}-x^*\dpip}{\dpip x_k-x^*\dpip}\leq r
+$$
+for some $r$ (constant for iteration. It is Q-superlinear if
+$$
+\lim_{k\rightarrow\infty}\frac{\dpip x_{k+1}-x^*\dpip}{\dpip x_k-x^*\dpip}=0
+$$
+And is Q-quadratic if:
+$$
+\frac{\dpip x_{k+1}-x^*\dpip}{\dpip x_k-x^*\dpip^2}\leq M
+$$
+For some constant $M$. Generally $p$-order depending on the exponent in the divisor.
 
 \section{Constrained Optimization}
 \subsection{KKT}
+Let $g_i(x)$ be the inequality constraints and $h_j(x)$ the equality constraints, then
+the KKT conditions are:
+\begin{align*}
+  g_i(x)&\leq 0 \comment{Primal Feasibility} \\
+  h_j(x)&=0 \comment{Primal Feasibility} \\
+  0 &= \nabla f(x)+\sum_i \mu_i\nabla g_i(x)+\sum_j \lambda_j\nabla h_j(x)
+  \comment{Stationarity} \\
+  \mu_i &\geq 0 \comment{Dual Feasibility} \\
+  \mu_ig_i(x)&=0 \comment{Complementary Slackness}
+\end{align*}
+Valid KKT points can be global and local minimum and saddle points. Hessian positive definite means point is a global/local minimum/maximum.
 
 \subsection{Quadratic Penalty Function}
 
+
+
 \subsection{Augmented Lagrangian}
 
+\subsection{Quadratic Programming}
+
+\subsection{Sequential Quadratic Programming}
+
 \subsection{Trust Regions}
+Trust regions does the work opposite of line search. Instead of finding an acceptable
+step length for a direction, we instead define a region and find an acceptable step in
+that region.
 
 \end{document}
 
