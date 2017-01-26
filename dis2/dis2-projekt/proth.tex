@@ -1,0 +1,50 @@
+\subsection{Proth}
+Et Proth tal er et positivt heltal på formen $N = h \cdot 2^k + 1$, hvor det er krævet, at $k$ er ulige, og $k > 2^h$.
+\begin{theorem}
+\label{thm:1}
+(Proths Teorem). Lad $N$ være et Proth tal. Hvis der for et heltal $a$ gælder
+\begin{align*}
+  a^{(n-1)/2} \equiv -1 \pmod{N}
+\end{align*}
+hvor det er antaget, at Jacobi symbolet $(\frac{a}{N}) = -1$, så er $N$ et primtal.
+\end{theorem}
+\begin{proof}
+Vi starter med at antage, at $N$ er et primtal. Vi får nu brug for Eulers kriterium, som vi (uden bevis)
+ser i lemma \ref{eulers-criterion}.
+\begin{lemma}
+Lad $p$ være et ulige primtal, og lad $a$ være et heltal, så $p$ og $a$ er indbyrdes primiske. Da har vi
+\begin{align*}
+  \left( \frac{a}{p} \right) \equiv a^{(p-1)/2} \pmod{p}
+\end{align*}
+\label{eulers-criterion}
+\end{lemma}
+Ved brug af Euler's kriterium kan vi omkskrive $(\frac{a}{N}) = -1$  til
+\begin{align*}
+  a^{(N-1)/2} \equiv -1 \pmod{N}
+\end{align*}
+Under antagelse af at kongruensen i teorem \ref{thm:1} holder, så er $N-1 = h \cdot 2^k$ og $\gcd(k, 2^n) = 1$. Derfor får vi
+\begin{align*}
+  a^{N-1} = \left( a^{(N-1)/2} \right)^2 \equiv (-1)^2 \equiv 1 \pmod{N}
+\end{align*}
+Siden $N$ er ulige og deler $a^{(N-1)/2}$, må der nødvendigvis også gælde, $\gcd(a^{(N-1)/2}-1,N)=1$.
+Fra Pocklingtons teorem (teorem \ref{theorem:pocklingtons-theorem}), ved vi, at enhver primtalsfaktor $p$ for $N$ er på formen
+\begin{align*}
+  p =r \cdot 2^k + 1 > 2^k
+\end{align*}
+Dog har vi også $N = h \cdot 2^k+1$, hvorfor $\sqrt{N} < 2^n < p$. Dette betyder at $N$ er et primtal.
+\end{proof}
+\subsubsection{Proth test}
+Proth testen er en simpel probabilistisk primtalstest, der fungerer ved at udvælge et vilkårligt heltal $a$,
+hvorom der ikke gælder $a \not \equiv 0 \pmod{N}$. Her udregnes
+\begin{align*}
+  b \equiv a^{(N-1)/2} \pmod{N}
+\end{align*}
+hvilket giver 4 tilfælde:
+\begin{enumerate}
+  \item Hvis $b \equiv -1 \pmod{N}$, så er $N$ et primtal (udfra Teorem \ref{thm:1})
+  \item Hvis $b \not \equiv \pm 1 \pmod{N}$, og $b^2 \equiv 1 \pmod{N}$, så er $N$ et sammensat tal, idet $\gcd(b \pm 1, N)$ er ikke-trivielle faktorer af $N$
+  \item Hvis $b^2 \not \equiv 1 \pmod{N}$, så kan man udfra Fermats lille teorem slutte, at $N$ er et sammensat tal
+  \item Hvis $b \equiv 1 \pmod{N}$, forbliver det ukendt, hvorvidt $N$ er primtal
+\end{enumerate}
+Denne procedure gentages indtil, det er blevet bestemt, om $N$ er et primtal eller ej. I tilfældet af at $N$ er et primtal,
+har testen en sandsynlighed på $\frac{1}{2}$ for at returnere, at $N$ er et primtal i en enkelt iteration.

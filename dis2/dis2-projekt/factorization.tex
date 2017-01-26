@@ -1,0 +1,68 @@
+\subsection{Faktorisering}
+I næste sektion beskriver vi Pocklington testen, som bygger på primtalsfaktorisering, hvor
+der arbejdes ud fra, at man kan afgøre om et tal er et primtal ud fra bl.a. primtalsfaktorerne
+for et andet tal. Vi har implementeret algoritmen ``trial division'', da den er simpel
+at implementere og således er mulig at implementere inden for projektets rammer. Trial division
+fungerer ved at finde alle primtalsfaktorer af et tal $n$ op til $\floor{\sqrt{n}}$ og dividere
+tallet med den pågældende faktor, når en sådan faktor findes. Trial division starter da forfra
+med at finde primtalsfaktorer for det nye tal.
+Dette er dog en meget langsom algoritme til primtalsfaktorisering, og vi vil derfor
+også beskrive matematikken bag algoritmen ``quadratic sieve'', som er væsentlig mere effektiv end
+``trial division''. Quadratic sieve er i midlertidig ikke blevet implementeret, da
+vi mente, at dette ville tage for lang tid.
+\subsubsection{Quadratic sieve}
+Quadratic sieve bygger på, at vi kan udtrykke $n$ som differensen mellem to kvadrattal. Ved
+at bygge videre på denne ide, så søger algoritmen at finde to tal $x, y$, der opfylder
+\begin{align}
+  x & \not \equiv \pm \; y \pmod{n} \label{eqn:qs-condition1} \\
+  x^2 & \equiv y^2 \pmod{n} \label{eqn:qs-condition2}
+\end{align}
+Ud fra disse to betingelser er det klart, at $(x - y)(x + y) \equiv 0 \pmod{n}$, hvilket vil
+sige, at $(x - y)(x + y)$ er en divisor i $n$. Den første af betingelserne udelukker dog, at
+$(x - y)$ og $(x + y)$ alene er divisorer i $n$. Således må $\text{gcd}(x - y, n)$ og
+$\text{gcd}(x + y, n)$ være ikke trivielle divisorer i $n$. (gcd er funktionen til at finde
+den største fælles divisor for to tal.)\\
+Vi vil nu vise, hvordan quadratic sieve fungerer ved at finde primtalsfaktoriseringen for
+$n = 1649$ ved at anvende ovenstående beskrivelse. (\ref{eqn:qs-condition2}) giver, at vi skal finde
+to kvadrattal, som er kongruente med $n$. $x$ bestemmes ved først at lave en iterativ søgning,
+hvor vi starter med $x = \ceil{\sqrt{n}} = 41$. Vi husker, at algoritmen bygger på, at
+$n = x^2 - y^2$, hvorfor vi kan finde $y^2 = x^2 - n$.
+\begin{align*}
+  41^2 - n &= 32 \\
+  42^2 - n &= 115 \\
+  43^2 - n &= 200
+\end{align*}
+Vi har endnu ikke fundet to kvadrattal, der opfylder (\ref{eqn:qs-condition1}) og (\ref{eqn:qs-condition2}),
+men alligevel vælger vi at stoppe søgningen ved $x = 43$. Vi bemærker nemlig at produktet
+$32 \cdot 200 = 6400 = 80^2$ er et kvadrattal, og vi får derfor følgende identitet:
+\begin{align*}
+  41^2 \cdot 43^2 \equiv 80^2 \pmod{n} \iff (41 \cdot 43)^2 \equiv 80^2 \pmod{n}
+\end{align*}
+Vi har altså $x = 41 \cdot 43 = 1763$ og $y = 80$. Vi anvender nu gcd til at finde de
+to primtalsfaktorer for $n = 1649$.\\
+\begin{align*}
+  \text{gcd}(x - y, n) &= \text{gcd}(1763 - 80, 1649) = \text{gcd}(1683, 1649) = 17 \\
+  \text{gcd}(x + y, n) &= \text{gcd}(1763 + 80, 1649) = \text{gcd}(1843, 1649) = 97
+\end{align*}
+En simpel undersøgelse kan vise, at $17$ og $97$ er primtal, hvorfor vi nu har fundet
+primtalsfaktoriseringen for $n = 1649 = 17 \cdot 97$.\\
+Eksemplet har vist, hvordan quadratic sieve fungerer, men vi mangler at forklare,
+hvordan den iterative process vælger $y_1,\cdots,y_t$, så $x_i^2 - n = y_i^2$
+for $1 \le i \le t$ og produktet af alle $y_i$'er er et kvadrattal.
+Dette kan gøres ved at se på ``smooth numbers''. Vi siger, at et tal er $B$-smooth,
+hvis alle dets primtalsfaktorer er mindre eller lig $B$. Vi lader $\pi(B)$ betegne
+antallet af primtal i intervallet $[1 ; B]$.
+\begin{lemma}
+(Uden bevis.) Hvis $M = m_1, m_2, \dots, m_k$ er $B$-smooth heltal og $k > \pi(B)$, så findes der
+en ikke tom delsekvens af $M$, hvor produktet af tallene i delsekvensen er et kvadrattal.
+\end{lemma}
+Vi kan altså finde det ønskede kvadrattal ved at finde mere end $\pi(B)$ $B$-smooth
+tal. Målet vil vu være at finde delsekvensen, der giver kvadrattallet. I den forbindelse
+bemærker vi, at hvert $m_i$ kan repræsenteres af en vektor $v_i$ med $\pi(B)$ elementer,
+hvor det $j$'te element i $v_i$ er eksponenten for det $j$'te primtal. Det ses da trivielt,
+at produktet af en delsekvens er et kvadrattal, hvis alle elementerne i vektoren, der
+er summen af vektorerne i delsekvensen, er lige. Vi kan således konstruere en matrix, hvor
+den $i$'te række er $v_i$, og ``mod 2'' er anvendt på hvert element. Rækkerne,
+der opfylder det givne kriterie, kan da findes ved at anvende gaussisk elimination.
+Vi har altså nu beskrevet teorien bag quadratic sieve, hvor det dog er blev udeladt,
+hvordan man effektivt kan finde $B$-smooth tal.

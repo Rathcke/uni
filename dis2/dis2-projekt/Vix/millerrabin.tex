@@ -1,0 +1,151 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=3.5cm]{geometry}
+\pagestyle{fancy}
+\fancyfoot[C]{\footnotesize Page \thepage\ of 3}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\author{Nikolaj Dybdahl Rathcke}
+\chead{Nikolaj Dybdahl Rathcke (rfq695)}
+
+\begin{document}
+
+\section{Miller-Rabin}
+\subsection*{Konceptet}
+Miller-Rabin testen afhænger af nogle ligninger som er sande for primtal. Hvis vi har et primtal $p>2$, så ved vi at $p-1$ er lige og vi kan derfor skrive det unikt som $2^r\cdot m$, hvor $m$ er ulige. For ethvert heltal $a$ i gruppen $\mathbb{Z}/p\mathbb{Z}$ gælder der så, at
+\begin{align*}
+&a^m\equiv 1 \ (\mbox{mod }p) \\
+\mbox{eller}\ \ \ \ \ \ &\ \\
+&a^{2^s\cdot m}\equiv -1 \ (\mbox{mod }p)
+\end{align*}
+For et $s\in 0\leq s\leq r-1$. Dette vil vi også gerne vise er sandt. Til det bruger vi, når $p$ er et primtal, at
+\begin{align}
+a^{p-1}\equiv 1 \ (\mbox{mod }p)
+\end{align}
+Som er en simpel omskrivning af Fermats lille theorem, der gælder når $a$ ikke er dividerbart af $p$ som det aldrig kan være når $0<a<p$	.\\
+Desuden ser vi på et andet lemma, nemlig at hvis vi har et kvadrat er lig $1$ modulo $p$, så
+\begin{align*}
+&x^2\equiv 1 \ (\mbox{mod }p) \\
+\Leftrightarrow\ \ &(x-1)(x+1)\equiv 0 \ (\mbox{mod }p)
+\end{align*}
+Altså at $p\ \backslash\ (x-1)(x+1)$. Dette betyder så at
+\begin{align*}
+x\equiv 1\mbox{ or }-1 \ (\mbox{mod }p)
+\end{align*}
+Bruger vi dette sammen med (1) kan vi altså blive ved med at tage kvadratroden af $a^{p-1}$. Hvis vi får $-1$ holder den anden ligning. Hvis vi aldrig får $-1$ så er det fordi vi ikke har flere potenser af $2$ og så vil den første ligning holde.\\
+Miller-Rabin testen afhænger dog af kontrapositionen, nemlig at
+\begin{align*}
+&a^m\not\equiv 1 \ (\mbox{mod }p) \\
+\mbox{eller}\ \ \ \ \ \ &\ \\
+&a^{2^s\cdot m}\not\equiv -1 \ (\mbox{mod }p)
+\end{align*}
+For $0\leq s\leq r-1$. 
+
+
+\subsection*{Algoritmen}
+Miller-Rabin testen afgør derfor om et givet tal, $n$, er et sammensat tal eller om det er "nok et primtal". Dette skyldes at det er en probabilistisk algoritme, altså at den afhænger af tilfældighed. \\
+Et kald til Miller-Rabin algoritmen kræver udover tallet $n$ også en parameter $k$ som er antallet af gange algoritmen bliver gentaget. For hver ekstra gang algoritmen bliver kørt hvor der bliver returneret at $n$ nok er primtal, falder sandsynligheden for at $n$ ren faktiskt er et sammensat tal. Altså ses $k$ som en parameter for korrekthed. Tallene $a$ kaldes for "vidner" hvis de angiver $n$ er et sammensat tal. \\
+Algoritmen kan deles i fire trin for $n\geq 5$.
+\begin{enumerate}
+\item Find de unikke tal $r$ og $m$, så $n-1=2^r\cdot m$ og $m$ er ulige.
+\item Vælg et tilfældigt heltal $a$, hvor $1<a<n$.
+\item Sæt $b=a^m$ (mod $n$). Hvis $b\equiv \pm 1$ (mod $n$), så er $n$ nok et primtal.
+\item Hvis $b^{2^s}\equiv -1$ (mod $n$) for et $s$ hvor $1\leq s\leq r-1$, så er $n$ nok et primtal. Hvis ikke, så er $n$ et sammensat tal.
+\end{enumerate}
+Den er implementeret i Ruby og filen \texttt{millerrabin.rb} kan ses i Appendix 1. Algoritmen er implementeret med henblik på at kunne understøtte flere kørsler for at opnå flere baser $a$. \\
+Vedhæftet er også outputtet når den køres på testsættet "numbers", hvor de første 10 tal er primtal og de sidste 10 er sammensatte tal.
+
+\subsection*{Præcision og Køretid}
+Det kan vises at der mindst er $3/4$ vidner $a$ for et ulige sammensat heltal. Altså vil der for $k$ kørsler på $n$ der siger $n$ er et primtal højst være en sandsynlighed på $4^{-k}$ for at $n$ rent faktiskt er sammensat.\\
+En effektiv implementering af modular eksponentiering, $b^e\ \mbox{mod}\ m$ kan implementeres i $\mathcal{O} (lg(e))$. Da vores eksponent, $m$, i det ydre loop maksimalt kan være $n/2$, har vi altså en køretid på $\mathcal{O} (k\ lg(n))$. \\
+Desuden kører den også det indre loop $k$ gange, hvor $r$ maksimalt kan være $lg(n)$. Desuden er eksponenten $2$ så dette lægge ikke synderligt meget til køretiden.
+Altså har vi en samlet køretid på $\mathcal{O} (k\ lg(n)^2)$.\\
+\\
+Det kan vises at der mindst er $3/4$ vidner $a$ for et ulige sammensat heltal. Altså vil der for $k$ kørsler på $n$ der siger $n$ er et primtal højst være en sandsynlighed på $4^{-k}$ for at $n$ rent faktiskt er sammensat.\\
+En effektiv implementering af modular eksponentiering kører i $\mathcal{O} (\log n)$ tid. \\
+Dette giver en samlet køretid på $\mathcal{O} (k\log^3 n)$.
+
+
+\newpage
+\section*{Appendix 1} \label{App:App1}
+\begin{verbatim}
+require 'benchmark'
+require 'openssl'
+ 
+def millerrabin(n,k)
+    if n < 5
+        return "n need to be greater than 4"
+    end
+    if n % 2 == 0
+        return "#{n} is composite"
+    end
+    m = n-1;
+    r = 0;
+    while (m % 2 == 0)
+        r += 1;
+        m = m/2;
+    end
+    for i in 1..k do
+        a = rand(2..n-2);
+        b = a.to_bn.mod_exp(m, n)                   # b = a^m % n
+        if (b == 1 or b == n-1)
+            next;
+        end
+        for j in (1..(r-1))
+            b = b.to_bn.mod_exp(2,n)                # b = b^2 % n
+            if (b == 1)
+              return "#{n} is composite"
+            end
+            if (b == n-1)
+                break;
+            end
+        end
+        if (b != n-1)
+            return "#{n} is composite";
+        end
+    end
+    return "#{n} is probably prime";
+end
+ 
+numbers = [48112959837082048697, 54673257461630679457,
+29497513910652490397, 40206835204840513073, 12764787846358441471,
+71755440315342536873, 45095080578985454453, 27542476619900900873,
+66405897020462343733, 36413321723440003717, 24918723678509309615,
+37813311192850760755, 50608046447142653959, 32395252670977894437,
+19601290870353624837, 13875069371204789371, 41875470038172930717,
+23238616604259962647, 31242090723917058139, 92427220233223221283]
+
+Output:
+48112959837082048697 is probably prime
+54673257461630679457 is probably prime
+29497513910652490397 is probably prime
+40206835204840513073 is probably prime
+12764787846358441471 is probably prime
+71755440315342536873 is probably prime
+45095080578985454453 is probably prime
+27542476619900900873 is probably prime
+66405897020462343733 is probably prime
+36413321723440003717 is probably prime
+24918723678509309615 is composite
+37813311192850760755 is composite
+50608046447142653959 is composite
+32395252670977894437 is composite
+19601290870353624837 is composite
+13875069371204789371 is composite
+41875470038172930717 is composite
+23238616604259962647 is composite
+31242090723917058139 is composite
+92427220233223221283 is composite
+\end{verbatim}
+
+\end{document}

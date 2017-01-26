@@ -1,0 +1,48 @@
+\section{Sammenligning}
+\subsection*{Test}
+
+\subsubsection*{Forventning}
+\textbf{Pocklington}:\\
+Da Pocklington er en deterministisk primtalstest er det forventeligt at den altid vil give det ønskede resultat.
+Problemet med Pocklington er at finde \textit{a}'er for hvilke betingelserne for teoremet gælder. Vi har ikke kunnet
+finde nogen smart måde at finde disse \textit{a}'er på. Derfor gør vi det ved en iterativ process hvor vi kigger på en mulighed
+af gangen. Dette er meget langsommeligt hvis man arbejder med store tal hvor \textit{a} ikke bliver fundet hurtigt. I
+dette tilfælde vil der være mange iterationer og dermed vil algoritmen være langsom.
+Det har endda den konsekvens at hvis tallet man tjekker om er primisk ikke er et primtal så vil testen kører alle \textit{a}'er igennem op til det tal der testes, dermed er algoritmen meget ineffektiv. Det kan derfor forventes at algoritmen vil
+være langsom for store tal.
+\textbf{Proth}:\\
+
+\textbf{Miller-Rabin}:\\
+
+
+\subsubsection*{Test af implementationer}
+For at teste de tre algoritmer er der udpeget 12 tal der er specifikt udvalgt sådan så de alle er Proth tal
+og hvor de skifter imellem at være sammensatte tal og primtal. Da det er proth tal der bliver testet 
+med har proth algoritmen en naturlig fordel, men vi har valgt at opbygge testen sådan da vi ønsker
+at sammenligne algoritmerne på det samme input.
+På hver test er der målt om de har fået det korrekte output og den tid det tager dem at lave testen.
+Ved de probabilistiske test har vi kørt testen 64 gange for give højere præcision.
+resultaterne.\\ 
+\begin{table}
+\begin{center}
+\begin{tabular}{c | c | c | c  }
+\hline 
+   (tid, korrekt) & Proth & Pocklington & Miller-Rabin \\ \hline
+   5 & (0.000074, 1) & (0.000064, 1) & (0.000744, 1) \\ \hline
+   9 & (0.000021, 1) & (0.000055, 1) & (0.000034, 1) \\ \hline
+   $9*(2^7)+1$ & (0.000039, 1) & (0.000070, 1) & (0.002038, 1) \\ \hline
+   $9*(2^9)+1$ & (0.000023, 1) & (0.030828, 1) & (0.000053, 1) \\ \hline
+   $9*(2^{33})+1$ & (0.000020, 1) & (N/A) & (0.014823, 1) \\ \hline
+   $9*(2^{31})+1$ & (0.000041, 1) & (N/A) & (0.000195, 1) \\ \hline
+   9*(2**134)+1 & (0.000092, 1) & (N/A) & (0.063023, 1) \\ \hline
+   9*(2**132)+1 & (0.000068, 1) & (N/A) & (0.001409, 1) \\ \hline
+   9*(2**366)+1 & (0.000330, 1) & (N/A) & (0.294020, 1) \\ \hline
+   9*(2**368)+1 & (0.000855, 1) & (N/A) & (0.004647, 1) \\ \hline
+   9*(2**782)+1 & (0.001410, 1) & (N/A) & (1.485159, 1) \\ \hline
+   9*(2**780)+1 & (0.001677, 1) & (N/A) & (0.023595, 1)\\ \hline
+\end{tabular}
+\end{center}
+\caption{Testresultat}
+\end{table}
+
+Tabellen viser testens 

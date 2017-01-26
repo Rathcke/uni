@@ -1,0 +1,47 @@
+\section{Sammenligning af algoritmer}
+Implementeringerne af de tre algoritmer kan findes i mappen \texttt{code}.\\
+For at teste de tre algoritmer har vi brugt 12 tal, der alle er Proth tal. Tallene skifter desuden mellem at være sammensatte tal og primtal. \\
+For at gøre vilkårene så lige som muligt er alle algoritmerne blevet implementeret i det samme programmeringssprog (Ruby),
+og testene er blevet udført på den samme computer. For hver test er der udover korrektheden af algoritmen også blevet målt tidsforbruget i sekunder.\\
+Ved de probabilistiske test har vi kørt testen 64 gange for at give en høj præcision.
+\begin{table}
+\begin{center}
+\begin{tabular}{c | c | c | c  }
+\hline 
+   Test tal  & Proth & Pocklington & Miller-Rabin \\ \hline
+   5 & (0.000074, 1) & (0.000064, 1) & (0.000744, 1) \\ \hline
+   9 & (0.000021, 1) & (0.000055, 1) & (0.000034, 1) \\ \hline
+   $9*(2^7)+1$ & (0.000039, 1) & (0.000070, 1) & (0.002038, 1) \\ \hline
+   $9*(2^9)+1$ & (0.000023, 1) & (0.030828, 1) & (0.000053, 1) \\ \hline
+   $9*(2^{33})+1$ & (0.000020, 1) & (N/A) & (0.014823, 1) \\ \hline
+   $9*(2^{31})+1$ & (0.000041, 1) & (N/A) & (0.000195, 1) \\ \hline
+   $9*(2^{134})+1$ & (0.000092, 1) & (N/A) & (0.063023, 1) \\ \hline
+   $9*(2^{132})+1$ & (0.000068, 1) & (N/A) & (0.001409, 1) \\ \hline
+   $9*(2^{366})+1$ & (0.000330, 1) & (N/A) & (0.294020, 1) \\ \hline
+   $9*(2^{368})+1$ & (0.000855, 1) & (N/A) & (0.004647, 1) \\ \hline
+   $9*(2^{782})+1$ & (0.001410, 1) & (N/A) & (1.485159, 1) \\ \hline
+   $9*(2^{780})+1$ & (0.001677, 1) & (N/A) & (0.023595, 1)\\ \hline
+\end{tabular}
+\end{center}
+\caption{Testresultater}
+\end{table}
+
+\textbf{Tabel 1} viser resultaterne af vores teste. Tuplerne beskriver (tid, korrekt), hvor korrekt er 1, hvis testen 
+gav det rigtige resultat og 0 ellers.\\
+Hvis vi kigger på resultaterne for Proth, kan man se, at den i de fleste tilfælde er den hurtigste. Dette var forventet,
+da vi i alle vores testscenarier brugte Proth tal. Til gengæld vil Proth algoritmen ikke i alle tilfælde give det rigtige svar,
+da den ikke nødvendigvis virker på ikke-Proth tal.  
+På dette punkt er Miller-Rabin bedre, da den kan bruges på alle heltal. Desuden, som der kan ses på resultaterne, er Miller-Rabin hurtigere,
+når den anvendes på de sammensatte tal, end når den anvendes på primtal. Dette skyldes, at den skal køre alle 64 gange for at udlede,
+at tallet "nok" er et primtal, men at den returnerer med det samme, hvis den finder et vidne for at tallet er sammensat.\\
+Forskellen mellem de to probabilistiske test er, at Miller-Rabins usikkerhed ligger i, at den ikke kan garantere, at tallet er et primtal,
+mens Proth usikkerhed er, at den ikke nødvendigvis kan finde et vidne for, om det er sammensat tal eller et primtal.\\
+Da Pocklington er en deterministisk primtalstest, er det forventeligt, at den altid vil give det ønskede resultat.\\
+Problemet med Pocklington er at finde $a$'er for hvilke betingelserne for teoremet gælder. Vi har ikke kunnet
+finde nogen smart måde at finde disse $a$'er på. Derfor gør vi det ved en iterativ process, hvor vi kigger på en mulighed
+af gangen. Dette er meget langsommeligt, hvis man arbejder med store tal, hvor $a$ ikke bliver fundet hurtigt. I
+dette tilfælde vil der være mange iterationer og dermed vil algoritmen være langsom.
+Det har endda den konsekvens, at hvis tallet man tjekker om er primisk ikke er et primtal, så vil testen kører alle $a$'er igennem
+op til det tal, der testes. Derved er algoritmen meget ineffektiv.\\
+Testene kan køres ved at køre filen \texttt{test.rb}. Denne skal dog stoppes i eksekveringen, da Pocklington testen 
+er meget lang tid om at terminere. Derfor er mange af resultaterne for Pocklington markeret med N/A (not applicable).

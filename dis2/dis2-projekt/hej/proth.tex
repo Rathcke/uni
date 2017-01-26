@@ -1,0 +1,58 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]		 {fontenc}
+\usepackage{pdfpages}
+\usepackage{listings}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{listings}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\newcommand\defeq{\stackrel{\mbox{\normalfont\tiny def}}{=}}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+
+\newtheorem{smoothNumbers}{Lemma}
+\newtheorem{prothTeorem}{Teorem}
+
+\begin{document}
+\subsection*{Proth tal}
+Et Proth tal er et positivt heltal på formen $N=h*2^k+1$ hvor det er krævet at $k$ er ulige og $k>2^h$ gælder. \\
+\begin{prothTeorem}
+\label{thm:1}ved vi at
+(Proths Teorem). Lad $N$ være et Proth tal som defineret før, hvis der for et heltal $a$ gælder
+$$a^{(n-1)/2} \equiv -1\:(mod\:N)$$
+hvor det er antaget at $(\frac{a}{N}) = -1$, så er $N$ et primtal.
+\end{prothTeorem}
+\begin{proof}
+Vi starter med at antage at $N$ er et primtal.\\
+Ved brug af Euler's kriterium kan vi omkskrive $(\frac{a}{N}) = -1$  til
+$$a^{(n-1)/2} \equiv -1\:(mod\:N)$$
+Under antagelse af at kongruensen i teorem \ref{thm:1} holder, så er $N-1=h*2^k$ og $\gcd(k,2^n)=1$, derfor
+$$a^{N-1}=\left(a^{(N-1)/2} \right)^2 \equiv (-1)^2 \equiv 1\: (mod\: N)$$
+Siden $N$ er ulige og deler $a^{(N-1)/2}$ må der nødvendigvis også gælde $\gcd(a^{(N-1)/2}-1,N)=1$. Fra Pocklingtons teorem [reference her], ved vi at enhver primtalsfaktor $p$ af $N$ er på formen
+$$p=r2^k+1>2^k$$
+Men 
+$$N=h*2^k+1$$
+Derfor
+$$\sqrt{N}<2^n<p$$
+Hvilket betyder at $N$ er et primtal.
+\end{proof}
+\subsection*{Proth test}
+Proth testen er en simpel probabilistisk primtalstest, der fungerer ved at udvælge et vilkårligt heltal $a$, hvorom der ikke gælder $a \not \equiv 0\:(mod\:N)$. Her udregnes 
+$$b\equiv a^{(N-1)/2}\:(mod\:N)$$
+hvilket giver 4 tilfælde
+\begin{enumerate}
+\item Hvis $b\equiv -1\: (mod\:N)$, så er $N$ et primtal (udfra Teorem \ref{thm:1})
+\item Hvis $b\not\equiv \pm 1\: (mod\:N)$ og $b^2\equiv 1\: (mod\:N)$, så er $N$ et sammensat tal, idet $\gcd(b \pm 1,N)$ er ikke-trivielle faktorer af $N$.
+\item Hvis $b^2\not\equiv 1\: (mod\:N)$, så kan man udfra Fermats lille teorem slutte at $N$ er et sammensat tal
+\item Hvis $b\equiv 1\: (mod\:N)$ forbliver det ukendt om hvorvidt $N$ er primtal
+\end{enumerate}
+Denne procedure gentages indtil at det er blevet bestemt om $N$ er et primtal eller ej. I tilfældet af at $N$ er et primtal, har testen en sandsynlighed på $\frac{1}{2}$ for at returnere at $N$ er et primtal i en enkelt iteration.
+\end{document}

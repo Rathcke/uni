@@ -1,0 +1,11 @@
+\section{Konklusion}
+Man kan konkludere at der er forskellige tilgange til at finde ud af om et tal er et primtal. 
+De probabilistiske prøver ved brug af gentagne forsøg at forøge sandsynligheden for at et tal er 
+et primtal. De to probabilistiske tests der er blevet gennemgået i denne rapport har haft to forskellige
+tilgange til det. Miller-Rabin kunne finde ud af om et tal var sammensat og hvis det ved gentagne forsøg ikke
+var vist at dette var tilfældet antog man det for at være primisk. Proth lavede fire check, et der tjekkede for om tallet 
+var et primtal, to der tjekkede om tallet var sammensat. En helt anden tilgang til primtalstest så man igennem 
+Pocklington testen der udnyttede triviel faktorisering af $N-1$. De har alle tre hver især deres fordele, 
+for Miller-Rabin giver man for tidsforbrugets skyld afkald på at kunne garantere at et tal er et primtal. Ved
+Proth kunne man ikke altid afgøre om et tal var primisk eller ej, men tilgenæld var der god performance. 
+Afslutningsvis kunne Pocklington altid afgøre om et tal var primisk, men tilgengæld havde den langsom køretid.
