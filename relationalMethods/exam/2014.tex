@@ -89,19 +89,19 @@ S &=
 \begin{pmatrix}
   0 & 1 \\
   0 & 0
-\end{pmatrix} 
+\end{pmatrix}
 \end{align*}
 Then we have:
 \begin{align*}
-R\overline{S} &= 
+R\overline{S} &=
 \begin{pmatrix}
   1 & 0 \\
   0 & 0
 \end{pmatrix} \\
-R^T \cap \overline{RS} &=
+RL \cap \overline{RS} &=
 \begin{pmatrix}
-  0 & 1 \\
-  0 & 0
+  0 & 0 \\
+  1 & 1
 \end{pmatrix} \cap
 \begin{pmatrix}
   1 & 1 \\
@@ -109,14 +109,22 @@ R^T \cap \overline{RS} &=
 \end{pmatrix} \\
 &=
 \begin{pmatrix}
-  0 & 1 \\
-  0 & 0
-\end{pmatrix} 
+  0 & 0 \\
+  1 & 0
+\end{pmatrix}
 \end{align*}
 Which means $R\overline{S}\neq R^T \cap \overline{RS}$ for these two relations.
 
 \section*{Question 2}
-TODO
+We get:
+\begin{align*}
+  R^*(R^T\cap (R^T \cup \overline{R}^T)RL \cap \overline{R}) &=
+  \begin{pmatrix}
+    1 & 0 & 1 \\
+    0 & 0 & 1 \\
+    1 & 0 & 1
+  \end{pmatrix}
+\end{align*}
 
 \section*{Question 3}
 The relation $R$ is:
