@@ -1,0 +1,48 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[danish]{babel}
+\usepackage{pdfpages}
+\usepackage{stmaryrd}
+\usepackage{listings}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{listings}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\newcommand\defeq{\stackrel{\mbox{\normalfont\tiny def}}{=}}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Teorem}
+
+\begin{document}
+\input{title.tex}
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+\setcounter{page}{1}
+\input{introduction.tex}
+\section{N-1 teste}
+Pocklingtons metode til at teste primtal er baseret på, at $n-1$ ofte kan faktoriseres trivielt. Primtal tests der tester for $n-1$ og $n+1$, hvor 
+disse er trivielt faktoriseret er meget almindelige, da de gør det let at teste, om et tal er et primtal. Derfor består listen 
+af de størst kendte primtal også primært af tal, for hvilke dette er gældende. I dette projekt vil der bliver fokuseret på $n-1$ tests.
+\input{factorization.tex}
+\input{pocklington.tex}
+\input{proth.tex}
+\input{miller-rabin.tex}
+\input{comparison.tex}
+\input{conclusion.tex}
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{bibliography}
+\newpage
+\appendix
+%\input{appendix.tex}
+\end{document}

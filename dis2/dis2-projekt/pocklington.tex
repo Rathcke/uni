@@ -1,0 +1,58 @@
+\subsection{Pocklington}
+Pocklingtons metode til at teste primtal er baseret på primtalsfaktorisering af $n-1$. 
+Testen er deterministisk. Dvs., at testens resultatet med sikkerhed er korrekt.
+\begin{theorem}
+\label{theorem:pocklington2}
+Lad $N > 1$. Hvis der for hvert primtal $q$ i $N-1$'s primtals faktorisering findes et heltal $a$, for hvilket det gælder: 
+\begin{enumerate}
+\item $a^{N-1}\equiv 1 \pmod{N}$
+\item $a^{(N-1)/q} \not \equiv 1 \pmod{N}$
+\end{enumerate}
+så vil $N$ være et primtal.
+\end{theorem}
+For at få en forståelse for teoremet vil vi først fremføre en intuitiv forklaring af teoremet. Hvis
+$N$ er et primtal, vil alle tal under $N$ være indbyrdes primiske med $N$ - altså eulers $\varphi$ funktion (antallet af tal mindre end $N$ der er indbyrdes primiske med $N$) være lig $N-1$.\\
+Derved kan man tolke den første betingelse igennem gruppeteori, hvor man kigger på gruppen $(Z/ZN)*$, som er restklassen
+for $N$. 
+Den første betingelse siger således blot, at ordenen af $a$ i $(Z/ZN)*$ er $N-1$. Ordenen er det antal gange
+man i en gruppe skal anvende gruppens operator på et element for at opnå identitetselementet. Hvis ordenen er $N-1$, skal $a$ altså i
+dette tilfælde multipliceres med sig selv $N-1$ gange for at få $1$, som er identitetselementet for en multiplikativ gruppe.
+Man kan forestille sig det lidt som om, man går en tur rundt i gruppen $(Z/ZN)*$, hvor man på vejen kommer forbi $N-1$ elementer
+for at komme frem til $1$.
+Man kan dog ikke være helt sikker på, at dette medfører, at der er $N-1$ elementer, der er indbyrdes primiske med $N$. Man skal først 
+sikre sig, at der ikke er nogle elementer i gruppen, man ikke når, og det er netop hvad den anden betingelse sørger for. 
+Hvis man igen tænker på det som en tur rundt i gruppen, så sikrer den altså, at man ikke kommer forbi det samme element i gruppen
+to gange. Dette var den intuitive forståelse af teoremet. Et mere formelt bevis kan formuleres på følgende måde.
+\begin{proof}[Bevis for teorem \ref{theorem:pocklington2}]
+Som tidligere nævnt skal vi for at vise, at $N$ er primisk, vise, at $\varphi(N)=N-1$ eller, at $N-1 \backslash \varphi(N)$,
+hvor $\varphi(N)$, som tidligere nævnt, er eulers totientfunktion. Hvis vi antager, at $N-1$ ikke deler $\varphi(N)$, så 
+vil der være et primtal $q$ og en eksponent $r>0$, så $q^r$ deler $N-1$, men ikke $\varphi(N)$. For dette $q$ vil der være et $a$ for hvilket
+de to betingelser gælder. Lad os nu sige, at $m$ er ordenen af $a$ modulo $N$. Da vil den første betingelse medføre, at $m \backslash N-1$, og den
+anden betingelse vil medføre, at $m$ ikke deler $(N-1)/q$. Derved fås $q^r \backslash m$ og $m \backslash \varphi(N)$, men det må betyde, at $q^r \backslash \varphi(n)$, hvilket er en modstrid. Dette beviser, at teorem \ref{theorem:pocklington2} er korrekt.
+\end{proof}
+Vi mangler dog et sidste teorem for at komme frem til pocklington testen. Det sidste teorem er Pocklingtons teorem:
+\begin{theorem}
+\label{theorem:pocklingtons-theorem}
+(Pocklingtons teorem). Lad $N-1$ kunne skrives på formen $q^kR$, hvor $q$ er et primtal, der ikke deler $R$.
+$q$ er altså et af primtallene fra $N-1$'s primtalsfaktorisering. Hvis der findes et heltal $a$,
+der opfylder de to betingelser fra Lucas testen, så kan alle primtalsfaktorer af $N$ skrives på formen $q^kr+1$.
+\end{theorem}
+\begin{proof}
+Lad $p$ være en hvilken som helst af primtalsfaktorerne for $N$, og $m$ være ordenen af 
+$a$ modulo $p$. Ligesom i det tidligere bevis for teorem \ref{theorem:pocklington2} må $q^k$ dele $m$,
+og da $m$ er ordenen af $a$ modulo $p$, så deler $m$ $p-1$, og deraf følger teoremet.
+\end{proof}
+Hvis man kombinerer Pocklingtons teorem med teorem \ref{theorem:pocklington2}, får man Pocklington testen som beskrevet ud fra teorem \ref{theorem:pocklington1}.
+\begin{theorem}
+\label{theorem:pocklington1}
+Faktoriser $N-1$ så $N-1=AB$ hvor $A$ og $B$ er indbyrdes primiske, $A>B$ og hvor vi kender primtals faktoriseringen
+af $A$. Da gælder det:
+Hvis der for hvert primtal $p$ i $A$'s faktorisering findes et heltal $a$ der har egenskaberne
+\begin{enumerate}
+\item $a^{n-1}\equiv 1 \pmod{N}$
+\item $\text{gcd}(a^{(N-1)/p}-1, N) = 1$
+\end{enumerate}
+så vil $n$ være et primtal.
+\end{theorem}
+Observer at $A>B$ betingelsen medfører, at $A>\sqrt{N}$, og netop dette gør teorem \ref{theorem:pocklington1}
+mere effektiv end testen baseret på \ref{theorem:pocklington2}. 
