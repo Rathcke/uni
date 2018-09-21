@@ -1,0 +1,101 @@
+\documentclass[a4paper, fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\setlength\parindent{0pt}
+\setlength\mathindent{75pt}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\begin{document}
+\subsection*{Fundamental Data Structure Problem}
+The fundamental data structuring problem is the problem of storing $S_1,\ldots,S_n$ items such that we can efficiently support different kinds of queries and operations. These operations/queries are \textsc{Make-Set}, \textsc{Insert}, \textsc{Delete}, \textsc{Find}, \textsc{Join}, \textsc{Paste} and \textsc{Split}.
+
+\subsection*{Random Treaps}
+Random Treaps is a datastructure that has a set of keys like a normal binary search tree, but each node also has a priority associated with it. This priority is given at random. The treap satisfies that it is a binary search tree with respect to keys and also a heap with respect to the priorities. Theorem 8.1 states there is a unique treap for each set of key-priority values. \\
+The operations \textsc{Make-Set} and \textsc{Find} are implemented normally. yadda yadda for the others. \\
+\\
+\textbf{Proof of Lemma 8.6:} We will show that $E[depth(x_k)]=H_k+H_{n-k+1}+1$. We define a variable $X_{ik}$ if $x_i$ is an ancestor of $x_k$. If we look at the case when $i<k$, then:
+\begin{align*}
+  \mathbb{E}\left[ \sum_{i<k} X_{ik} \right] &= \sum_{i<k} p_i \comment{where $p_i=\max\{p_i,\ldots, p_k\}$} \\
+                                             &= \sum_{i<k} \frac{1}{k-i+1} \comment{Only ancestor if it was the largest key at its insertion}\\
+                                     &= \sum_{i=2}^k \frac{1}{i} \\
+                                     &= H_k-1
+\end{align*}
+The same analysis follows for $i>k$, yielding an expected depth of $(H_k-1)+(H_{n-k+1}-1)+1$ ($+1$ from itself) which gives us $\mathcal{O}(\lg n)$ depth.\\
+\\
+\textbf{Proof of Lemma 8.7:} Meh?
+
+\subsection*{Hashing with $O(1)$ search time}
+
+
+
+\end{document}

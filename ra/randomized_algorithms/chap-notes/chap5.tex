@@ -1,0 +1,167 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{epstopdf}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[margin=1in]{geometry}
+\usepackage{subcaption}
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=2,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\def\E{\mbox{\textbf{E}}}
+\def\Pr{\mbox{\textbf{Pr}}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
+\graphicspath{{image/}}
+\author{Ola Rønning (vdl761)\\Tobias Hallundbæk Petersen (xtv657)}
+\title{Randomized Algorithms \\ Week 6}
+\lhead{RA}
+\rhead{Week 6}
+\begin{document}
+\textbf{Concepts}: Probabilistic method, probability amplification, Locasz local lemma, conditional probabilities.\\
+Probabiltic Method:
+\begin{enumerate}
+\item Any ran. var. \(x\) assume \(\geq 1\) value \(\geq E[x]\) and assume \(\geq 1\) value \(\leq E[x]\).
+\item If \(o\) chosen at random from \(U\) satifies property \(p\) with non-zero probability, the there \(\exists o \in U\) with property \(p\).
+\end{enumerate}
+Application: Max Cut\\
+Thrm: For any grah \(G(V,E)\), \(|V|=n\), \(|E|=m\), there exist partition of \(V\) to \(A,B\) st.
+\[|\{(u,v)|u\in A \wedge v\in B\}| \geq m/2\]
+Consider assign \(v\in V\) at random to \(A\) or \(B\) with \(1/2\) prob. \(\Rightarrow\) Prob \((u,v)=u\in A \wedge v\in B = 1/2\). By linarity of expectation we expect \(m/2\) edges satisfying \(p=(u,v)=u\in A \wedge v\in B\). \(\Rightarrow \exists p\) satisfying the thrm by Probabilistic Method 2.\\
+Not necessarily an efficient ran. alg., if prob. is miniscule.
+
+Max-Sat:\(m\) clauses in \(cnf\) over \(n\) vars.\\
+Problem: assign vars values st. max num. of cluase are satisfied.\\
+Thrm 1: For any set of \(m\) clauses, there is a thruth assign. st var satisfy \(\geq m/2\) clauses.\\
+Proof: Ran assign var to 0,1 indp. and equiprob. For \(1\leq i \leq ,\), \(Z_i=1\) iff \(i\)'th clause satisfied. With \(k\) literals, \(\Pr[\bar{Z}_i]=2^{-k}\), since all literals must zero. \(\Rightarrow \Pr(Z_i) = 1 - 2^{-k} \geq 1/2\) \(\Rightarrow \forall i.E[Z_i] \geq 1/2\). By linarity of expectation 
+\[E[\sum_{i=1}^m Z_i \geq m/2\]
+By probabilistic method 1. \(\exists\) assign. st \(\sum_{i=1}^m Z_i \geq m/2\).\\
+\(3/4\)-approx Max Sat.\\
+\(\alpha\)-ran-approx alg: for instance \(I\) \(m_{\cdot}(I)\) max num of satif. clauses \(E[M_A(I)]\) expected num of satisf. clause by \(\mathcal{A}\)
+\[ inf_{I\in \mathcal{I}} \frac{E[m_A(I)]}{m_{\cdot}(I)}=\alpha\]
+Thrm 1 is \(1-2^{-k}\)-approx alg if \(\forall i |C_i| \geq k\) \(\Rightarrow k\geq 2\) Thrm 1 \(\geq 3/4\)-approx alg.\\
+Issue \(k=1\) (\(1/2\) approx)\\
+Solution: New randomized rounding alg. Run both, return better.\\
+Formulate problem as Linear programming relaxation and use randomize rounding.\\
+Let \(z_j\in \{0,1\}\) be ind. sat. \(C_j\). For each var \(x_i\) let \(y_i\) be indp. st. \(y_i=1\) iff \(x_i=TRUE\). \(C_j^+\) be set pf indeces in \(C_j\) of vars in uncomplemented form and let \(C_j^-\) be indeces of complemented vars.\\
+Linear Program
+\[\max \sum_{j=1}^m z_j\\y_i,z_j \in \{0,1\}\]
+subject to
+\[\sum_{i\in C^+_j}y_i + \sum_{i \in C^-_j}(1-y_i) \geq z_j\]
+Relaxation: \(y_i, z_j \in [0,1\). Let \(\hat{y}_i\) be relaxed \(y_i\) when solved. \(\hat{z}_j\) be val obt. for \(z_j \Rightarrow \max \sum_j \hat{z}_j \geq \max \sum_j z_j\).\\
+Show \(E[Z] \geq (1-1/e)\sum_j \hat{z}_j\), then show best of two algs atleast \(3/4 \sum_j \hat{z}_j\).\\
+Let \(\Pr[y_i=1] = \hat{y}_i\) and 
+\[\beta_k = 1-(1-k^{-1})^k\]
+Note \(\beta_k \geq (1-1/e)\) for all \(k \in \mathcal{Z}^+\).\\
+Lemma 1: Let \(c_j\) be a clause with \(k\) literals. The prob that it is satis. by rand rounding is \(\geq \beta_k\hat{z}_j\)\\
+Proof: Focus on \(c_j\) and assume \(c_j^+=c_j\), assume \(x_1 \vee .. \vee x_k\).
+By constraint \(\hat{y}_1+..+\hat{y}_k \geq \hat{z}_j\). \(c_j\) remains unsatis if all \(y_i\) are rounded to zero.\\
+\(\Pr[c_j=FALSE]=\prod_{i=1}^k(1-\hat{y}_i)\) since ran rounding is indep.\\
+Remain to show
+\[ 1-\prod_{i=1}^k (1 - \hat{y}_i) \geq \beta_k \hat{z}_j\]
+LHS min when \(\hat{y}_i = \hat{z}_j/k \Rightarrow\)
+\[1-(1-x/k)^k \geq \beta_{k} x\]
+for \(x\in[0,1]\). Note \(g(x) = 1-(1-x/k)^k\) is concave, so it remains to show \(f(0)\geq g(0)\) and \(f(1) \geq g(1)\), for \(f(x)=\beta_k x\). Simple calc gives \(g(0)=f(0)=0\) and \(f(1)=g(1)=1-(1-1/k)^k\).\\
+Thrm 3: Given instance \(I\) of Max-Sat. \(E[satis clauses]\) by a Linear Prog with randomized rounding is (1-1/e) times the max num of number clauses satifyable on \(I\).\\
+Proof: Lemma 1 over all \(j\) with linearity of expectation. 
+Thrm 4: Let \(n_1\) be the expected of alg from thrm 1. Let \(n_2\) be expected of alg from Thrm 2 then 
+\[\max(n_1,n_2)\geq 3/4 \sum_j \hat{z}_j\]
+Proof: Suffice to show  \((n_1 + n_2)/2 \geq 3/4 \sum \hat{z}_j\).\\
+Denote by \(S^k\) the set of clause \(c\) where \(|c|=k\)
+\[n_1 = \sum_k \sum_{c_j \in S^k} (1-2^{-k} \geq \sum_k \sum_{c_j \in S^k} (1-2^{-k})\hat{z}_j\]
+By lemma 1
+\begin{align*}
+n_2 &\geq \sum_k \sum_{c_j \in S^k} \beta_k \hat{z}_j \Rightarrow\\
+\frac{n_1+n_2}{2} &\geq \sum_k \sum_{c_j \in S^k} \frac{(1-2^{-k})+\beta_k}{2}\hat{z}_j
+\end{align*}
+Since \( \forall k. (1-2^{-k}) + \beta_k \geq 3/2\) \(\Rightarrow\)
+\[\frac{n_1+n_2}{2} \geq \frac{3}{4} \sum_k\sum_{c_j \in S^k} \hat{z}_j = \frac{3}{4} \sum_j \hat{z}_j\]
+Expanding graph: number of any \(S\) is large than some constant times \(|S|\), ie \(|\tau(S)| \geq c|S|\). \(\tau(S)= \{w\in V| \exists v\in S,(v,w) \in E\}\).\\
+An \((n,d,\alpha,c\) OR-concentrator is a bipartite multigraph \(G(L,R,E)\) with indp. set \(|L|=|R|=n\) st.
+\begin{enumerate}
+\item \(\forall v\in L. deg(v)\leq d\)
+\item \(\forall S \subseteq L\) st. \(|S| \leq \alpha n\), there are \(|\tau(S)\leq R| \geq c|S|\)
+\end{enumerate}
+Thrm 5: \(\exists n_0\) st. \(\forall n > n_0\) there is an \((n,18,1/3,2)\) OR-concentrator.\\
+Proof: Consider bipartite rand graph on vert. in \(L\) and \(R\) st \(v\in L\) choose \(\tau(v)\) by sampling \(d\) vertices indep and unif from \(R\). \(\Rightarrow\) \(\tau(v) \leq d\) since multi edges removed.\\
+Let \(\mathcal{E}_s\) denote event that \(\tau(S) < c|S|\) neighbors in \(R\).\\
+Bound \(\Pr[\mathcal{E}_s]\) then \(\sum_{s\in S: |S| \leq \alpha n} \Pr[\mathcal{E}_s]\) to upperbound prob that rand. graph fails to be OR-conctrator \((n,d,\alpha,c)\) as specified.\\
+Fix \(S\subseteq L\) st \(|S|=s\) and \(T\subseteq R\) st \(|T|=cs\). there are \({n \choose s}\) ways of choosing \(S\), and \({n \choose cs}\) ways of choosing \(T\).\\
+\(\Pr[\tau(S) \subseteq T] = (cs/n)^{ds}\), since \(\forall v\in S.\tau(v) \leq d\) \(\Rightarrow \Pr[\mathcal{E}_S] \leq {n \choose s} {n \choose cs} (cs/n)^{ds}\)\\
+Use \({n \choose k} \leq (ne/k)^k\)
+\[\Pr[\mathcal{E}_s]\leq (ne/s)^s(ne/cs)^{cs}(cs/n)^{ds}  = \left[\right(\frac{s}{n}\left)^{d-c-1} e^{1+c} c^{d-c}\right]^s\]
+\(\alpha = 1/3\) and \(s \leq \alpha n\)\\
+\begin{align*}
+\Pr[\mathcal{E}_s] &\leq \left[\left(\frac{1}{3}\right)^{d-c-1} e^{1+d} c^{d-c}\right]^s\\
+                   &\leq \left[\left(\frac{1}{3}\right)^{d} (3e)^{1+d}\right]^s
+\end{align*}
+Using \(c=2 \wedge d=18\)
+\[\Pr[\mathcal{E}] \leq \left[\left(\frac{2}{3}\right)^{18}(3e)^3\right]^s\]
+let \(r=(2/3)^{18}(3e)^3\) and note \(r < 1/2\) \(Rightarrow\)
+\[\sum \Pr[\mathcal{E}_s] \leq \sum_{s\geq 1} r^s = \frac{r}{1-r} < 1\]
+\end{document}

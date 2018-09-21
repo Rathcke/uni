@@ -1,0 +1,158 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{epstopdf}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[margin=1in]{geometry}
+\usepackage{subcaption}
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=2,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\def\E{\mbox{\textbf{E}}}
+\def\Pr{\mbox{\textbf{Pr}}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
+\graphicspath{{image/}}
+\lhead{RA}
+\rhead{Lin-probe}
+\begin{document}
+\section{k-independence}
+A hashing \(h:[u]\rightarrow [t]\) is k-independent if for distinct \(x_0,..,x_{k-1}\in [u]\) and hash values \(y_0,..,y_{k-1} \in [t]\) we have \(\Pr[h(x_0)=y_0 \wedge h(x_1)=y_1 \wedge .. \wedge h(x_{k-1}=y_{k-1}\).\\
+In other words 
+\begin{enumerate}
+\item for any keys \(x_0,..,x_{k-1} \in [u]\), hash values \(h(x_0),..,h_{k-1}\) are independent random variables, so \(i\in [k]. \Pr[h(x_i) = y_i] = \Pr[h(x_i) = y_i |\bigwedge_{j \in [k]\\\{i\}}h(x_j) = y_j]\). 
+\item for any \(x \in [u]\) \(h(x)\) is uniform in \([t]\).
+\end{enumerate}
+\section{Linear Probing}
+Linear probing uses a hash function to hash a set of \(n\) keys into an array of size \(t\). 
+\begin{itemize}
+\item Insert(x): start at \(h(x)\) scan until empty location is found and insert. Note we pretend its array is a ring.
+\item Find(x): start at \(h(x)\) scan until either we find x or an empty location, return x or null respectively.
+\item Delete(x): x in location i, scan \(i+1,..\) for \(y\) st \(h(y) < i\) we place this at i, and start scan at \(j\) with same invariant. We continue until we reach empty location \(d\), because then there is no hash in run that goes passed d.
+\end{itemize}
+\textbf{Thrm} With linear probing the time it takes to search, delete and insert a key x is at most the proportional to the number of locations from \(h(x)\) to the first empty location.\\
+Load: for \(n\) keys and \(t\) locations in array, \(n/t\). Assume \(n \leq \frac{2}{3}t\).
+\section{Linear probing /w 5-independence}
+We assume load \(n \leq 2/3 t\) and \(t\) power of two.\\
+Let \(R\) be a run, ie. maximal interval of filled positions, empty before and after. Hence we have \(x\in S\) that lands in \(R \Rightarrow h(x) \in R\), so \(r=|R|\) keys hash into \(R\).\\
+By above thrm, operation runtime is proportional upperbounded by \(r+1\).\\
+Dyadic \(l\)-interval: is an interval of length \(2^l\) of the form \(\forall i\in [t/2^l].[i2^l,(i+1)2^l)\). Assumming uniform hashing into \([t]\), we expect \(n/t2^l \leq 2/3 2^l\) to hash to \(I\).\\
+\(I\) near-full if \(\geq 3/4 2^l\) keys from \(S\\\{q\}\) hash into \(I\).\\
+\textbf{Lemma}: Consider run R of length \(r \geq 2^{l+2}\). Then one of the first four \(l\)-intervals intersecting must be near-full.\\
+Proof: Let \(I = I_0,..,I_3\) be first four \(l\)-intervals of R. Then since \(r \geq 4 2^l\) we have 
+\[|I| = |\left(\bigcup_{i\in [4]} I_i\right) \cap R| \geq 3*2^l +1\] 
+Since \(I_0\) can be only last location in \(I_0\). Since \(I\) is full, atleast \(3*2^l +1\) keys must hash to \(I\). Then when we exclude \(q\) we one of \(I_i\) must have \(3/4*2^l\) keys. By defintion \(I_i\) is near-full.\\
+\textbf{Lemma:} If run R containing the hash of the query \(q\) has \(r \in [2^{l+2},2^{l+3})\), then the of the 12 intervals: interval containing \(h(q)\), the 8 intervals immediately to the left or the 3 immediately to the right, must be nearly full.\\
+Proof: Since \(r\leq 8*2^l\) the first interval intersecting R can be atmost 8 intervals before the one contianing \(h(q)\). The following three must be if \(h(q)\) is in first intersect with R.\\
+\textbf{Thrm} Consider storing a set S of keys in a linear probing table of size t (pow 2). Conditioned on the hashing \(h(q)\), let \(P_l\) bound the probability that \(3/4 2^l\) keys from \(S\\\{q\}\) hash to any l-interval. The then expected time for search, delete and insert of \(q\) is bounded by 
+\[O \left(1+\sum_{l=0}^{log_2 t} 2^{l}P_l\right)\]
+Proof: We want bound on \(P_l\): the probability that any l-interval is near full. Since then the probability that run containing \(h(q)\) has length \(r\in [2^{l+2},2^{l+3})\) is given bounded by \(12P_l\) by above lemma.\\
+This gives that the expected length of the run  containing \(q\) is
+\[3+\sum_{l=0}^{log_2 t} 2^{l+3}(12P_l) = O \left(1+\sum_{l=0}^{log_2 t} 2^{l}P_l\right)\]
+\section{Fourth moment bound}
+For \(i \in [n]\) let \(X_i \in \{0,1\}\), \(p_i = \Pr[X_i = 1] = E[X_i]\), \(X = \sum_{i\in [n]} X_i\) and \(\mu = E[X] = \sum_{i \in [n]} p_i\).\\
+Note \(\sigma_i^2 = Var[X_i] = E[(X_i - p_i)^2] = p_i(1-p_i)^2 + (1-p_i)p_i^2 = p_i - p_i^2\) and for pairwise independent \(X_i\) the variance of the sum is the sum of variances.
+\[\sigma^2 \leq \mu\]
+Using Chebyshevs inequality we have
+\[\Pr[|X-\mu| \geq d \sqrt{\mu}] \leq \Pr[|X-\mu \geq d \sigma] \leq 1/d^2\]
+\textbf{Thrm} If random variables \(X_0,..,X_n\) are 4-wise independent and \(\mu = \E[X] \geq 1\). Then
+\begin{equation}
+\Pr[|X-\mu| \geq d\sqrt{\mu}] \leq \frac{4}{d^4}]
+\end{equation}
+Proof: Note \(X-\mu = \sum_{i\in [n]} (X_i -p_i)\). by linarity of expecation
+\[E[\sum_{i\in [n]} (X_i-p_i)^4] = \sum_{i,j,k,l \in [n]} E[(X_i-p_i)(X_j-p_j)(X_k -p_k)(X_l - p_l)\]  
+If \((X_i - p_i)\) is only occurrence  then there will be no middle term and hence \(p_i-p_i = 0\) so \(E[(X_i-p_i)]E[(X_j-p_j)(X_k -p_k)(X_l - p_l)=0\). So only even occurs will contribute.
+\[E[\sum_{i\in [n]} (X_i-p_i)^4] = \sum_{i \in [n]} E[(X_i-p_i)^4] + {4 \choose 2} \sum_{i < j} E[(X_j-p_j)^2]E[(X_i-p_i)^2] \]  
+For \(m>1\) we have
+\begin{align}
+E[(X_i-p_i)^m] &= p_i(1-p_i)^m + (1-p_i)^m(-p_i)^m\\
+               &\leq p_i(1-p_i)^m + (1-p_i)^m(p_i)^m\\
+               &= p_i(1-p_i)((1-p_i)^{m-1} + p_i^{m-1})\\
+               &\leq p_i(1-p_i) \leq \sigma_i^2
+\end{align}
+So
+\begin{align}
+E[\sum_{i\in [n]} (X_i-p_i)^4] &\leq \sum_i \sigma_i^2+{4 \choose 2} \sum_{i<j} \sigma_i^2\sigma_i^2\\
+                               &\leq \sigma^2 + 3(\sum_i \sigma_i^2)^2\\
+                               = \sigma^2 + 3\sigma^4
+\end{align}
+So we have
+\[E[(X-\mu)^4] \leq 4 \mu^2\]
+Using markov we acheive
+\[\Pr[|X-\mu| \geq d\sqrt{\mu}] = \Pr[(X-\mu)^4 \geq (d\sqrt{\mu})^4] \leq \frac{E[(X-\mu)^4]}{(d\sqrt{\mu})^4} \leq \frac{4}{d^4}\]
+
+\textbf{Thrm} Suppose we use a 5-independent hash function \(h\) to store a set S of n keys in a linear probing table of size \(2/3t \geq n\) where t is pow 2. Then it takes expected constant time to search, insert and detete a key.\\
+Proof: First we fix the hash of q. Now we bound \(P_l\). For each key \(x \in S\\\{q\}\) let \(X_x = 1\) iff \(h(x)\in I\). \\
+Then \(\sum_{x \in S\\\{q\}} X_x\) is the number of keys landing in \(I\), and its expectation \(\mu \leq n/t 2^l \leq 2/3 2^l\).\\
+We want to know 
+\[X \geq 3/4 2^l \Rightarrow X-\mu \geq 1/12 2^l > 1/10\sqrt{2^l \mu}\]
+Since h is 5 independent, fixing \(h(x)\) gives \(X_x\) is 4 independent so by previous thrm we get
+\[\Pr[X \geq 3/4 2^l] \leq 40000/2^{2l} = O(1/2^{2l})\]
+Applying this to last theorem of previous section we get
+\[O(1+\sum_0^{\lg t} 2^lP_l) = O(1+\sum_0^{\lg t} 2^l/2^{2l}) = O(1)\]
+\end{document}

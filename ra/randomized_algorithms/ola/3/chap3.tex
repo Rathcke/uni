@@ -1,0 +1,170 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{epstopdf}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[margin=1in]{geometry}
+\usepackage{subcaption}
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=2,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\def\E{\mbox{\textbf{E}}}
+\def\Pr{\mbox{\textbf{Pr}}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
+\graphicspath{{image/}}
+\lhead{RA}
+\rhead{Chap 3}
+\begin{document}
+\section{Occupancy}
+Tail probability: the probability that a random variable deviates a given amount from its expectation.\\
+Occupancy problem: assign m balls to n bins.\\
+Commonly uses the union bound. We want to answer with high probability no bin recieve more than k balls.
+Let \(\mathcal{E}_j(k)\) denote event j'th bin receive k balls. Consider bin 1. The probability bin 1 is given exacyly i balls is
+\begin{align}
+\Pr[\mathcal{E}_1(k)] &= \sum_k^n {n \choose i} (1/n)^i (1-1/n)^{n-i} \leq {n \choose i} n^{-i} \leq \left(\frac{ne}{i}\right)^in^{-i} = \sum \left(\frac{e}{i}\right)^i\\
+&= \left(\frac{e}{k}\right)^k\left(1+\frac{e}{k}+...+\left(\frac{e}{n-k}\right)^{n-k}\right) \leq \left(\frac{e}{k}\right)^k\left(1+\left(\frac{e}{k}\right)+\left(\frac{e}{k}\right)^2+...\right)
+\end{align}
+Infinit sum with solution \(1/1-r\). Choose \(k^* = 3\ln n/\ln\ln n\).
+\[Pr[\mathcal{E}_1(k^*)] \leq \frac{1}{n^2}\]
+By union bound we obtain
+\[Pr[\cup\mathcal{E}_j(k^*)] \leq \frac{1}{n}\]
+From this we have that with probability \(1-1/n\) there are no more than \(k^*\) balls in any bin.
+
+Birthday problem: assign m balls to n bins, how many balls should expect to place before there are two balls in the same bin.\\
+Consider the random assignment as an order assignment in time. First one ball is assigned then the next balls is assigned etc. Denote even that i'th ball lands in empty bin by \(\mathcal{E}_i\).  \(\Pr[\mathcal{E}_i]= 1 - \frac{i-1}{n}\) so
+\[\Pr[\cap_2^m\mathcal{E}_j] = \prod_2^m(1-\frac{i-1}{n} \leq \prod_2^me^{-(i-1)/n)}=e^{-m(m-1)/2n}\]
+\section{Markov and Chebyshev inequality}
+Markov inequality: Let Y be random varaible assuming only non-negative values. Then for \(t \in \mathcal{R}^+\) \[\Pr[X > t] \leq \frac{E[Y]}{t}\]
+Proof: Let f(y)=1 iff \(y \geq t\) and 0 otherwise.  Then \(\Pr[Y\geq t] = E[f(Y)]\). Since \(f(y)\leq y/t\) for all y,
+\[E[f(Y)] \leq E[Y/t] = \frac{E[Y]}{t}\]
+Chebyshev inequality: Let X be ran variable with expectation \(\mu_X\) and standard deviation \(\sigma_X\). Then for \(t \in \mathcal{R}^+\)
+\[\Pr[|X-\mu_X| \geq t\sigma_X] \leq \frac{1}{t^2}\]
+Proof: Use
+\[\Pr[|X-\mu_X| \geq t\sigma_X] = \Pr[(X-\mu_X)^2 \geq t^2\sigma^2_X]\]
+\(Y=(X-\mu_X)^2\) has expectation \(\sigma^2_X\) and then apply markov.
+
+\section{LazySelc}
+Let \(r_S(t)\) denote the rank of an elements t in S and let \(S_{(i)}\) be the i'th smallest element of S.\\
+\includegraphics[width=\textwidth]{lazySelect.png}\\
+\textbf{Lemma}: Let \(X_1,X_2,...,X_m\) be independent random variables. Let \(X = \sum_1^m X_i\). Then \[\sigma_X^2=\sum_{1}^m \sigma^2_{X_i}\]
+Proof: \(\mu = \sum_1^m \mu_i\). Variance of \(X\) is given by
+\[E[(X-\mu)^2] = E[(\sum_1^m(X_i- \mu_i))^2] = \sum_1^m E[(X_i - \mu_i)^2] + 2 \sum_{i<j} E[(X_i-\mu_i)(X_j-\mu_j]\]
+Since \(X_i,X_j\) are independent so are \(X_i - \mu_i\) and \(X_j - \mu_j\). So we have \(E[XY] = E[X]E[Y]\), but 
+\[E[X_i-\mu_i] = E[X_i] - \mu_i = 0\]
+It follows that
+\[E[(X-\mu)^2] = \sum_1^m E[(X_i - \mu_i)^2] = \sum_1^m \sigma^2_i\]
+\textbf{Thrm}: With probability \(1-O(n^{-1/4})\). LazySelect finds \(S_{(k)}\) on the first pass Step 1-5, and thus peforms 2n+o(n) comparisons.\\
+Proof: The number of comparisons is to see. We get $2n$ comparisons determining ranks for $a$ and $b$. The other steps only perform $o(n)$ comparisons. The algorithm can fail if $S_k$ lands outside the set $P$. Lets analyze the probability that $S_k<a$. This happens only if fewer than $\ell$ of the elements in $R$ are $\leq S_k$. Let $X_i$ be an indicator variable for this, then we see that $P[X_i]=k/n$. These variables are actually \textit{Bernouille trials}, which means we can find $\mu$ and $\sigma$:
+\begin{align*}
+  \mu&=E\left[ \sum_{i=1}^{n^{3/4}} X_i \right] = \sum_{i=1}^{n^{3/4}} E[X_i] =\frac{kn^{3/4}}{n}=kn^{-1/4}
+\end{align*}
+and
+\begin{align*}
+  \sigma^2 = n^{3/4}\left( \frac{k}{n} \right) \left( 1-\frac{k}{n} \right) \leq \frac{n^{3/4}}{4}
+\end{align*}
+Or to bound the standard deviation, we have $\sigma \leq n^{3/8}/2$. We can now use Chebyshev's inequality to get:
+\begin{align*}
+  P[|X-\mu|\geq \sqrt{n}]\leq P[|X-\mu|\geq 2n^{1/8}\sigma]=O(n^{-1/4})
+\end{align*}
+Following the same argument, this is also the probability that $b<S_k$, meaning the probability it falls outside $[a,b]$ is $O(n^{-1/4})$. \\
+The other way it can fail is if $|P|>4n^{3/4}+2$. We note that $|P|=r_b-r_a+1$, so for the test to fail, we must have $k-r_a>2n^{3/4}+1$ or $r_b-k>2n^{3/4}+1$. The proof then follows from the above analysis, but where $X_i$ is $1$ if the $i$'th sample has rank less than $k-2n^{3/4}$ or above $k+2n^{3/4}$. Once again, we get $O(n^{-1/4}$, which proves the result from Theorem 3.5. \\
+
+
+\section{Two-point sampling}
+Pairwise Indepedence: a set \(X_1,X_2,...\) of discrete random vairables is pairwise independet if for all \(i\ne j\) and \(x,y \in \mathcal{R}\)
+\[\Pr[X_i = x| X_j = y] = \Pr[X_i = x]\]
+Pairwise indepedence is enough for Lemma in LazySelc Section.\\
+Consider algorithm random deciding algorithm A for language L, st for \(r \in \mathcal{Z}_n = <0,..,n-1>\) where \(n\) is suitable prime, A(x,r) output binary with properties i) if \(x \in L\) A(x,r) = 1 for at least half of \(\mathcal{Z}_n\). ii) if \(x\not\in L\) A(x,r)=0 for all r.
+if \(x in L\) and r is st A(x,r)=1 then r is witness for x. Since deciding is the or reduction of A(x,r) for t indepedently drawn r's we can drive down incorrect classification to \(2^{-t}\), at the cost of \(\Omega(t\log n)\) random bits. \\
+If we are only willing to \(2(\log n)\) random bits, ie. draw \(a,b\) from \(\mathcal{Z}_n\) the naive approach gives upperbound on incorrect classification \(1/4\).\\
+Better scheme: let \(r_i = a*i + b \mod n\) for \(1 \leq i \leq t\) and do or reduction on \(A(x,r_i)\). Probability of incorrect classification \(1/t\).\\
+Proof: \(A(x,r_i)\) is a random varaible over the probabilty space of independet pairs \(a,b\) from \(\mathcal{Z}_n\), hence \(r_i\) are pairwise independet and so are \(A(x,r_i)\) for \(1\leq i\leq t\). Let \(Y=\sum_1^t A(x,r_i)\) and \(x \in L\), then \(E[Y] \geq t/2\), \(\sigma_y^2 \leq t/4\). An incorrect classification is event \(\{Y=0\}\) 
+\[\Pr[Y=0]\leq \Pr[|Y-E[Y]| \geq t/2] \leq 1/t\]
+by Chebyshev inequality.
+
+\section{Coupons}
+Coupons collectors problem: there are n types of coupons, at each trial a random coupon is chosen. How many trials should expect to run before we have all types of coupons.\\
+Let X be a random variable defined to be number of trials required to collect atleast one of each coupon. Let \(C_1,C_2,..,C_X\) denote the sequence of trials. \(C_i\) denotes the type of coupon  drawn in \(i\) trial. \(C_i\) is a success if its a new type of copoun (not seen in last i-1 trials). \(C_1\) and \(C_X\) are always success. Define epoch \(X_i\) be the number of trials between from \(i\)'th to \(i+1\) success.
+\[X = \sum_0^{n-1} X_i\]
+the probabilty of success in any trial of the ith epoch is \(p_i = (n-i)/n\). \(X_i\) is geometric distrubtion so \(E[X_i] = 1/p_i\) and variance is \( (1-p_i)/p^2_i\). So by linarity of expecatation
+\[E[X] = \sum_0^{n-1} \frac{n}{n-i} =n \sum_1^n 1/i= n H_n\]
+Since \(X_i\) is indep, 
+\begin{align}
+\sigma_X^2 &= \sum_0^{n-1} \sigma_{X_i}^2\\
+           &= \sum_0^{n-1} \frac{ni}{(n-i)^2}\\
+           &= \sum_0^{n-1} \frac{n(n-i)}{i^2}\\
+           &= n^2\sum_0^{n-1} \frac{1}{i^2} - nH_n
+\end{align}
+Which converges to \(\pi^2/6\) as n approaches \(\infty\).\\
+We want to make statements like \(X\) is sharply concentrated around its expectation. Variance not tight enough. Let \(\mathcal{E}^r_i\) deonte the event that coupon type i is not collect in first r trials. 
+\[\Pr[\mathcal{E}^r_i]=(1-1/n)^r \leq e^{-r/n} = n^{-\beta} \]
+\(\beta=r/(n \ln n)\), so by union bound
+\[\Pr[X > r] \leq n^{-\beta +1}\]
+
+\end{document}

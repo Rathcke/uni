@@ -1,0 +1,63 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{epstopdf}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[margin=1in]{geometry}
+\usepackage{subcaption}
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\def\E{\mbox{\textbf{E}}}
+\def\Pr{\mbox{\textbf{Pr}}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
+\graphicspath{{image/}}
+\lhead{Randomized Algorithms}
+\rhead{Game-Theoretic Techniques}
+\begin{document}
+\section{Data Structures}
+\subsection{The Fundamental Data-structuring Problem}
+\label{sub:The Fundamental Data-structuring Problem}
+We want to maintain a DS for some set $S$ which supports various types of queries and operations efficiently. One solution is to represent the set $S$ as a BST that satisfies the search tree property: for a node with keyval $k$, its left subtree only contains keys smaller than $k$ and its right, key greater than $k$. Internal nodes have keyvals, leaves are NIL pointers. AKA endogenous.
+
+The implementation of the various operations (find, insert, join, delete) for a BST guarantees a worst-case time bound of $O(\log n)$.
+\subsection{Random Treaps}
+\label{sub:Random Treaps}
+A random treap is a tree in which each internal node has an associated key AND priority. The treap is then a BST wrt its keys while it maintains heap order wrt its priorities. We assume distinct keys and priorities. A treap for $S=\{(k_1,p_1),\ldots, (k_n,p_n)\}$
+\paragraph{Theorem 8.1:} Let $S=\{(k_1,p_1),\ldots(k_n,p_n)\}$ be any set of key-priority pairs such that the keys and the priorities are distinct. Then there exist some unique treap $T(S)$ for it.
+\paragraph{Proof:} It is obvious for the cases $n=0$ and $n=1$. Suppose $n\geq 2$ and that $(k_1,p_1)$ has highest prio in $S$. A treap can then be constructed by item 1 at the root of $T(S)$. A treap for the items with key value smaller than $k_1$, can be constructed recursively and this is stored at left subtree. Symmetric for items with kv greater than $k_1$ (right subtree).\\
+
+Operations: $FIND(k,S)$ works as it would in a BST. $INSERT(k,S)$ works by performing $FIND$ first and inserting as leaf when terminating. This can break heap order, so to restore it, we can perform rotations on $k$ and its parents (towards the root) until heap order is not violated anymore. $DELETE(k,S)$ is the reverse of $INSERT$. Find the key and rotate it down until it becomes a leaf and remove it. These operations takes time proportional to depth of treap.
+
+How do we chose $p_i$'s? Idea is to pick them indep at random from some prob distribution $\mathcal{D}$ (prob 1 that all chosen are distinct).
+
+Analysis of $FIND$ $INSERT$ and $DELETE$: fat olas noter.
+\subsection{Universal Hashing}
+\label{sub:Universal Hashing}
+
+\end{document}

@@ -1,0 +1,113 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{epstopdf}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[margin=1in]{geometry}
+\usepackage{subcaption}
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\def\E{\mbox{\textbf{E}}}
+\def\Pr{\mbox{\textbf{Pr}}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
+\graphicspath{{image/}}
+\lhead{Randomized Algorithms}
+\rhead{Game-Theoretic Techniques}
+\begin{document}
+\section{Tail Inequalities}
+\subsection{Chernoff bound}
+We bound the tail probabilities of the sum of Poisson trials using the Chernoff bound, which states:
+
+\textbf{Chernoff Bound:} Let $X_1,X_2,\ldots,X_n$ be independent Poisson trials st $P[X_i=1]=p_i$, where $0<p_i<1$. Then for $X=\sum^{n}_{i=1} X_i$, $\mu=E[X]=\sum^{n}_{i=1} p_i$ and any $\delta > 0$
+$$
+P[X>(1+\delta)\mu] < \left[ \frac{e^{\delta}}{(1+\delta)^{(1+\delta)}} \right]^{\mu}
+$$
+Above is for deviations above expectation. Can also consider deviation for below expectation\\
+NO PROOF SUCK MY DICK
+\subsection{Routing in a parallel network}
+We define a network by a digraph $G=(N,E)$. Nodes $N$ repr processing elements and edges in $E$ repr communication links. Each link can carry at most 1 packet in 1 step.
+
+\textbf{PROB: } Each processor initially contains a packet destined for some processor in the netw. We denote the packet originating at node $i$ destined for node $d(i)$ by $v_i$. Also, we assume that each node is the destination of exactly one packet i.e. the $d(i)$'s for $1\leq i \leq N$, form a permutation of $\{1,\ldots, N\}$.\\
+
+HYPERCUBE SHIT\\
+
+We describe the (left-to-right) bit-fix strategy where a packet takes a route only depending on src and dest: Given src and dest addr are $n$-bit vectors, scan bits of $\sigma_i$ from left to right and comp with current location of $v_i$. Send out if the current node along the edge corresp to the left most bit in which they differ. EXAMPLE: Going from $1101$ to $0000$:
+$$
+  1101\rightarrow 0101 \rightarrow 0001 \rightarrow 0000
+$$
+
+Oblivious routing
+  2-phase
+
+\textbf{Lemma 1:} View each route In Phase 1 as a directed path in the hypercube from
+the source to the intermediate destination. Prove that once two routes separate, they
+do not rejoin.\\
+\textbf{Proof:} Graphical proof OR: Let $k$ be the node at which the two paths separate and $\ell$ be the node at which they rejoin. Note that the route is determined by the bit fixing scheme. for $v_i$ and $v_j$ from $k$ to $l$ depends only on the bit repr of $k$ and $l$, therefore $v_i$ and $v_j$ must follow the same route. Contradiction under the assumption that $k$ is last node before separation
+
+\textbf{Lemma 2:} Fix $v_i$ and let $\rho_i=(e_1,\ldots,e_k)$ be the path of $v_i$ to $\sigma(i)$. Let $S$ be the set of packets, excl. $v_i$, which use atleast 1 edge of $\rho_i$. Then the delay of $v_i$ is atmost $|S|$.
+
+\textbf{Proof:} Lag of any packet $v$ is defined relative to $\rho_i$ as $t-j$ if it is ready to follow edge $e_j$ at timestep $t$. Is initially $0$ and is equal to delay when ready to traverse $e_k$. Each time lag of $v_i$ is increased, we can charge it to a distinct member of $S$.
+
+When lag of $v_i$ increases from $\ell$ to $\ell + 1$ we shall charge it to a packet leaving $\rho_i$ with a lag of $\ell$. There exists such a packet preceding $v_i$ in the queue else the lag of $v_i$ would not have increased.
+
+Let $t'$ be the last time step that any packet in $S$ has lag $\ell$. There is a packet $v$ demanding $e_{j'}$ at time $t'$ st $t'-j'=\ell$. Since $v$ demands $e_{j'}$, a packet $w$ (can be $v$ itself) actually travels on $e_{j'}$ at $t'$. $w$ must then leave $\rho_i$ at $t'$ or else it would demand $e_{j'+1}$ at $t'+1$ which implies that some packet acutally follow $e_{j'+1}$ at $t'+1$ violating maximality of $\ell$. By lemma 1, $w$ never returns to $\rho_i$, therefore we charge
+every increase in lag to a packet in $S$ at most once.\\
+
+Analysis for expectime time to transfer all packets: Define $H_{ij}$ to be ind. Poisson trials that equal $1$ when $\rho_i$ and $\rho_j$ share at least $1$ edge and $0$ otherwise. We bound delay of $v_i$ from above using Chernoff, by bounding $\sum^{n}_{j=1} H_{ij}$.
+
+Let $T(e)$ be the number of routes that pass through $e$ (in the hypercube). If $\rho_i=(e_1,\ldots,e_k)$ then
+$$
+\sum^{n}_{j=1} H_{ij}\leq \sum^{k}_{i=1} T(e_i)
+$$
+where it then follows
+$$
+E\left[\sum^{n}_{j=1} H_{ij} \right]\leq E\left[\sum^{k}_{i=1} T(e_i)\right]
+$$
+Total $\#$ of edges in $G$ is $Nn$ ($n$ edges per node, since directed). Expected length of each route is $n/2$, therefore summing over all routes, it is $Nn/2$. It therefore follows that $E[T(e)]=1/2$ for all $e$.
+
+It then follows that:
+$$
+E\left[\sum^{n}_{j=1} H_{ij}\right] \leq \frac{k}{2} \leq \frac{n}{2}
+$$
+Not that routes of packets are chosen ind. at random. Therefore for fixed $i$ and $j\not=i$, $H_{ij}$ are ind. Poisson trials. Applying Chernoff bound on $\sum^{n}_{j=1} H_{ij}$ with $\mu=n/s$:
+\begin{align*}
+  F^+(\mu,\delta) &< 2^{-(1+\delta)\mu}
+  P\left[\sum^{n}_{j=1} H_{ij} \right]< 2^{-6n}
+\end{align*}
+Number of packets is $N=2^n$, the prob that any of them experience delay exceeding $6n$ is less than $2^n\cdot 2^{-6n}=2^{5n}$. Adding length of route to delays gives $7n$ as number of steps taken by $v_i$ in phase 1. It then follows:\\
+
+\textbf{Theorem: } With prob $1-2^{-5n}$, the packet $v_i$ reaches $t_i$ in $7n$ steps or fewer.\\
+
+Phase 2 is identical to Phase 1, if roles of src and dest are interchanged. Therefore, prob that any packet fails to reach its target in either phase is less than $2\cdot 2^{-5n}$ which is less than $2^{-n}=\frac{1}{N}$:
+
+\textbf{Thm: } With prob at least $1-\frac{1}{N} $, every packet reaches its dest in $14n$ or fewer steps.
+\subsection{Wiring problem}
+DO THIS??
+
+\end{document}

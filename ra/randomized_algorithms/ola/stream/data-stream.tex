@@ -1,0 +1,219 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{epstopdf}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[margin=1in]{geometry}
+\usepackage{subcaption}
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=2,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\def\E{\mbox{\textbf{E}}}
+\def\Pr{\mbox{\textbf{Pr}}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
+\graphicspath{{image/}}
+\lhead{RA}
+\rhead{Data Stream Algs}
+\begin{document}
+Stream: \(\sigma = <a_1,a_2,...,a_m>\), token \(a_i \in U = [n]\).\\
+Goal: process \(\sigma\) using space s st \(s<<m \wedge s << n\), \(s=O(\min(m,n))\), pref \(s=O(\log m + \log n)\).\\
+Sometimes best \(s=polylog(\min(m,n))\), \(polylog = O((\log(g(n))^c)\) for \(c>0\).\\
+Streams can only be access in sequence.\\
+Multiplicative condition: Let \(A(\sigma)\) be random stram alg A on \(\sigma\): Let \(\phi\) be target function. A is an \(\epsilon,\delta\)-approx alg of \(\phi\) if
+\[\Pr[|\frac{A(\sigma)}{\phi(\sigma)} -1 | > \epsilon] \leq \delta\]
+To strong a condition when \(\phi(\sigma)\) has values close to zero.\\\\
+Additive-approx:
+\((\epsilon,\delta)\)-additative-approx-alg A of \(\phi\) if
+\[\Pr[|A(\sigma) - \phi(\sigma)|] \leq \sigma\]
+Often instrested in statistical properties of multiset in \(\sigma\). Let vector \(\vec{F} = (f_1,..f_n)^T\), \(f_j = |\{i:a_i = j\}|\). So \(\phi(\vec{F})\) target. \(\vec{F}\) frequency vector.\\
+Turnstile model: \(\sigma: [n] \times \{-L,...,L\}\) so \(f_j \sum_{|\{i:a_i=j\}|} l_i\). Redefined m to max number tokens in multiset \(|\!|\vec{F}|\!|_1 \leq m\).\\
+Strict turnstile model: \(\vec{F} \geq 0\)\\
+Cash register model: \(\forall i.l_i > 0\)
+\section{Frequency Problem}
+Majority problem: if \(\exists j: f_j > m/2\), then output j else null.
+Frequency problem: For some k, output \(\{j:f_j > m/k\}\)\\
+Frequency-estimateion problem: For stream \(\sigma\) produce structure that can estimate \(\hat{f}_a\) for freq \(f_a\) for \(a \in [n]\).\\
+Misra-Gries Alg: Takes param k (same as freq problem). Maintain associative array, fx bbt
+\begin{verbatim}
+Process j:
+  If j in keys(A) then
+    A[j] <- A[j]+1
+  else if |keys(A)| < k -1 then
+    A[j] <- 1
+  else
+    foreach l in keys(A)
+      A[l] <- A[l] - 1
+      if A[l] = 0 then remove l
+  output: f^_a = A[a] if keys(a) else 0
+\end{verbatim}
+\textbf{Thrm} The Misra-Gries alg. with param k uses one pass and \(O(k(\log m+\log n))\) bits of space and fives estimate \(\hat{f}_j\) satisfying
+\[\max(0,f_j - \frac{m}{k}) \leq \hat{f}_j \leq f_j\]
+Proof:
+When \(A[j]\) decr then we decr k-1 other counters \(\Rightarrow\) decr witnessed (applied to) k tokens \(\Rightarrow \leq m/k\) decrs as \(|\sigma| = m\), therefore \(\hat{f}_j \leq f_j -  m/k\).
+\section{The median trick}
+Event \(X=\sum_1^t x_i\), X is bad if \(|X-f_x| \geq \epsilon |\!|f_{-x}|\!| \geq \gamma\)\\
+\(X_{t/2}\) (median) bad implies \(X_{<t/2}\) bad events.\\
+\(B_i \equiv X_i\) bad, \(B = \sum B_i\)\\
+\(X_{t/2} \Rightarrow B \geq t/2\), \(\Pr[B_i] \leq 1/3 \Rightarrow E[B] \leq t/3\)\\
+\(\Pr[X_{t/2} bad] \leq exp(\Omega(t))\)
+\section{Sketchs (Ran freq algs)}
+Sketch: Datastructure d st. \(d(\sigma_1 \cdot \sigma_2)\), \(\cdot\) is string concat, can be computed from \(d(\sigma_1)\) and \(d(\sigma_2)\) using space efficient comb alg C \(C(d(\sigma_1),d(\sigma_2)) = d(\sigma_1 \cdot \sigma_2)\).\\
+Linear Sketch: Sketching alg. A st \(\forall \sigma \subseteq [n]\) \(A(\sigma)\) takes value in vector space of dim \(l=l(n)\) and \(A(\sigma)\) is linear function of \(\vec{F}(\sigma)\). \(l\) is the dim of linear sketch. Works under turnstile and strict turnstile model.\\
+\subsection{Count Sketch}
+Basic sketch parameter \(\epsilon\) (desired accuracy)
+\begin{verbatim}
+Init
+  C[1,..,k] <- O,.,0
+  h: [n] -> [k] 2-unviersal hash function
+  g: [k] -> {-1,1} 2-unviersal hash function
+
+Process(j,c)
+  C[h(j)] += cg(j)
+
+Query(a in [N])
+  f^_a = g(a)C[h(a)]
+\end{verbatim}
+Analysis of Basic Sketch Estimate:\\
+Fix a, consider \(X=\hat{f}_a\), let \(Y_j=1\) iff \(h(j)=h(a)\), j contributes to counter \(C[h(a)] \Leftrightarrow h(j)=h(a)\), contributes sign \(g(j)\) and freq \(f_j\).\\
+Therefore,
+\[X = g(a)\sum_1^n f_jg(j)Y_j = f_a + \sum_{j\neq a} f_j g(a)g(j)Y_j\]
+\[E[g(j)Y_j] = E[g(j)]E[Y_j] = (1/2-1/2)E[Y_j] = 0\]
+first equality uses g is independent of h, above implies
+\[E[X]=f_a + \sum f_j g(a) E[g(j)Y_j] = f_a\]
+\(f_j\) and \(g(a)\) are constants. Hence \(X=\hat{f}_a\) is an unbiased estimator for \(f_a\).\\
+Second moment of Basic sketch:\\
+By 2-unviersality of \(h\in \mathbb{f}(h)\) we have \(\forall j \in [n] - a\)
+\[E[Y_j^2] = E[Y_j] = \Pr[h(j)=h(a)] = 1/k\]
+By 2-unviersality of g and independence of g and h \(\forall i,j\in [n], i\neq j\)
+\[E[g(j)g(i)Y_iY_j] = E[g(j)]E[g(i)]E[Y_iY_j] = 0*0*E[Y_i Y_j] = 0\]
+This implies that
+\begin{align}
+var[X] &= 0 + g(a)^2Var[\sum_{j\neq a} f_j g(j) Y_j\\
+       &= E[\sum_{j\neq a} f_j^2 Y_j^2 + \sum_{i,j \neq a, i<j} f_if_jg(i)g(j)Y_iY_j] - (\sum_{j\neq a} f_j E[g(j) Y_j])^2\\
+       &= \sum_{j\neq a} f_j^2/k + 0 + 0 = |\!|f|\!|^2_2 - f_a^2/k
+\end{align}
+where \(f\) is frequency distribution determine by \(\sigma\).\\
+From Chebyshev inequality
+\begin{align}
+\Pr[|\hat{f}_a-f_a| \geq \epsilon \sqrt{|\!| f|\!|_2^2 - f_a^2}] &= \Pr[|X-E[X]| \geq \epsilon \sqrt{|\!| f|\!|_2^2 - f_a^2}]\\
+                                                                &\leq \frac{var[x]}{\epsilon^2|\!|f|\!|^2-f_a^2}\\
+                                                                &= 1/k\epsilon^2 = 1/3
+\end{align}
+For  \(j \in [n]\) let \(f_{-j}\)  denote the (n-1) dimensional vector obtained by dropping j'th entru of f then
+\[\Pr[|\hat{f}_a -f_a| \geq \epsilon|\!|f_{a}|\!|^2_2] \leq 1/3\]
+\subsection{Count sketch alg}
+\begin{verbatim}
+Init
+  C[1..t][1..k] <- 0, k = 3/epsilon, t = O(log(1/delta))
+  choose t indep 2-universal hash funsc h_1,..,h_t:[n]->[k]
+  choose t indep 2-universal hash funcs g_1,..,g_t:[k]->{-1,1}
+
+Process(j,c)
+  for i=1 to t C[i][h_i(j)] += c g_i(j)
+
+Query(a)
+  f^_a = median_{1\leq i \leq t} C[i][h_i(a)]g_i(a)
+
+\end{verbatim}
+Chernoff bound argument proves \(\hat{f}_a\) satiesfies
+\[\Pr[|\hat{a}_a-f_a|\geq \epsilon|\!| f_{-a}|\!|] \leq \delta\]
+Hash fucntion stored in \(O(t\log n)\) space. each of the tk countes uses \(\log m\) space. This gives space bound 
+\[O(t \log n + tk \log m) = O(1/\epsilon^2 \log 1/\delta(\log n + \log m))\]
+\section{Count-Min Sketch}
+\begin{verbatim}
+Init
+  C[1..t][1..k] <- 0, k = 2/epsilon, t = low(log(1/delta))
+  choose t independent 2-unviersality hash functions h_1,..,h_t:[n] -> [k]
+
+Process(j,c)
+  for i=1 to t C[i][h_i(j)] += c
+
+Query(a)
+  f^_a = min_{1\leq i \leq t} C[i][h_i(a)]
+\end{verbatim}
+Space usage \(O(1/\epsilon \log 1/\delta (\log m + \log n))\).\\
+Assume each token \((j,c)\) \(c>0 \Rightarrow\) every counter \(C[i][h_i(a)]\) on token: a is overestimate of \(f_a\) so \(f_a \leq \hat{f}_a\).\\
+For fixed a analysis the size of overestimation \(C[i][h_i(a)]-f_a\).\\
+Let \(X_i\) denote excess. Let \(Y_{ij}\) be 1 iff \(h(j)=h(a)\). If \(Y_{ij}=1\) contribute \(f_j\) to counter
+\[X_i = \sum_{j\neq a} f_jY_{ij}\]
+By two unviersality \(E[Y_{ij}]=1/k\)\\
+By linarity of expecation
+\[E[X_i] = \sum_{j\neq a} \frac{f_j}{k} = \frac{|\!|f|\!|_1 - f_a}{k} = |\!| f_{-a} |\!|/k\]
+\(f_j \geq 0 \Rightarrow X_i \geq 0\) by Markov
+\[\Pr[X_i \geq \epsilon |\!| f_{-a}|\!|] \leq \frac{|\!|f_{-a}|\!|}{k} = \frac{1}{2}\]
+Excess in output is \(\hat{f}_a-f_a=\min X_i.\forall i \in [t]\)
+\begin{align}
+\Pr[\hat{f}_a-f_a \geq \epsilon |\!|\hat{f}_{-a}|\!|] &= \Pr[\min{X_i} \geq \epsilon |\!|f_{-a}|\!|_1]\\
+                                                      &= \prod^t_{i=1} \Pr[X_i \geq \epsilon |\!|\hat{f}_{-a}|\!|]
+                                                      \leq 1/2^t
+\end{align}
+By choice of t this probability is atmost \(\delta\), therefore
+\[f_a \leq \hat{f}_a \leq f_a + \epsilon|\!|f_{-a}|\!|_1\]
+With probability of failure \(\delta\). Deviation \(|\!|f_{-a}|\!| \geq |\!|f_{-a}|\!|_2\) so count-sketch tighter.
+\end{document}

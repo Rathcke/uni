@@ -1,0 +1,4 @@
+vix: 5,3
+bobe: 2,lin-prob
+viktor: 7,straem
+ola: 4,8

@@ -1,0 +1,151 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{epstopdf}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[margin=1in]{geometry}
+\usepackage{subcaption}
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\def\E{\mbox{\textbf{E}}}
+\def\Pr{\mbox{\textbf{Pr}}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
+\graphicspath{{image/}}
+\lhead{Randomized Algorithms}
+\rhead{Game-Theoretic Techniques}
+\begin{document}
+\section{Algebraic Techniques}
+\label{sec:Algebraic Techniques}
+Most alg techs involve fingerprinting: Consider the problem of determining equality of elements $x$ and $y$ drawn from $U$. Verifying has deterministic complexity $ \geq \log|U|$. Pick then random mapping from $U$ into smaller univ $V$. There is then good chance that $x$ and $y$ are identical if their images also are. Can now be verified in $\log |V|$ time by comparing fingerprints.
+\subsection{Fingerprinting and Freivalds' Technique}
+\label{sub:Fingerprinting and Freivalds' Technique}
+Describe a technique for verifying matrix multiplication. Fastest deterministic is $O(2^{2.376})$, but is very complicated. Given an impl we want to verify correctness of it. So, given $n\times n$ matrices $A$, $B$ and $C$ over $\mathbb{F}$ we would like to know if $AB=C$.\\\\
+\textbf{Freivalds' technique:} An $O(n^2)$ time randomized alg with bounded err prob. Starts by chosing rand vector $r\in\{0,1\}^n$ (elements chosen rand). We then compute $x=Br$, $y=Ax=ABr$ and $z=Cr$ in $O(n^2)$ time (vector mult). If $AB=C$ then $y=z$. We want to find prob that $y\not = z$ if $AB\not = C$.
+\paragraph{Thm 7.1:} Let $A$, $B$ and $C$ be $n\times n$ matrices over $ \mathbb{F}$ st $AB\not= C$. Then for $r$ chosen random from $\{0,1\}^n$, $P[ABr=Cr]\leq 1/2$.
+\paragraph{Proof:} Let $D=AB-C$. Then $D$ is not all zeros matrix. We want to bound prob that $Dr=0$. wlog, we can assume that first row in $D$, call this $d$, has a non-zero entry and all non-zero entries comes before the zero entries. Assume that first $k>0$ entries in $d$ are non-zero. Focus on $P[d^T r\not = 0]$. Since first row in $Dr$ is exactly $d^Tr$, this gives a lower bound on prob that $y\not = z$. We have that $d^Tr=0$ iff.
+$$
+  r_1=\frac{-\sum^{k}_{i=2}d_ir_i }{d_1}
+$$
+ie that
+$$
+  \sum^{k}_{i=1} d_ir_i=r_1d_1+\sum^{k}_{i=2} d_ir_i = 0\Leftrightarrow r_1=\frac{-\sum^{k}_{i=2}d_ir_i }{d_1}
+$$
+Assuming all other rand entries in $r$ are chosen before $r_1$. Then RHS is fixed for some val $v$. Since $r_1$ is uniformly distributed over set of size 2, prob that it equals $v$ cannot exceed $1/2$.\\
+
+Can do $k$ independant iterations of algorithm to reduce error to $1/2^k$.
+
+\subsection{Verifying Polynomial Identities}
+\label{sub:Verifying Polynomial Identities}
+Two polynomials $P(x)$ and $Q(x)$ are said to be equal if they have same coeff for corresponding powers of $x$. First consider \textit{polynomial product verification}: Given $P_1(x)$, $P_2(x)$, $P_3(x)$, verify $P_1(x)\times P_2(x)=P_3(x)$. If $P_1$ and $P_2$ have deg at most $n$, then $P_3$ has deg at most $2n$. Can mult $n$ deg poly in $O(n\log n)$ time using FFTs and for fixed $x$ can evaluate in $O(n)$ time.\\
+
+\textbf{Idea:} Let $\mathbb{S}\subseteq \mathbb{F}$ of size at least $2n+1$. Pick $r\in\mathbb{S}$ random and eval the polynomials in $r$. The identity $P_1(x)P_2(x)=P_3(x)$ is decl correct unless $P_1(r)P_2(r)\not=P_3(r)$. Alg only errs when identity is false.
+
+Def $Q(x)=P_1(x)P_2(x)-P_3(x)$ of deg $2n$. Then $Q(x)\equiv 0$, if prod is correct. If $Q(x)\not\equiv 0$ then whp $Q(r)\not = 0$. Since deg is $2n$, $Q$ can have not more than $2n$ distinct roots. Therefore, unless $Q\not\equiv 0$, not more than $2n$ different choices of $r\in\mathbb{S}$ will have $Q(r)=0$. Prob of error is at most $2n/|\mathbb{S}|$.\\
+
+This is for univariate polynomials. For a multivariate polynomial $Q(x_1,\ldots,x_n)$ the deg of any term is sum of exponents of the variables, total deg is max degree of its terms. We extend Freivalds' technique:
+\paragraph{Thm 7.2 (Schwartz-Zippel Theorem):} Let $Q(x_1,\ldots,x_n)\in \mathbb{F}[x_1,\ldots,x_n]$ be a multivariate polynomial of total degree $d$. Fix finite set $\mathbb{S}\subseteq \mathbb{F}$ and let $r_1,\ldots,r_n$ be chosen indep and unif at random from $\mathbb{S}$. Then prob of error:
+$$
+Pr[Q(r_1,\ldots,r_n)=0| Q(x_1,\ldots,x_n)\not \equiv 0]\leq \frac{d}{|\mathbb{S}|}
+$$
+\paragraph{Proof:} Induction on number of vars $n$. Base case is univariate poly, where we showed before that $P[Q(r_1)=0|Q(x_1)\not\equiv 0]\leq 2n/|\mathbb{S}|=d/|\mathbb{S}|$.
+
+Now consider $Q$ with $n\geq 2$ vars. Factor out first var to get
+$$
+Q(x_1,\ldots,x_n)=\sum^{k}_{i=0} x_1^iQ_i(x_2,\ldots,x_n)
+$$
+where $k\leq d$ is the largest exponent of $x_1$ in $Q$. Since total deg of $Q_k$ is at most $d-k$, the induction hypothesis implies $P[Q_k(r_2,\ldots,r_2)=0]\leq (d-k)/|\mathbb{S}|$. Suppose $Q_k(r_2,\ldots,r_n)\not = 0$, conside the univariate polynomial:
+$$
+  q(x_1)=Q(x_1,r_2\ldots r_n)= \sum^{k}_{i=0} x^i_1Q_i(r_2,\ldots,r_n)
+$$
+$q(x_1)$ has deg $k$, and $q(x_1)\not\equiv 0$, due to the coeff $Q_k(r_2,\ldots,r_n)$. Base case implies that
+$$P[q(r_1)=0|Q_k(r_2,\ldots,r_n)\not=0]\leq k/|\mathbb{S}|$$.
+Using that $P[\mathcal{E}_1]\leq P[\mathcal{E}_1|\overline{\mathcal{E}_2}]+P[\mathcal{E}_2]$ we get the prob bound $d/|\mathcal{S}|$.
+
+\subsection{Perfect Matchings in Graphs}
+\label{sub:Perfect Matchings in Graphs}
+Consider bipartite graph $G=(U,V,E)$ with the independet sets $U$ and $V$ of size $n$ each. A matching $M$ is a collection of edges from $E$ such that each vertex occurs at most once in $M$. Perfect matching is of size $n$.
+
+\paragraph{Theorem 7.3 (Edmonds' Theorem):} Let $A$ be the $n\times n$ matrix obtainned from $G=(U,V,E)$ as follows:
+$$
+  A_{ij}=\begin{cases}
+    x_{ij} & (u_i,v_j)\in E\\
+    0      & (u_i,v_j)\not \in E
+  \end{cases}
+$$
+Define the multivar polynomial $Q(x_{11},x_{12},\ldots,x_{nn})$ as being equal to $\det(A)$. Then $G$ has a perfect matching iff. $Q\not\equiv 0$.
+\paragraph{Proof:} The determinant of $A$ is given by
+$$
+\det(A) = \sum_{\pi\in\mathbb{S}_n} sgn(\pi)A_{1,\pi}A_{2,\pi}\ldots A_{n,\pi}
+$$
+Since each indeterminante $x_{ij}$ occurs at most once in $A$, there can be no cancellation of terms in sum. Det is therefore not identically zero iff there is a permutation $\pi$ for which the corresponding term in the summation of non-zero. The latter happens iff each entry in $A_{i,\pi(i)}$, for $1\leq i\leq n$ is non-zero. This is equiv to perfect matching in G (corresponding to $G$).a
+
+\subsection{Verifying Equality of Strings}
+\label{sub:Verifying Equality of Strings}
+Equality of strings can be reduced to that of verifying polynomial identities.\\
+Problem: Comparing consistency of information in databases without having to transmit the entire database. Have data sequences $(a_1,\ldots,a_n)$ and $(b_1,\ldots,b_n)$ (bits). We describe a randomized strat for detecting inconsistencies whp while transmitting far fewer than $n$ bits.
+
+Intepret data as $n$-bit ints $a$ and $b$ st $a=\sum^{n}_{i=1} a_i2^{i-1}$ and $b=\sum^{n}_{i=1} b_i2^{i-1}$. Def fingerprint func $F_p(x)=x \mod p$ where $p$ is prime. Alice transmits $F_p(a)$ to Bob that can compare with $F_p(b)$. If $a\not = b$ then clearly $F_p(a)\not =F_p(b)$. Number of bits transmitted is $O(\log p)$. We chose $p$ random in order to avoid an adversary foiling the strat.
+
+For any number $k$, let $\pi(k)$ be number of distinct primes less than $k$. Prime number Thm tell us this number is asymptotically $k/\ln k$. Consider $c=|a-b|$. Fingerprint fails when $c\not = 0$ and $p$ divides $c$. We know that $c\leq N=2^n$. Want to know how many primes divide $c$.
+\paragraph{Lemma 7.4:} The number of dist prime divisors of any number less than $2^n$ is at most $n$
+\paragraph{Proof:} Each prime number is greater than $1$. If $N$ has more than $t$ distinct prime divisors, then $N\geq 2^t$.\\
+
+Choose threshold $\tau$ larger than $n=\log N$. Number of primes smaller than $\tau$ is $\pi(\tau)\texttildelow \tau/\ln \tau$. At most $n$ can be divisors of $c$ resulting in a fail. We pick random prime $p$ smaller than $\tau$ for $F_p$. Number of communication bits is $O(\log \tau)$. Choose $\tau=tn\log tn$ for large $t$. Then it follows that prob of error is:
+\paragraph{Thm 7.5:} $P[F_p(a)=F_p(b)|a\not = b]\leq \frac{n}{\pi(\tau)}=O\left( \frac{1}{t} \right)$
+\subsection{A Comparison of Fingerprinting Techniques}
+\label{sub:A Comparison of Fingerprinting Techniques}
+Focus on verifying equality of 2 strings $a=(a_1,\ldots,a_n)$ and $b=(b_1,\ldots,b_n)$ containing elements drawn from alphabeth $\sigma$ of size $k$. We can encode each distinct element from the set of numbers $\Gamma =\{0,\ldots,k-1\}$. View the strings as $A(z)=\sum^{n-1}_{i=0}a_iz^i $ and $B(z)=\sum^{n-1}_{i=0}a_ib^i $. Clearly strings are identical if polynomials are.
+
+FP technique in 7.1 and 7.2: Fix $p$ greater than $2n$ and $k$. Pick random $z$ from the field $A$ and $B$ are over and substitute for $z$ in the polynomials. If $a=b$, then the polynomials are identical as well as the fingerprints. If $a\not = b$ the polynomials are distinct and the prob that the fingerprint is as well is at most $n/p$. Bounded by $1/2$ for choice of $p$.
+
+FP technique in 7.4: Dual of first. Fix $z=2$ and choose random prime $q$. FP's are obtained by evaluating $A(2)$ and $B(2)$ over $\mathbb{Z}_q$. AKA fix eval point, and choose random field in contrast to fix field and random eval point. Both techniques reduce the problem of comparing $n$-bit number to $O(\log n)$-bit numbers.
+
+\subsection{Pattern Matching}
+\label{sub:Pattern Matching}
+We have a text $X=x_1x_2\ldots x_n$ and pattern $Y=y_1y_2\ldots y_m$, both strings over some $\sigma$ (restrict us to $\{0,1\}$). We want to know if the pattern occurs in the text, ie there is $j\in\{1,2,\ldots,n-m-1\}$ st for $1\leq i\leq m$, $x_{j+i-1}=y_i$. Trivial solution is $O(nm)$, but deterministic solutions in $O(n+m)$.\\
+
+\textbf{Monte Carlo alg in $O(n+m)$:} Define $X(j)=x_jx_{j+1}\ldots x_{j+m-1}$, aka substring of length $m$ starting at $j$. There is a match if there is a $j$ st $1\leq j\leq n-m+1$, for which $Y=X(j)$. Make solution unique by req smallest $j$.
+
+The randomized alg choose a fingerpint $F$ and compares $F(Y)$ with each of $F(X(j))$. Error means $F(Y)=F(X(j))$ but $Y\not = X(j)$. Choose efficient $F$ with small prob of error. Use same as in section 7.4: Let the string be $Z\in\{0,1\}^m$ ($m$-bit int) with $F_p(Z)=Z\mod p$, where $p$ is random prime $<\tau$. Interpret $Y$ and $X(j)$ as $m$-bit ints and compare fingerprints. Thm 7.5 bounds prob of false match:
+$$
+P[F_p(Y)=F_p(X(j))| Y\not = X(j)]\leq \frac{m}{\pi(\tau)} =O\left(\frac{m\log \tau}{\tau} \right)
+$$
+ie. false match occurs for any of the at most $n$ vals of $j$ with prob $O((nm\log\tau)/\tau)$. With $\tau = n^2m\log n^2m$ the prob of false match is $O(1/n)$.
+
+\textbf{Running time: }
+$$
+X(j+1)=2[X(j)-2^{m-1}x_j]+x_{j+m}
+$$
+Gives the recurrence:
+$$
+F_p(X(j+1))=2[F_p(X(j))-2^{m-1}x_j]+x_{j+m} \mod p
+$$
+Given fingerprint of $X(j)$ cost of fingerprint $X(j+1)$ is $O(1)$. Gives total cost of $O(n+m)$:
+\paragraph{Thm 7.6:} The Monte Carlo algorithm for pattern matching requires $O(n+m)$ time with err prob $O(1/n)$
+\end{document}

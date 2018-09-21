@@ -87,7 +87,7 @@ lessThan [StringVal e1, StringVal e2] = return (if e1 < e2 then TrueVal
 lessThan _                            = fail "Bad argument types in '<'"
 
 plus :: Primitive
-plus [IntVal e1, IntVal e2]       = return $ IntVal (e1 + e2)
+plus [IntVal e1, IntVal e2]       = return (IntVal (e1 + e2))
 plus [StringVal e1, StringVal e2] = return $ StringVal (e1 ++ e2)
 plus [StringVal e1, IntVal e2]    = return $ StringVal (e1 ++ show e2)
 plus [IntVal e1, StringVal e2]    = return $ StringVal (show e1 ++ e2)

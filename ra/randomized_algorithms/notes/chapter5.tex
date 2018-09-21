@@ -1,0 +1,66 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{epstopdf}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[margin=1in]{geometry}
+\usepackage{subcaption}
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\def\E{\mbox{\textbf{E}}}
+\def\Pr{\mbox{\textbf{Pr}}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
+\graphicspath{{image/}}
+\lhead{Randomized Algorithms}
+\rhead{Game-Theoretic Techniques}
+\begin{document}
+\section{The Probabilistic Method}
+\subsection{Overview of the method}
+\label{sub:Overview of the method}
+The two reccurent ideas:
+\begin{enumerate}
+  \item Any random var assumes at least one value no smaller than the expected and at least 1 value that is not greater than the expected.
+  \item If an object chosen randomly from a universe satisfies a property with positive probability, then there must be an object in the universe that satisfies that property.
+\end{enumerate}
+The method generally consists of 2 stages: First, we design a "thought experiment" in which a random process plays a role, e.g. assigning $+1$ or $-1$ indepedently and equiprobably to the elements of $b$ in the set-balancing problem. Second, we analyze the random exp and draw conclusion indepently from the exp.\\
+
+\textbf{Thm 5.1: } For any undigraph $G$ with $n$ vertices and $m$ edges, there is a partition of the vertex set $V$ into $A$ and $B$ such that
+$$
+  |\{(u,v)\in E | u\in A \land v \in B\}|\geq m/2
+$$\textbf{Pf: } Consider assigning each vertex of $G$ to $A$ and $B$ indep and equiprob. For an $(u,v)$ the prob that endpoints will end up in diff sets is $1/2$. Using LOE, for the $m$ edges, the expected number of edges with endpoints in diff sets is $m/2$.\\
+
+\subsection{Maximum Satisfiability}
+\label{sub:Maximum Satisfiability}
+Focus on satisfiability problem. For $m$ clause in CNF over $n$ variables, we seek an assignment of the variables st. all clauses are satisfied. MAX-SAT is the problem of maximizing the number of satisfied clauses. MAX-SAT is NP-hard but the following probabilistic argument shows that for any $m$ clauses there is an assignment of variables st. at least $m/2$ clauses are satisfied.
+\textbf{Thm 5.2: } For any set of $m$ clauses, there is a truth assignment for the variables that satisfies at least $m/2$ clauses.
+THIS IS SHIT
+\subsection{Expanding Graphs}
+\label{sub:Expanding Graphs}
+We define an expanding graph as a graph in which the number of neighbours of any set of vertices $S$ is larger than some positive constant multiple of $|S|$. An OR-concentrator is a special expanding graph.
+\end{document}

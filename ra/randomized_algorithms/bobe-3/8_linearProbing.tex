@@ -1,0 +1,152 @@
+\documentclass[a4paper, fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[margin=2.5 cm]{geometry}
+
+\setlength\parindent{0pt}
+\setlength\mathindent{75pt}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\A{\mathcal{A}}
+\def\I{\mathcal{I}}
+\def\E{\mathbb{E}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\begin{document}
+\section*{Reading}
+\begin{itemize}
+    \item Notes, section 1-3
+\end{itemize}
+\tableofcontents
+\section{Intro}
+\subsection{$k$-independence}
+\begin{enumerate}
+  \item For any distinct keys $x_0,...,x_k \in [u]\}$, the hash values $h(x_0),...,h(x_k)$ are independent random variables, that is, for any hash values $y_0,...,y_k \in [t]$ and $i \in [k], \Pr[h(x_i)=y_i] = \Pr[h(x_i) = y_i | \bigwedge_{j\in[k]\\\{i\}} h(x_j) = y_j]$.
+  \item For any $x \in [u]$, $h(x)$ is uniformly distributed in $[t]$.
+\end{enumerate}
+\subsection{Example of linear probing}
+\begin{verbatim}
+h(a) = 2, h(b) = 3, h(c) = 2, h(d) = 3
+|1|2|3|4|5|6|
+| |a| | | | |
+| |a|b| | | |
+| |a|b|c| | |
+| |a|b|c|d| |
+c?, h(c) = 2
+| |a|b|c|d| |
+   ^ ^ ^
+-a, h(a) = 2
+| |a|b|c|d| |
+| | |b|c|d| |
+| |c|b| |d| |
+| |c|b|d| | |
+\end{verbatim}
+\section{Linear probing with 5-independence}
+\subsection{Theorem 1}
+The time it takes to search insert or delete a key $x$ is at most proportional to the number of locations from $h(x)$ to the first empty location.
+\subsection{Lemma 2}
+A run $R$ is a the longest consecutively amount of filled positions. When proving we talk about something called dyadic intervals, a dyadic $l$-interval is an interval of length $2^l$, containing positions $[i2^l,(i+1)2^l)$ where $i \in [t/2^l]$. An interval is near-full if at least $3/4 2^l$ keys from $S/\{q\}$ hash into it.
+
+Consider a run $R$ of length $r \geq 2^{l+2}$. Then one of the first four $l$-intervals intersecting $R$ must be near full.
+\paragraph{Proof}
+\begin{center}
+  \includegraphics[width=\textwidth]{./fig_1_8_linearProbing.jpg}
+\end{center}
+\subsection{Lemma 3}
+A run containing the hash of the query key $q$ is of length $r \in [2^{l+2},2^{l+3})$, will have a near-full interval in one of the following 12 intervals: the one containing the hash of $q$, the 8 previous and the 3 next.
+\paragraph{Proof}
+As the run can be at most $8 * 2^l$ long, we know the from Lemma 2 that one of the first 4 intervals must be near-full. Thus one of the 12 must be near-full.
+\subsection{Theorem 4}
+If $S$ keys are stored in a linear probing table of size $t$ where $t$ is a power of two. Conditioned on the hash of a key q, we let $P_l$ bound the probability that $3/4 2^l$ keys from $S\{q\}$ hash to any given $l$-interval. then the expected time to search, insert, or delete $q$ is bounded by:
+$$
+3 + \sum_{l=0}^{\log_2 t} 2^{l+3} * 12P_l = O(1+\sum_{l=0}^{\log_2 t}2^lP_l)
+$$
+\subsection{Theorem 5}
+If the varaibles $X_0,...,X_{n-1} \in \{0,1\}$ are 4-wise independent, $X = \sum_{i\in [n]} X_i$, and $\mu = \E[X] \geq 1$, then
+$$
+\Pr[|X-\mu| \geq d\sqrt{\mu}] \leq 4/d^4
+$$
+\subsection{Theorem 6}
+Using a 5-independent hash function $h$ to store a set $S$ of $n$ keys in a linear probing table of size $t \geq 3/2n$ where $t$ is a power of two. Then it takes expected constant time to search insert or delete a key.
+\paragraph{Proof}
+First we fix the hash of the query key $q$. To apply Theorem 4, we need to find a bound $P_l$ on the probability that $3/4 2^l$ keys from $S/\{q\}$ hash to any given $l$-interval $I$. For each key $x \in S \ \{q\}$, let $X_x$ be the indicator variable for $h(x) \in I$. Then $X = \sum_{x\in S / \{q\}} X_x$ is the number of keys landing in $I$, and the expectation of $X$ is $\mu = \E[X] \leq n2^l/t \leq 2/3* 2^l$. Our concern is the event that
+$$
+X \geq 3/4* 2^l \Rightarrow X - \mu \geq 1/12 * 2^l > 1/10 \sqrt{2^l\mu}
+$$
+Since $h$ is 5-independent, the $X_x$ are 4-independent, so by Theorem 5, we get
+$$
+\Pr [X \geq 3/4* 2^l] \leq \frac{4}{\left(\frac{2^{l/2}}{10}\right)^4} = 40000/2^{2l} = O(1/2^{2l})
+$$
+Thus we can use $P_l = O(1/2^{2l})$ in Theorem 4, and then we get that the expected operation cost is
+$$
+O(1+\sum_{l=0}^{\log_2 t}2^lP_l) = O(1+\sum_{l=0}^{\log_2 t}2^l/2^{2l}) = O(1)
+$$
+
+\includepdf[pages=-]{./notes_8_linearProbing.pdf}
+\end{document}

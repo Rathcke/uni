@@ -1,0 +1,133 @@
+\documentclass[a4paper, fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=2.5 cm]{geometry}
+
+\setlength\parindent{0pt}
+\setlength\mathindent{75pt}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=3,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\def\el{[\![}
+\def\er{]\!]}
+\def\dpip{|\!|}
+\def\MeanN{\frac{1}{N}\sum^N_{n=1}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\begin{document}
+
+\subsection*{Occupancy Problems}
+
+\subsection*{Markov's Inequality}
+Sometimes, it can be hard to say something about the probability that a random variable deviates far from its expectation. One way to avoid making a detailed analysis is by using Markov's inequality. It says that for a random non-negative variable $Y$, then:
+\begin{align*}
+  P[Y\geq t] &\leq \frac{E[Y]}{t}
+\end{align*}
+Unfortunately, this is not particularly tight and often not useful. However, if we know the variance of a distribution, we can use Markov's inequality to derive a more useful bound known as Chebyshev's inequality.
+
+\subsection*{Chebyshev's Inequality}
+The Chebyshev inequality states that, for a random variable $X$, standard deviation $\sigma$ and expectation $\mu$:
+\begin{align*}
+  P[|X-\mu|\leq t\sigma] &\leq \frac{1}{t^2}
+\end{align*}
+We are gonna use this inequality in the analysis of a randomized selection algorithm.
+
+\subsection*{Randomized Selection}
+A selection algorithm is an algorithm to find the $k$'th smallest element. The \textsc{LazySelect} algorithm is one such algorithm which uses random sampling. The algorithm:
+\begin{itemize}
+  \item So given a $k$ and a set $S$ of size $n$, we pick $n^{3/4}$ uniformly at random and call that set for $R$.
+  \item Sort $R$ in $O(n^{3/4}\lg n)$ time.
+  \item We let $x=kn^{-1/4}$, $\ell=\max \{\lfloor x-\sqrt{n}\rfloor, 1\}$ and $h=\min\{\lceil x+\sqrt{n}\rceil, n^{3/4}\}$. Let $a=R_{\ell}$ and $b=R_h$ and determine their rank by comparing to all elements in $S$.
+  \item If $k<n^{1/4}$, then $P$ is the set of $y\leq b$ from $S$. If $k>n^{3/4}$, then $P$ is the set of $y\geq a$ from $S$. If in between, then $P$ is the set of $a\leq y\leq b$.
+  \item Check if $S_k$ is in $P$ and if $P\leq 4n^{3/4}+2$. If it is, sort $P$ in $O(P\lg P)$ time and find $S_k$ in $P_{k-r_a+1}$. Otherwise, try the entire thing again.
+\end{itemize}
+So the idea is to have $S_k$ in the set $P$, which is rather small, so we don't lose too much when sorting the set in the last step.\\
+\\
+The claim is that with probability $1-O(n^{-1/4})$, we find $S_k$ in the first try, yielding $2n+o(n)$ comparisons (Theorem 3.5).\\
+\\
+\textbf{Proof:} The number of comparisons is easy to see. We get $2n$ comparisons determining ranks for $a$ and $b$. The other steps only perform $o(n)$ comparisons. The algorithm can fail if $S_k$ lands outside the set $P$. Lets analyze the probability that $S_k<a$. This happens only if fewer than $\ell$ of the elements in $R$ are $\leq S_k$. Let $X_i$ be an indicator variable for this, then we see that $P[X_i]=k/n$. These variables are actually \textit{Bernouille trials}, which means we can find $\mu$ and $\sigma$:
+\begin{align*}
+  \mu&=E\left[ \sum_{i=1}^{n^{3/4}} X_i \right] = \sum_{i=1}^{n^{3/4}} E[X_i] =\frac{kn^{3/4}}{n}=kn^{-1/4}
+\end{align*}
+and
+\begin{align*}
+  \sigma^2 = n^{3/4}\left( \frac{k}{n} \right) \left( 1-\frac{k}{n} \right) \leq \frac{n^{3/4}}{4}
+\end{align*}
+Or to bound the standard deviation, we have $\sigma \leq n^{3/8}/2$. We can now use Chebyshev's inequality to get:
+\begin{align*}
+  P[|X-\mu|\geq \sqrt{n}]\leq P[|X-\mu|\geq 2n^{1/8}\sigma]=O(n^{-1/4})
+\end{align*}
+Following the same argument, this is also the probability that $b<S_k$, meaning the probability it falls outside $[a,b]$ is $O(n^{-1/4})$. \\
+The other way it can fail is if $|P|>4n^{3/4}+2$. We note that $|P|=r_b-r_a+1$, so for the test to fail, we must have $k-r_a>2n^{3/4}+1$ or $r_b-k>2n^{3/4}+1$. The proof then follows from the above analysis, but where $X_i$ is $1$ if the $i$'th sample has rank less than $k-2n^{3/4}$ or above $k+2n^{3/4}$. Once again, we get $O(n^{-1/4}$, which proves the result from Theorem 3.5. \\
+\\
+The best known deterministic algorithm uses $3n$ comparisons. The expected running time is also $2n+o(n)$.
+
+\subsection*{Two-Point Sampling}
+
+\subsection*{Coupon Collector's Problem}
+
+
+Talk about inequalities $\rightarrow$ Randomized selection $\rightarrow$ Prove Theorem 3.5
+
+\end{document}

@@ -1,0 +1,162 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{epstopdf}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{textcomp}
+\usetikzlibrary{patterns}
+\usepackage{pdfpages}
+\usepackage{gauss}
+\usepackage{fancyvrb}
+\usepackage[table]{colortbl}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[margin=1in]{geometry}
+\usepackage{subcaption}
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+
+\definecolor{listinggray}{gray}{0.9}
+\usepackage{listings}
+\lstset{
+	language=,
+	literate=
+		{æ}{{\ae}}1
+		{ø}{{\o}}1
+		{å}{{\aa}}1
+		{Æ}{{\AE}}1
+		{Ø}{{\O}}1
+		{Å}{{\AA}}1,
+	backgroundcolor=\color{listinggray},
+	tabsize=2,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={0.2\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak =\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	showtabs=false,
+	showspaces=false,
+	showlines=true,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+  moredelim=**[is][\color{blue}]{@}{@},
+}
+\newcommand{\comment}[1]{%
+  \text{\phantom{(#1)}} \tag{#1}}
+\lstdefinestyle{base}{
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black},
+}
+
+\pagestyle{fancy}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+\def\E{\mbox{\textbf{E}}}
+\def\Pr{\mbox{\textbf{Pr}}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand*\squared[1]{%
+  \tikz[baseline=(R.base)]\node[draw,rectangle,inner sep=0.5pt](R) {#1};\!}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
+\graphicspath{{image/}}
+\lhead{RA}
+\rhead{Chap 4}
+\begin{document}
+\section{Chernoff Bound}
+Bounds the probability of deviating far from the mean. First we bound devaition above, then below. We consider moment generating function \(E[e^{tX}]\) rather than \(E[X]\). We work with poisson trials, indpendent \(p_i\) prob that\(X_i=1\).\\
+Thrm Chernoff above: Let \(X_{i\leq n}\) be indp poisson trials, st. \(\Pr[X_1 = 1] = p_i\). Then for \(\delta > 0\) 
+\[\Pr[X>(1+\delta)\mu] < \left[\frac{e^\delta}{(1+\delta)^{1+\delta}}\right]^\mu\]
+Proof: For any positive real \(t\)
+\[\Pr[X>(1+\delta)\mu]  = \Pr[exp(tX) > exp(t(1+\delta)\mu)]\]
+By markov we have
+\[\Pr[X>(1+\delta)\mu] < \frac{E[exp(tX)]}{exp(t(1+\delta)\mu)}\]
+Strict since \(p_i\) not zero or one. Observe
+\[\E[exp(tX)] = E[exp(t\sum_i^n X_i)] = E[\prod_i^n exp(tX_i)]\]
+By independence of \(X_i\) \(E[\prod exp(tX_i)] = \prod E[exp(tX_i)]\),so
+\[\Pr[X > (1+\delta)\mu] < \frac{\prod_i^n E[exp(tX_i)]}{exp(t(1+\delta)\mu)}\]
+\(\Pr[exp(tX_i)=exp(t)] = p_i\) and value 1 with probability \(1-p_i\) so
+\[\Pr[X>(1+\delta)\mu] < \frac{\prod_i^n[p_ie^t + 1 - p_i]}{exp(t(1+\delta)\mu)} = \frac{\prod_i^n [1+p_i(e^t-1)]}{exp(t(1+\delta)\mu)}\]
+Use \(1+x < e^x\) with \(x = p_i(e^t-1)\) 
+\begin{align}
+\Pr[X > (1+\delta)\mu] < \frac{\prod_i^n exp(p_i(e^t -1)]}{exp(t(1+\delta)\mu)}\\
+\Pr[X > (1+\delta)\mu] < \frac{ exp(\sum_i^n p_i(e^t -1)]}{exp(t(1+\delta)\mu)}\\
+\Pr[X > (1+\delta)\mu] < \frac{ exp((e^t -1)\mu)}{exp(t(1+\delta)\mu)}
+\end{align}
+We differentiate the last expression with respect to t and set to zero; solving for t now yields \(t = \ln(1 + \delta)\), which is positive for \(\delta > 0\). Substituting
+this value for t.
+
+\section{Parallel routing}
+Problem: consider network of N nodes. \(v_i\) is the package from processor \(i\), \(d(i)\) is destination. Only consider case when \(d(i)\) are all distinct, ie. permutation of \([N]\). How many steps required to route arbitrary permutation of \(d(1),..,d(N)\).
+Consider case where all edges leaving vertex have queue, a route is a sequence of edges to take from source to destination. Oblivous algorithm, all routes are determined only by destination. \\
+\textbf{Thrm}: For N nodes with out-degree d, there is deterministic oblivous routing algorithm there is a instance of permutation routing alg. requiring \(\Omega(\sqrt{N/d})\) steps.
+
+Boolean hypercube: \(N=2^{dim}\) nodes. node \(i \in \{0,1\}^n\) adjacent to nodes with index obtained by single boolean flip. fx 010 adj. to \(011,000,110\). If j'th bit flipped out egde labeled j.\\
+2 phase ran alg:
+\begin{enumerate}
+\item pick random intermediate destination \(\sigma(i)\) from [N]. \(v_i\) travels to \(\sigma(i)\).
+\item When all packages have arrived at intermediate destination, all packages travel to destination \(d(i)\).
+\end{enumerate}
+Route determined by bit-fixing strategy: send \(v_i\) at \(v_j\) along the edge most sig. bit of \(v_j - d(i)\). Note \(\sigma\) is not permutation, as all destination chosen indpendently. Use FIFO for queueing.\\
+Phase 1 analysis, \(\rho_i\) is phase one route for \(v_i\). \(|\rho_i| \leq n+delay\).\\
+\textbf{Lemma}: delay of \(v_i\) with route \(e_1,..,e_k\) is atmost \(|S|\). Where S is the set of packages which route pass through atleast one of \(e_1,..,e_k\).\\
+Proof: A package in S leaves \(\rho_i\) at time step step at which it traverses an edge in \(\rho_i\) for the last time. Lag of a package traversing \(e_j\) at time t is \(t-j\). Init lag of \(v_i=0\), lag of \(v_i\) as traverses \(e_k\) is delay. If lag of \(v_i\) reaches l+1 a package in S leaves \(\rho_i\) with l. We see this since there must be a package from S that traveses \(e_j\), otherwise \(v_i\) could just traverse \(e_j\). Our queue policy FIFO means even if that package continue to travel along \(\rho_i\) it will not delay \(v_i\) again.  Let t' be the last time at which a package in S leaves with lag l. So there exist package v traversing \(e_{j'}\) at time t' st \(t'-e_{j'} = l\). Since v follows \(e_{j'}\) there is some w in S that follows \(e_{j'}\) at time t'. w must leave \(\rho_i\) at t': if not, some package follows \(e_{j'+1}\) at time \(t'+1\) with lag l, and so t' is not maximal. We charge increase from l to l+1 to w, which will not delay \(v_i\) again since it leaves \(\rho_i\). Thus each member of \(S\) can each be charge atmost one delay, establishing the lemma.\\
+Let \(H_{ij}=1\) iff \(\rho_i\) and \(\rho_j\) share atleast one edge. Delay \(v_i\) is at most \(\sum_1^N H_{ij}\). Since routes are chosen randomly \(H_{ij}\) are poisson trial for \(i\neq j\). Hence to bound delay using Chernoff, we can bound sum over \(H_{ij}\).\\
+Consider edge \(e\) in the hypercube, let \(T(e)\) be the number of routes that traverse \(e\). Fix \(\rho_i\) with \(|\rho_i| = k \leq n\), then
+\[\sum_1^N H_{ij} \leq \sum_1^k T(e_l) \Rightarrow E[\sum_1^N H_{ij}] \leq \sum_1^k E[T(e_l)]\]
+The expected length of \(\rho_j\) is \(n/2\). So the the expected total length is \(Nn/2\). There are \(Nn\) nodes \(\Rightarrow E[T(e)]= 1/2\) for all edges \(e\).
+\[E[\sum_1^N H_{ij}] \leq k/2 \leq n/2\]
+By Chernoff bound the probability that \(\sum_1^N H_{ij}\) exceeds 6n \(<\) \(2^{-6n}\). Summing over all packets we get probability \(2^{-5n}\) that none exceed 6n delay. Adding the route length we get with probability \(1-2^{-5n}\) every package reaches phase 1 dest. atmost 7n steps.\\
+For phase to we run same anlysis, only source is chosen at random. Hence we have that with for package to reach dest in either phase is \(2*2^{-5n} < 1/N\) for \(n>1\).\\
+With probaility at least \(1-(1/N)\) every packet reaches its destination in atmost 14n steps. 
+\section{Wiring problem}
+Problem: global wiring in gate-arryas.\\
+Gate-array: \(\sqrt{n}\times\sqrt{n}\) matrix with elements number \([n]+1\).\\\
+A net: is a set of gates that must be connect.\\
+Problem to solve: Given a set of nets. Consider only nets of size 2. We want to specify a physical path for each net.\\
+The boundary between two gates can accomidate atmost \(w\) wires crossing it. We want to solve global wiring st. no boundary has more \(w\) wires crossing it.\\
+We consider only one bend routes\\
+We cast problem to 0-1 linear program. For net i we have indicators \(x_{i0}=1\) iff net i goes horizontal first and \(x_{i1}=1\) iff we go verical first, starting from the leftmost gate.\\
+For each boundary in the gatearray
+\[T_{b0} = \{i | \emph{net} i \emph{passes through } b \emph{ if } x_{i0} = 1\}\]
+and 
+\[T_{b1} = \{i | \emph{net} i \emph{passes through } b \emph{ if } x_{i1} = 1\}\]
+Linear program:
+\[\min w \emph{ where }x_{i0},x_{i1} \in \{0,1\}\]
+subject to
+\begin{align}
+x_{i0} + x_{i1} &= 1\\
+\sum_{i \in T_{b0} x_{i0}} + \sum_{i \in T_{i1}} x_{i1} &\leq w
+\end{align}
+Problem is NP-hard. Do relaxation to \(x_{i0},x_{i1} \in [0,1]\) and use randomized rouding to 1 with probabilties equal to relaxed solution.\\
+\textbf{Thrm} Let \(\epsilon\) be a real number st. \(0<\epsilon<1\). Then with probability \(1-\epsilon\) the global wiring \(S\) produced by randomized rounding satisfies
+\[w_S \leq \hat{w}(1+\Delta^+(\hat{w},\epsilon/2n)) \leq w_0(1+\Delta^+(w_0,\epsilon/2n))\]
+Note \(w_0\) is optimal solutions (max \(w\) possible).\\
+Proof: Consider a boundary \(b\); since the solutoin of the linear program satisfy its constrains, we have
+\[\sum_{i \in T_{b0}} \bar{x}_{i0} + \sum_{i\in T_{b1}} \bar{x}_{i1}\]
+The number of wires passing thorugh \(b\) in the solution \(S\)  is
+\[w_s(b) = \sum_{i \in T_{b0}} \bar{x}_{i0} + \sum_{i\in T_{b1}} \bar{x}_{i1}\]
+ But \(\bar{x}_{i0}\) and \(\bar{x}_{i1}\) are Poisson trials with probabilty \(\hat{x}_{i0}\) and \(\hat{x}_{i1}\), respecively. Further, \(\bar{x}_{i0}\) and \(\bar{x}_{i1}\) are each indpendent of \(j\) for \(i\neq j\). Therefore \(w_S(b)\) is the sim of independent Poisson trials and by previous two equations
+ \[E[w_S(b)] = \sum_{i \in T_{i0}} E[\bar{x}_{i0}] + \sum_{i\in T_{b1}} E[\bar{x}_{i1}] = \sum_{i \in T_{i0}} \hat{x}_{i0} + \sum_{i\in T_{b1}} \hat{x}_{i1} \leq \hat{w}\]
+By definition of \(\Delta^+(\mu,\epsilon)\)
+\[\Pr[w_s(b) > \hat{w}(1+\Delta^+(\hat{w},\epsilon/2m)] \epsilon/2n\]
+
+\end{document}
